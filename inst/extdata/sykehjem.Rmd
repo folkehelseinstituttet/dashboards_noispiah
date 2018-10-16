@@ -1,0 +1,100 @@
+---
+output:
+  pdf_document:
+    template: fhi_nois.latex
+    latex_engine: xelatex
+editor_options: 
+  chunk_output_type: console
+header-includes:
+  - "\\usepackage{pdflscape}"
+  - "\\usepackage{blindtext}"
+params:
+  dev: TRUE
+  level: landsdekkende
+  location: Fræna
+  DATE_USE: 2017-11-08
+title: "Prevalensundersøkelsen for helsetjenesteassosierte infeksjoner og antibiotikabruk"
+sub_title: "`r params$location` --- Høst 2017"
+header: "Prevalensundersøkelsen for helsetjenesteassosierte infeksjoner og antibiotikabruk \\newline `r params$location` --- Høst 2017"
+footer: "Folkehelseinstituttet, Oslo, Norge"
+authors:
+  - "Torunn Alberg"
+  - "Hanne-Merete Eriksen"
+  - "Hege Line Magnussen Løwer"
+  - "Richard Aubrey White"
+---
+
+```{r message=FALSE, warning=FALSE, include=FALSE, paged.print=FALSE}
+suppressMessages(library(data.table))
+suppressMessages(library(ggplot2))
+
+if(params$dev){
+  suppressPackageStartupMessages(devtools::load_all("/packages/dashboards_noispiah/", export_all=FALSE, quiet=T))
+} else {
+  suppressPackageStartupMessages(library(noispiah))
+}
+
+fhi::DashboardInitialise(
+  STUB="/",
+  SRC="src",
+  NAME="noispiah"
+)
+  
+da <- readxl::read_excel(fhi::DashboardFolder("data_raw","AntibiotikadataPrimer.xlsx"))
+di <- readxl::read_excel(fhi::DashboardFolder("data_raw","InfeksjonsdataPrimer.xlsx"))
+
+setDT(da)
+setDT(di)
+
+if(params$level=="landsdekkende"){
+  
+} else if(params$level=="fylke"){
+  da <- da[Fylke==params$location]
+  di <- di[Fylke==params$location]
+} else if(params$level=="kommune"){
+  da <- da[Kommune==params$location]
+  di <- di[Kommune==params$location]
+}
+```
+
+\newpage 
+
+# Deltagelse, forekomst av helsetjenesteassosierte infeksjoner og bruk av antibiotika i sykehjem
+
+\blindtext
+
+\begin{landscape}
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, paged.print=TRUE, results='asis'}
+Table_DeltagelseForekomstHAIogABiSykehjem(di=di,da=da,level=params$level,DATE_USE=params$DATE_USE)
+```
+
+\end{landscape}
+
+\newpage
+
+# Prevalens av helsetjenesteassosierte infeksjoner blant beboere i sykehjem per avdelingstype
+
+\blindtext
+
+hello
+
+hi
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, paged.print=TRUE, results='asis'}
+Figure_ForekomstHAIiSykehjemPerAvdelingstype(di=di,da=da,DATE_USE=params$DATE_USE)
+```
+
+
+\newpage
+
+# Andel forskrivninger av antibiotika til forebygging og behandling per indikasjon
+
+\blindtext
+
+\newpage
+
+# Forskrivning av antibiotika (virkestoff) per indikasjon
+
+\blindtext
+

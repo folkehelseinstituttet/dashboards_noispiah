@@ -1,0 +1,22 @@
+language: r
+cache: packages
+r_packages:
+- covr
+- drat
+- pkgdown
+before_install:
+- bash make.sh
+after_success:
+- Rscript -e 'library(covr); codecov()'
+- test $TRAVIS_PULL_REQUEST == "false" && test $TRAVIS_BRANCH == "master" && bash
+  deploy.sh
+- test $TRAVIS_PULL_REQUEST == "false" && test $TRAVIS_BRANCH == "master" && Rscript
+  -e 'Sys.sleep(10);install.packages("sykdomspuls",repos="https://folkehelseinstituttet.github.io/drat/");pkgdown::build_site()'
+deploy:
+  provider: pages
+  skip-cleanup: true
+  github-token: "$GH_TOKEN"
+  keep-history: true
+  local-dir: docs
+  on:
+    branch: master
