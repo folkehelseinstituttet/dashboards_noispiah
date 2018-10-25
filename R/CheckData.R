@@ -6,10 +6,10 @@
 #' @importFrom stringr str_detect
 #' @export CheckData
 CheckData <- function(raw=fhi::DashboardFolder("data_raw")){
-  if(file.exists(file.path(raw,"DONE.txt")) & CONFIG$FORCE_TESTING==FALSE){
-    cat(raw,"\n")
-    cat(CONFIG$FORCE_TESTING,"\n")
-    cat(sprintf("%s/%s/R/noispiah DONE.txt exists",Sys.time(),Sys.getenv("COMPUTER")),"\n")
+  if(file.exists(file.path(raw,"DONE.txt")) & !fhi::DashboardIsDev()){
+    fhi::DashboardMsg(raw)
+    fhi::DashboardMsg(CONFIG$FORCE_TESTING)
+    fhi::DashboardMsg("DONE.txt exists")
     quit(save="no")
   }
 
@@ -20,18 +20,18 @@ CheckData <- function(raw=fhi::DashboardFolder("data_raw")){
     if(!RAWmisc::IsFileStable(file.path(raw,f))) dataFilesExist <- FALSE
   }
   if(!dataFilesExist){
-    cat(sprintf("%s/%s/R/noispiah No new data files",Sys.time(),Sys.getenv("COMPUTER")),"\n")
+    fhi::DashboardMsg("No new data files")
     quit(save="no")
   }
 
-  for(f in CONFIG$LATEX_RAW){
-    file.copy(system.file("extdata", f, package = "noispiah"),file.path(raw,"rapporter",f), overwrite = TRUE)
-  }
+  #for(f in CONFIG$LATEX_RAW){
+  #  file.copy(system.file("extdata", f, package = "noispiah"),file.path(raw,"rapporter",f), overwrite = TRUE)
+  #}
 
   for(f in CONFIG$FILES_RMD_RAW){
     files <- list.files(file.path(raw,"rapporter"))
     filesTypeF <- files[stringr::str_detect(files,f)]
-    if(length(filesTypeF)==0 | CONFIG$FORCE_TESTING){
+    if(length(filesTypeF)==0 | fhi::DashboardIsDev()){
       file.copy(system.file("extdata", f, package = "noispiah"),file.path(raw,"rapporter",sprintf("%s_%s",lubridate::today(),f)), overwrite = TRUE)
     }
 
@@ -45,7 +45,7 @@ CheckData <- function(raw=fhi::DashboardFolder("data_raw")){
              SetConfig("FILES_RMD_USE_SYKEHUS",file.path(raw,"rapporter",filesTypeF))
            },
            {
-             print('ERROR')
+             fhi::DashboardMsg('ERROR')
            }
     )
   }

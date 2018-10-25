@@ -117,7 +117,7 @@ Figure_ForekomstHAIiSykehjemPerAvdelingstype <- function(di,da,DATE_USE){
   tab[,xLab := sprintf("%s (%s)",Avdelingstype,AntallBeboereKl8)]
 
   q <- ggplot(tab,aes(x=xLab,y=perc,fill=variable))
-  q <- q + geom_bar(stat="identity",colour="black")
+  q <- q + geom_bar(stat="identity",colour="black",alpha=0.5)
   q <- q + scale_fill_brewer("",palette="Set1",guide=guide_legend(ncol=2,byrow=T,reverse = TRUE))
   q <- q + scale_x_discrete("Avdelingstype (antall beboere)")
   q <- q + scale_y_continuous("Prevalens av helsetjenesteassosierte infeksjoner")

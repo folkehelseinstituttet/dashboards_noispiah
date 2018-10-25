@@ -8,7 +8,6 @@ CONFIG$FILES_DATA <- c(
   "AntibiotikadataSpesialist.xlsx",
   "InfeksjonsdataSpesialist.xlsx"
   )
-CONFIG$LATEX_RAW <- c("fhi_nois.latex","fhi.pdf_tex","fhi.pdf")
 CONFIG$FILES_RMD_RAW <- c("sykehjem.Rmd","sykehus.Rmd")
 CONFIG$FILES_RMD_USE_SYKEHJEM <- ""
 CONFIG$FILES_RMD_USE_SYKEHUS <- ""

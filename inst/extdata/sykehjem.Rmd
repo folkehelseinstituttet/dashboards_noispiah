@@ -1,17 +1,9 @@
 ---
-output:
-  pdf_document:
-    template: fhi_nois.latex
-    latex_engine: xelatex
-editor_options: 
-  chunk_output_type: console
-header-includes:
-  - "\\usepackage{pdflscape}"
-  - "\\usepackage{blindtext}"
+output: fhi::noispiah_document
 params:
   dev: TRUE
   level: landsdekkende
-  location: Fræna
+  location: Aust-Agder
   DATE_USE: 2017-11-08
 title: "Prevalensundersøkelsen for helsetjenesteassosierte infeksjoner og antibiotikabruk"
 sub_title: "`r params$location` --- Høst 2017"
@@ -22,29 +14,24 @@ authors:
   - "Hanne-Merete Eriksen"
   - "Hege Line Magnussen Løwer"
   - "Richard Aubrey White"
+editor_options: 
+  chunk_output_type: console
 ---
 
 ```{r message=FALSE, warning=FALSE, include=FALSE, paged.print=FALSE}
+fhi::DashboardInitialiseOpinionated("noispiah", FORCE_DEV_PACKAGE_LOAD = params$dev, SILENT=TRUE)
+
 suppressMessages(library(data.table))
 suppressMessages(library(ggplot2))
 
-if(params$dev){
-  suppressPackageStartupMessages(devtools::load_all("/packages/dashboards_noispiah/", export_all=FALSE, quiet=T))
-} else {
-  suppressPackageStartupMessages(library(noispiah))
-}
-
-fhi::DashboardInitialise(
-  STUB="/",
-  SRC="src",
-  NAME="noispiah"
-)
-  
 da <- readxl::read_excel(fhi::DashboardFolder("data_raw","AntibiotikadataPrimer.xlsx"))
 di <- readxl::read_excel(fhi::DashboardFolder("data_raw","InfeksjonsdataPrimer.xlsx"))
 
 setDT(da)
 setDT(di)
+
+level <- params$level
+DATE_USE <- params$DATE_USE
 
 if(params$level=="landsdekkende"){
   
@@ -77,10 +64,6 @@ Table_DeltagelseForekomstHAIogABiSykehjem(di=di,da=da,level=params$level,DATE_US
 
 \blindtext
 
-hello
-
-hi
-
 ```{r echo=FALSE, message=FALSE, warning=FALSE, paged.print=TRUE, results='asis'}
 Figure_ForekomstHAIiSykehjemPerAvdelingstype(di=di,da=da,DATE_USE=params$DATE_USE)
 ```
@@ -92,9 +75,51 @@ Figure_ForekomstHAIiSykehjemPerAvdelingstype(di=di,da=da,DATE_USE=params$DATE_US
 
 \blindtext
 
+\begin{landscape}
+
+```{r echo=FALSE, fig.height=5, fig.width=5, message=FALSE, warning=FALSE, paged.print=TRUE, results='asis'}
+q <- Figure_ForskrivningerAvAntibiotikaTilForebyggingOgBehandling(di=di,da=da,DATE_USE=params$DATE_USE)
+f <- sprintf("%s.png",tempfile())
+ggsave(f, plot = q, width = 297*0.75, height = 210*0.75, units = "mm")
+```
+
+\includegraphics{`r f`}
+
+\end{landscape}
+
 \newpage
 
-# Forskrivning av antibiotika (virkestoff) per indikasjon
+# Forskrivning av antibiotika (virkestoff) til behandling av nedre urinveisinfeksjon
 
 \blindtext
+
+\begin{landscape}
+
+```{r echo=FALSE, fig.height=5, fig.width=5, message=FALSE, warning=FALSE, paged.print=TRUE, results='asis'}
+q <- Figure_ForskrivningerAvAntibiotikaPerIndikasjon(di=di,da=da,DATE_USE=params$DATE_USE,indikasjon="Nedre urinveisinfeksjon")
+f <- sprintf("%s.png",tempfile())
+ggsave(f, plot = q, width = 297*0.75, height = 210*0.75, units = "mm")
+```
+
+\includegraphics{`r f`}
+
+\end{landscape}
+
+\newpage
+
+# Forskrivning av antibiotika (virkestoff) til behandling av nedre luftveisinfeksjon
+
+\blindtext
+
+\begin{landscape}
+
+```{r echo=FALSE, fig.height=5, fig.width=5, message=FALSE, warning=FALSE, paged.print=TRUE, results='asis'}
+q <- Figure_ForskrivningerAvAntibiotikaPerIndikasjon(di=di,da=da,DATE_USE=params$DATE_USE,indikasjon="Nedre luftveisinfeksjon")
+f <- sprintf("%s.png",tempfile())
+ggsave(f, plot = q, width = 297*0.75, height = 210*0.75, units = "mm")
+```
+
+\includegraphics{`r f`}
+
+\end{landscape}
 
