@@ -1,13 +1,5 @@
 ---
-output:
-  pdf_document:
-    template: fhi_nois.latex
-    latex_engine: xelatex
-editor_options: 
-  chunk_output_type: console
-header-includes:
-  - "\\usepackage{pdflscape}"
-  - "\\usepackage{blindtext}"
+output: fhi::noispiah_document
 params:
   dev: FALSE
   level: landsdekkende
@@ -25,28 +17,16 @@ authors:
 ---
 
 ```{r message=FALSE, warning=FALSE, include=FALSE, paged.print=FALSE}
+fhi::DashboardInitialiseOpinionated("noispiah", FORCE_DEV_PACKAGE_LOAD = params$dev, SILENT=TRUE)
+
 suppressMessages(library(data.table))
 suppressMessages(library(ggplot2))
-
-if(params$dev){
-  suppressPackageStartupMessages(devtools::load_all("/packages/dashboards_noispiah/", export_all=FALSE, quiet=T))
-} else {
-  suppressPackageStartupMessages(library(noispiah))
-}
-
-DashboardFolder <- fhi::DashboardFolder
-fhi::DashboardInitialise(
-  STUB="/",
-  SRC="src",
-  NAME="noispiah"
-)
   
 da <- readxl::read_excel(fhi::DashboardFolder("data_raw","AntibiotikadataSpesialist.xlsx"))
 di <- readxl::read_excel(fhi::DashboardFolder("data_raw","InfeksjonsdataSpesialist.xlsx"))
 
 setDT(da)
 setDT(di)
-HelseForetak
 
 if(params$level=="landsdekkende"){
   
