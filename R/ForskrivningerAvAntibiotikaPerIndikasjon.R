@@ -33,16 +33,16 @@ Data_ForskrivningerAvAntibiotikaPerIndikasjon <- function(di,da,DATE_USE){
     "Kirpro3",
     "Medpro"
   ),forebyggingVsBehandling:="Forebygging"]
-  xtabs(~temp$forebyggingVsBehandling)
+  #xtabs(~temp$forebyggingVsBehandling)
 
   temp[,AB:="andre antibiotika"]
   temp[ATCKode %in% ab[`ATCSubstans (virkestoff)`=="Methenamine"]$ATCKode,AB:="Methenamine"]
   temp[ATCKode %in% ab[Gruppe=="Bredspektrede"]$ATCKode,AB:="bredspektrede antibiotika"]
-  xtabs(~temp$AB)
+  #xtabs(~temp$AB)
 
-  xtabs(~temp$forebyggingVsBehandling+temp$AB)
+  #xtabs(~temp$forebyggingVsBehandling+temp$AB)
   temp[,category:=sprintf("%s %s",forebyggingVsBehandling,AB)]
-  xtabs(~temp$category)
+  #xtabs(~temp$category)
 
 
   temp[,IndikasjonCategory:=Indikasjon]
@@ -53,7 +53,7 @@ Data_ForskrivningerAvAntibiotikaPerIndikasjon <- function(di,da,DATE_USE){
     "Klinisk sepsis med annet antatt utgangspunkt",
     "Klinisk sepsis med usikkert utgangspunkt",
     "Laboratoriebekreftet blodbaneinfeksjon",
-    "Nøytropen feber"
+    "N\u00F8ytropen feber"
   ),IndikasjonCategory:="Klinisk sepsis"]
 
   tab <- temp[forebyggingVsBehandling=="Behandling",.(n=.N),by=.(IndikasjonCategory,category,ATCSubstans)]
@@ -67,8 +67,10 @@ Data_ForskrivningerAvAntibiotikaPerIndikasjon <- function(di,da,DATE_USE){
 #' @param di a
 #' @param da a
 #' @param DATE_USE a
+#' @param indikasjon a
 #' @import data.table
 #' @import ggplot2
+#' @importFrom stats reorder
 #' @export Figure_ForskrivningerAvAntibiotikaPerIndikasjon
 Figure_ForskrivningerAvAntibiotikaPerIndikasjon <- function(di,da,DATE_USE,indikasjon="Nedre urinveisinfeksjon"){
   xLab <- NULL
