@@ -13,6 +13,8 @@ Figure_ForskrivningerAvAntibiotikaPerIndikasjon(di, da, DATE_USE,
 \item{da}{a}
 
 \item{DATE_USE}{a}
+
+\item{indikasjon}{a}
 }
 \description{
 Figure_ForskrivningerAvAntibiotikaPerIndikasjon

@@ -33,16 +33,16 @@ Data_ForskrivningerAvAntibiotikaTilForebyggingOgBehandling <- function(di,da,DAT
     "Kirpro3",
     "Medpro"
   ),forebyggingVsBehandling:="Forebygging"]
-  xtabs(~temp$forebyggingVsBehandling)
+  #xtabs(~temp$forebyggingVsBehandling)
 
   temp[,AB:="andre antibiotika"]
   temp[ATCKode %in% ab[`ATCSubstans (virkestoff)`=="Methenamine"]$ATCKode,AB:="Methenamine"]
   temp[ATCKode %in% ab[Gruppe=="Bredspektrede"]$ATCKode,AB:="bredspektrede antibiotika"]
-  xtabs(~temp$AB)
+  #xtabs(~temp$AB)
 
-  xtabs(~temp$forebyggingVsBehandling+temp$AB)
+  #xtabs(~temp$forebyggingVsBehandling+temp$AB)
   temp[,category:=sprintf("%s %s",forebyggingVsBehandling,AB)]
-  xtabs(~temp$category)
+  #xtabs(~temp$category)
 
 
   temp[,IndikasjonCategory:=Indikasjon]
@@ -53,7 +53,7 @@ Data_ForskrivningerAvAntibiotikaTilForebyggingOgBehandling <- function(di,da,DAT
     "Klinisk sepsis med annet antatt utgangspunkt",
     "Klinisk sepsis med usikkert utgangspunkt",
     "Laboratoriebekreftet blodbaneinfeksjon",
-    "Nøytropen feber"
+    "N\u00F8ytropen feber"
   ),IndikasjonCategory:="Klinisk sepsis"]
 
   tab <- temp[,.(n=.N),by=.(IndikasjonCategory,category)]
