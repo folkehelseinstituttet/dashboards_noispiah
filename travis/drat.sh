@@ -1,10 +1,7 @@
 #!/bin/bash
-set -o errexit -o nounset
-PKG_REPO=$PWD
-cd ..
 
 addToDrat(){
-  mkdir drat; cd drat
+
 
   ## Set up Repo parameters
   git init
@@ -26,11 +23,13 @@ addToDrat(){
 
 }
 
+
+set -o errexit -o nounset
+PKG_REPO=$PWD
+cd ..
+mkdir drat; cd drat
+
 addToDrat
 
-## Other options:
-## Only add if the commit is tagged: so something like:
-#if [ $TRAVIS_TAG ] ; then
-#   addToDrat
-#fi
-##but will need to edit .travis.yml since $TRAVIS_BRANCH will now equal $TRAVIS_TAG
+rm $PKG_REPO/$PKG_TARBALL
+cd $PKG_REPO
