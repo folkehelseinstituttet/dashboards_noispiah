@@ -28,12 +28,12 @@ function travis-branch-commit() {
         return 1
     fi
     # make Travis CI skip this build
-    if ! git commit -m "Travis CI update [$TRAVIS_BUILD_NUMBER]"; then
+    if ! git commit -m "Travis CI update $TRAVIS_BUILD_NUMBER [ci skip]"; then
         err "failed to commit updates"
         return 1
     fi
     # add to your .travis.yml: `branches\n  except:\n  - "/\\+travis\\d+$/"\n`
-    #local git_tag=SOME_TAG_TRAVIS_WILL_NOT_BUILD+travis$TRAVIS_BUILD_NUMBER
+    #local git_tag=travis+$TRAVIS_BUILD_NUMBER
     #if ! git tag "$git_tag" -m "Generated tag from Travis CI build $TRAVIS_BUILD_NUMBER"; then
     #    err "failed to create git tag: $git_tag"
     #    return 1
@@ -60,38 +60,8 @@ function err() {
     msg "$*" 1>&2
 }
 
-addToDrat(){
-  mkdir drat; cd drat
-
-  ## Set up Repo parameters
-  git init
-  git config user.name "Richard White"
-  git config user.email "r@rwhite.no"
-  git config --global push.default simple
-
-  ## Get drat repo
-  git remote add upstream "https://$GH_TOKEN@github.com/folkehelseinstituttet/drat.git"
-  git fetch upstream 2>err.txt
-  git checkout gh-pages
-
-  Rscript -e "drat::insertPackage('$PKG_REPO/$PKG_TARBALL', \
-    repodir = '.', \
-    commit='Travis update $PKG_REPO: build $TRAVIS_BUILD_NUMBER')"
-  Rscript -e "saveRDS(read.dcf('src/contrib/PACKAGES'),'src/contrib/PACKAGES.rds')"
-  git commit -a -m "Travis update $PKG_REPO: build $TRAVIS_BUILD_NUMBER"
-  git push 2>err.txt
-
-}
-
 set -o errexit -o nounset
 PKG_REPO=$PWD
-cd ..
-
-addToDrat
-
-rm $PKG_REPO/$PKG_TARBALL
-cd $PKG_REPO
-
 Rscript -e "styler::style_pkg('$PKG_REPO/')"
 
 travis-branch-commit 

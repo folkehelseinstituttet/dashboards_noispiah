@@ -7,10 +7,13 @@ r_packages:
 before_install:
 - bash make.sh
 after_success:
-- Rscript -e 'lintr::lint_package(lint=lintr::with_defaults(camel_case_linter = NULL, snake_case_linter=NULL, line_length_linter = lintr::line_length_linter(120), object_usage_linter=NULL))'
+- Rscript -e 'lintr::lint_package(lint=lintr::with_defaults(camel_case_linter = NULL,
+  snake_case_linter=NULL, line_length_linter = lintr::line_length_linter(120), object_usage_linter=NULL))'
 - Rscript -e 'library(covr); codecov()'
 - test $TRAVIS_PULL_REQUEST == "false" && test $TRAVIS_BRANCH == "master" && bash
-  deploy.sh
+  travis/drat.sh
+- test $TRAVIS_PULL_REQUEST == "false" && test $TRAVIS_BRANCH == "master" && bash
+  travis/styler.sh
 - test $TRAVIS_PULL_REQUEST == "false" && test $TRAVIS_BRANCH == "master" && Rscript
   -e 'Sys.sleep(10);install.packages("noispiah",repos="https://folkehelseinstituttet.github.io/drat/");pkgdown::build_site()'
 deploy:
@@ -23,4 +26,5 @@ deploy:
     branch: master
 env:
   global:
-    secure: iSolmo0c0OlFDgFEGzP167gOLFPT+9u7BMOVxe+q0o3fYM3VRcX8OJ2gc1Y9Cjwc6IL3EW32QgmnR1UpRLw7NXRgjVXDSxDBzd9Ay4kxShFoCGL+8AlUl3ThwvB0IvyONfyEwAXbmOLnY9D9PlCjDauPsrqkh34dqofZ9Ch1vLCcH/QZq0Z/ihwUOTH1YAcWlgUmQY8VgRBhfkGqUqHYQ/FHV3gWXIpVFupVA2t9qeyEmd96QTmvcOS7F5CsUDxran/+1F9tK3dkE9Htxbu7ErpQcy8PTimlBr+tZMu4eRFBe9U5wrnHnOI+w38n1C8+539amKOq1mXgHXreJSDXCUQKBj3oK/GDUCxr618p/07ELD7vouRhDegQnYwVQzPrVW8HVOjG0YRanl0FHvr/bxFFva3L0kJUBFpxN3vSI4tWEKb3sqf1S8NQBcIDh4Bx6K+eNkMI/eS9K8SM0mTFi7neemLee1bD/BhtRXS7HRLWVuu8R1xowWYL+SwLjDiNEG43Kr8UPNqezPXu78RzPK9E82VCUlkEYJyWxLpx8j5t6SejaESBrJip4mATb3MCRYoFbs5HPyNLCHZgxlExrWkEw+Pg9oK4uK7NoXdd2ElYMHgAOYsHjFbyJVIpWJoAds8lf/hD6Ci8ib/cHYUIjF7h0WFLXkinHal6wAxU0M4=
+  - secure: iSolmo0c0OlFDgFEGzP167gOLFPT+9u7BMOVxe+q0o3fYM3VRcX8OJ2gc1Y9Cjwc6IL3EW32QgmnR1UpRLw7NXRgjVXDSxDBzd9Ay4kxShFoCGL+8AlUl3ThwvB0IvyONfyEwAXbmOLnY9D9PlCjDauPsrqkh34dqofZ9Ch1vLCcH/QZq0Z/ihwUOTH1YAcWlgUmQY8VgRBhfkGqUqHYQ/FHV3gWXIpVFupVA2t9qeyEmd96QTmvcOS7F5CsUDxran/+1F9tK3dkE9Htxbu7ErpQcy8PTimlBr+tZMu4eRFBe9U5wrnHnOI+w38n1C8+539amKOq1mXgHXreJSDXCUQKBj3oK/GDUCxr618p/07ELD7vouRhDegQnYwVQzPrVW8HVOjG0YRanl0FHvr/bxFFva3L0kJUBFpxN3vSI4tWEKb3sqf1S8NQBcIDh4Bx6K+eNkMI/eS9K8SM0mTFi7neemLee1bD/BhtRXS7HRLWVuu8R1xowWYL+SwLjDiNEG43Kr8UPNqezPXu78RzPK9E82VCUlkEYJyWxLpx8j5t6SejaESBrJip4mATb3MCRYoFbs5HPyNLCHZgxlExrWkEw+Pg9oK4uK7NoXdd2ElYMHgAOYsHjFbyJVIpWJoAds8lf/hD6Ci8ib/cHYUIjF7h0WFLXkinHal6wAxU0M4=
+  - secure: lmgTkYkCEVeNTVAZyIylt5j1PDZZrdLZ3NFlauLAkCm+V96bfkqZyB+JwlwDFRcGFRb3I7NodqysoCp6sk2qM/dOG+mmXpR6ZkMkAf4bO3l0/g2hfPK9kNVK3THwcteQHy58wPruZJEhAI3NPxT2KdkzzvjmqF+fj0a5rLlC5VcgKNXQvc6MA4R6uz/Zmpr+h4pMI78UaSvp/nnJgRvr4YQmNqckawYeV2GV7Nek6cOCrSfe6dUsuWGR5oFJbqwwTaspOhs4pFdIVTkksi+AqZQ5GsRBPVULyAbqQM0iPkTXumwIxneU8aLAJMZ2gkg4vkrf1k/rJJ88vePkAL+zmTRC+l/5HE9QZWzltAKZdYzwWqUKjlv0g06E4rqNWf5oq5o8N4DWDLPnSDm8/TEmrrum1N3ieGjn2kXjIzGQS4VZah76vHrmvUbV5/9CIljbfbGfr2yL/HfE+2wSxYAE8fnZ/T1qxyfLhwLOEtWca3o3zqF1DwC4V2yv09f4sDCsBy0Gwmnf9Pua5PBlcHC9FR8YNV+7woMH3kjsprSjqs1Y622i/Dd8lZ7DabGRAXrJsJGagUYjfU2s4AlJ9UgamdwR7SJAMWplJlnLi+lR6lUeqGCotdMkuDEXuPYlW1NufI+ho+Faw43wzLb1jhqIFJK919OQ7KaPBKGAkURYV+E=
