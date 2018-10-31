@@ -4,6 +4,8 @@ r_packages:
 - covr
 - drat
 - pkgdown
+- lintr
+- styler
 before_install:
 - bash travis/make.sh
 after_success:
