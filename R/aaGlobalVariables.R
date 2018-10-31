@@ -7,8 +7,8 @@ CONFIG$FILES_DATA <- c(
   "InfeksjonsdataPrimer.xlsx",
   "AntibiotikadataSpesialist.xlsx",
   "InfeksjonsdataSpesialist.xlsx"
-  )
-CONFIG$FILES_RMD_RAW <- c("sykehjem.Rmd","sykehus.Rmd")
+)
+CONFIG$FILES_RMD_RAW <- c("sykehjem.Rmd", "sykehus.Rmd")
 CONFIG$FILES_RMD_USE_SYKEHJEM <- ""
 CONFIG$FILES_RMD_USE_SYKEHUS <- ""
 CONFIG$FYLKE <- c(
@@ -29,7 +29,8 @@ CONFIG$FYLKE <- c(
   "Tr\u00F8ndelag",
   "Vest-Agder",
   "Vestfold",
-  "\u00D8stfold")
+  "\u00D8stfold"
+)
 
 #' If folders are setup according to the
 #' dashboard philosophy, then this function
@@ -38,10 +39,7 @@ CONFIG$FYLKE <- c(
 #' @param val a
 #' @export SetConfig
 SetConfig <- function(
-  var,
-  val
-){
-
+                      var,
+                      val) {
   CONFIG[[var]] <- val
 }
-
