@@ -1,4 +1,4 @@
-fhi::DashboardInitialiseOpinionated("noispiah")
+fhi::DashboardInitialiseOpinionated("noispiah", PACKAGE_DIR=".")
 
 suppressMessages(library(data.table))
 suppressMessages(library(ggplot2))
