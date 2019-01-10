@@ -4,7 +4,8 @@
 \alias{Data_DeltagelseForekomstHAIogABiSykehjem}
 \title{Data_DeltagelseForekomstHAIogABiSykehjem}
 \usage{
-Data_DeltagelseForekomstHAIogABiSykehjem(di, da, level, DATE_USE)
+Data_DeltagelseForekomstHAIogABiSykehjem(di, da, level, DATE_USE,
+  type = "sykehjem")
 }
 \arguments{
 \item{di}{a}
@@ -14,6 +15,8 @@ Data_DeltagelseForekomstHAIogABiSykehjem(di, da, level, DATE_USE)
 \item{level}{a}
 
 \item{DATE_USE}{a}
+
+\item{type}{sykehjem}
 }
 \description{
 Data_DeltagelseForekomstHAIogABiSykehjem

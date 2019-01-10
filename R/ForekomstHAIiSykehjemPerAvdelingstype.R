@@ -49,7 +49,7 @@ Data_ForekomstHAIiSykehjemPerAvdelingstype <- function(di, da, DATE_USE) {
   variable <- NULL
   xLab <- NULL
 
-  tab <- di[InstitusjonType == "Sykehjem" & PrevalensDato == DATE_USE,
+  tab <- di[PrevalensDato == DATE_USE,
     .(
       AntallBeboereKl8 = sum(AntallBeboereKl8),
       antallInfeksjonerUrine = sum(
@@ -86,20 +86,28 @@ Data_ForekomstHAIiSykehjemPerAvdelingstype <- function(di, da, DATE_USE) {
   RAWmisc::RecodeDT(
     tab,
     switch = c(
-      "antallInfeksjonerUrine" = "Urinveisinfeksjoner",
-      "antallInfeksjonerNedreLuftveis" = "Nedre luftveisinfeksjoner",
-      "antallInfeksjonerOperasjonsOmrade" = "Infeksjoner i operasjonsomr\u00E5de",
-      "antallInfeksjonerHud" = "Hudinfeksjoner"
+      "antallInfeksjonerUrine" = "Urinveisinfeksjon",
+      "antallInfeksjonerNedreLuftveis" = "Nedre luftveisinfeksjon",
+      "antallInfeksjonerOperasjonsOmrade" = "Infeksjoner i operasjonsomr\u00E5det",
+      "antallInfeksjonerHud" = "Hudinfeksjon"
     ),
     var = "variable"
   )
 
   tab[, variable := factor(variable, levels = c(
-    "Hudinfeksjoner",
-    "Infeksjoner i operasjonsomr\u00E5de",
-    "Nedre luftveisinfeksjoner",
-    "Urinveisinfeksjoner"
+    "Hudinfeksjon",
+    "Infeksjoner i operasjonsomr\u00E5det",
+    "Nedre luftveisinfeksjon",
+    "Urinveisinfeksjon"
   ))]
+
+  RAWmisc::RecodeDT(
+    tab,
+    switch = c(
+      "Kombinert kort- og langtids" = "Kombinert kort- og langtidsavdeling"
+    ),
+    var = "Avdelingstype"
+  )
 
   return(tab)
 }
@@ -120,13 +128,17 @@ Figure_ForekomstHAIiSykehjemPerAvdelingstype <- function(di, da, DATE_USE) {
   variable <- NULL
 
   tab <- Data_ForekomstHAIiSykehjemPerAvdelingstype(di = di, da = da, DATE_USE = DATE_USE)
-  tab[, xLab := sprintf("%s (%s)", Avdelingstype, AntallBeboereKl8)]
+  tab[, xLab := sprintf("%s (%s)", Avdelingstype, FormatNorwegian(AntallBeboereKl8))]
+  tab[, total:=sum(perc),by=xLab]
+  ordering <- unique(tab[,c("total","xLab")])
+  setorder(ordering,total)
+  tab[,xLab:=factor(xLab,levels=ordering$xLab)]
 
   q <- ggplot(tab, aes(x = xLab, y = perc, fill = variable))
   q <- q + geom_bar(stat = "identity", colour = "black", alpha = 0.5)
   q <- q + scale_fill_brewer("", palette = "Set1", guide = guide_legend(ncol = 2, byrow = T, reverse = TRUE))
   q <- q + scale_x_discrete("Avdelingstype (antall beboere)")
-  q <- q + scale_y_continuous("Prevalens av helsetjenesteassosierte infeksjoner")
+  q <- q + scale_y_continuous("Prevalens av helsetjenesteassosierte infeksjoner (%)")
   q <- q + labs(main = "Prevalens av helsetjenesteassosierte infeksjoner etter avdelingstype")
   q <- q + coord_flip()
   q <- q + theme(legend.position = "bottom")

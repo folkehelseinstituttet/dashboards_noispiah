@@ -5,7 +5,8 @@
 \alias{Data_ForskrivningerAvAntibiotikaTilForebyggingOgBehandling}
 \title{Data_ForskrivningerAvAntibiotikaTilForebyggingOgBehandling}
 \usage{
-Data_ForskrivningerAvAntibiotikaTilForebyggingOgBehandling(di, da, DATE_USE)
+Data_ForskrivningerAvAntibiotikaTilForebyggingOgBehandling(di, da, DATE_USE,
+  group1 = "IndikasjonCategory", group2 = "category")
 }
 \arguments{
 \item{di}{a}
@@ -13,6 +14,10 @@ Data_ForskrivningerAvAntibiotikaTilForebyggingOgBehandling(di, da, DATE_USE)
 \item{da}{a}
 
 \item{DATE_USE}{a}
+
+\item{group1}{a}
+
+\item{group2}{a}
 }
 \description{
 Data_ForskrivningerAvAntibiotikaTilForebyggingOgBehandling

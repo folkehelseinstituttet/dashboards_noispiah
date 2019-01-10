@@ -1,23 +1,26 @@
 ---
 output: fhi::noispiah_document
 params:
-  dev: FALSE
+  dev: TRUE
+  package_dir: "."
   level: landsdekkende
-  location: Aust-Agder
-  DATE_USE: 2017-11-08
-title: "Prevalensundersøkelsen for helsetjenesteassosierte infeksjoner og antibiotikabruk"
-sub_title: "`r params$location` --- Høst 2017"
-header: "Prevalensundersøkelsen for helsetjenesteassosierte infeksjoner og antibiotikabruk \\newline `r params$location` --- Høst 2017"
+  location: "Landsdekkende"
+  DATE_USE: 2018-05-30
+title: "Prevalensundersøkelsen av helsetjenesteassosierte infeksjoner og antibiotikabruk i sykehus (NOIS-PIAH)"
+sub_title: "`r ifelse(params$location=='Landsdekkende','Nasjonale resultater',params$location)` --- `r params$DATE_USE`"
+header: "Prevalensundersøkelsen for helsetjenesteassosierte infeksjoner og antibiotikabruk \\newline `r params$location` --- `r params$DATE_USE`"
 footer: "Folkehelseinstituttet, Oslo, Norge"
 authors:
-  - "Torunn Alberg"
-  - "Hanne-Merete Eriksen"
-  - "Hege Line Magnussen Løwer"
-  - "Richard Aubrey White"
+  - "_"
+editor_options: 
+  chunk_output_type: console
 ---
 
 ```{r message=FALSE, warning=FALSE, include=FALSE, paged.print=FALSE}
-fhi::DashboardInitialiseOpinionated("noispiah", FORCE_DEV_PACKAGE_LOAD = params$dev, SILENT=TRUE)
+fhi::DashboardInitialiseOpinionated("noispiah",
+                                    PACKAGE_DIR=params$package_dir,
+                                    FORCE_DEV_PACKAGE_LOAD = params$dev,
+                                    SILENT=TRUE)
 
 suppressMessages(library(data.table))
 suppressMessages(library(ggplot2))
@@ -37,46 +40,103 @@ if(params$level=="landsdekkende"){
   da <- da[Institusjon==params$location]
   di <- di[Institusjon==params$location]
 }
+
+DATE_USE=params$DATE_USE
 ```
 
 \newpage 
 
-# Deltagelse, forekomst av helsetjenesteassosierte infeksjoner og bruk av antibiotika i sykehjem
+# Antibiotika til forebygging og behandling
+
+\blindtext
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, paged.print=TRUE, results='asis'}
+Figure_AndelAntibiotikaTilForebyggingOgBehandling(di=di,da=da,DATE_USE=DATE_USE)
+```
+
+\newpage
+
+# Indikasjoner for forskrivning av antibiotika til behandling 
+
+NEED TO FIX ANTIBIOTICS CATEGORIES
+
+\begin{landscape}
+
+```{r echo=FALSE, fig.height=5, fig.width=5, message=FALSE, warning=FALSE, paged.print=TRUE, results='asis'}
+q <- Figure_ForskrivningerAvAntibiotikaTilBehandlingPerIndikasjon(di=di,da=da,DATE_USE=params$DATE_USE)
+f <- sprintf("%s.png",tempfile())
+ggsave(f, plot = q, width = 297*0.75, height = 210*0.75, units = "mm")
+```
+
+\begin{figure}
+\begin{center}
+\includegraphics{`r f`}
+\caption{\label{fig:figs2}Andel forskrivninger av antibiotika til forebygging og behandling i sykehjem, per indikasjon}
+\end{center}
+\end{figure}
+
+\end{landscape}
+
+\newpage
+
+# Antibiotika til behandling per spesialitet
+
+NEED TO FIX ANTIBIOTICS CATEGORIES
+
+\begin{landscape}
+
+```{r echo=FALSE, fig.height=5, fig.width=5, message=FALSE, warning=FALSE, paged.print=TRUE, results='asis'}
+q <- Figure_ForskrivningerAvAntibiotikaTilBehandlingPerSpesialitet(di=di,da=da,DATE_USE=params$DATE_USE)
+f <- sprintf("%s.png",tempfile())
+ggsave(f, plot = q, width = 297*0.75, height = 210*0.75, units = "mm")
+```
+
+\begin{figure}
+\begin{center}
+\includegraphics{`r f`}
+\caption{\label{fig:figs2}Andel forskrivninger av antibiotika til forebygging og behandling i sykehjem, per indikasjon}
+\end{center}
+\end{figure}
+
+\end{landscape}
+
+\newpage
+
+# Antibiotika til behandling over tid
+
+\blindtext
+
+\newpage
+
+# Antibiotika til XX
+
+\blindtext
+
+\newpage
+
+# Deltagelse, forekomst av helsetjenesteassosierte infeksjoner og bruk av antibiotika i sykehus
 
 \blindtext
 
 \begin{landscape}
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, paged.print=TRUE, results='asis'}
-#Table_DeltagelseForekomstHAIogABiSykehjem(di=di,da=da,level=params$level,DATE_USE=params$DATE_USE)
+Table_DeltagelseForekomstHAIogABiSykehjem(
+  di=di,
+  da=da,
+  level=params$level,
+  DATE_USE=params$DATE_USE,
+  type="sykehus")
 ```
 
 \end{landscape}
 
-\newpage
-
-# Prevalens av helsetjenesteassosierte infeksjoner blant beboere i sykehjem per avdelingstype
-
-\blindtext
-
-hello
-
-hi
-
-```{r echo=FALSE, message=FALSE, warning=FALSE, paged.print=TRUE, results='asis'}
-#Figure_ForekomstHAIiSykehjemPerAvdelingstype(di=di,da=da,DATE_USE=params$DATE_USE)
-```
-
 
 \newpage
 
-# Andel forskrivninger av antibiotika til forebygging og behandling per indikasjon
+# Prevalens av helsetjenesteassosierte infeksjoner blant pasienter i sykehus per spesialitet
 
 \blindtext
 
 \newpage
-
-# Forskrivning av antibiotika (virkestoff) per indikasjon
-
-\blindtext
 

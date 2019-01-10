@@ -35,9 +35,9 @@ Data_ForskrivningerAvAntibiotikaPerIndikasjon <- function(di, da, DATE_USE) {
   ), forebyggingVsBehandling := "Forebygging"]
   # xtabs(~temp$forebyggingVsBehandling)
 
-  temp[, AB := "andre antibiotika"]
+  temp[, AB := "Andre antibiotika"]
   temp[ATCKode %in% ab[`ATCSubstans (virkestoff)` == "Methenamine"]$ATCKode, AB := "Methenamine"]
-  temp[ATCKode %in% ab[Gruppe == "Bredspektrede"]$ATCKode, AB := "bredspektrede antibiotika"]
+  temp[ATCKode %in% ab[Gruppe == "Bredspektrede"]$ATCKode, AB := "Bredspektrede antibiotika"]
   # xtabs(~temp$AB)
 
   # xtabs(~temp$forebyggingVsBehandling+temp$AB)
@@ -56,7 +56,7 @@ Data_ForskrivningerAvAntibiotikaPerIndikasjon <- function(di, da, DATE_USE) {
     "N\u00F8ytropen feber"
   ), IndikasjonCategory := "Klinisk sepsis"]
 
-  tab <- temp[forebyggingVsBehandling == "Behandling", .(n = .N), by = .(IndikasjonCategory, category, ATCSubstans)]
+  tab <- temp[forebyggingVsBehandling == "Behandling", .(n = .N), by = .(IndikasjonCategory, category, ATCSubstans, AB, forebyggingVsBehandling)]
   tab[, denom := sum(n), by = IndikasjonCategory]
 
   return(tab)
@@ -84,12 +84,12 @@ Figure_ForskrivningerAvAntibiotikaPerIndikasjon <- function(di, da, DATE_USE, in
   tab[, denom := sum(n), by = IndikasjonCategory]
   tab[, sorting := sum(n), by = ATCSubstans]
 
-  q <- ggplot(tab, aes(x = reorder(ATCSubstans, -sorting), y = n / denom * 100, fill = category))
+  q <- ggplot(tab, aes(x = reorder(ATCSubstans, sorting), y = n / denom * 100, fill = AB))
   q <- q + geom_col(colour = "black", alpha = 0.5)
   q <- q + scale_fill_brewer("", palette = "Set1", guide = guide_legend(ncol = 3, byrow = T, reverse = TRUE))
   q <- q + scale_x_discrete("Antibiotika (virkestoff)")
   q <- q + scale_y_continuous(sprintf(
-    "Andel av forskrivninger til behandling av %s (n=%s)",
+    "Andel (%%) av forskrivninger til behandling av %s (n=%s)",
     tolower(indikasjon),
     sum(tab$n)
   ))

@@ -8,7 +8,7 @@ ExtractEnglish <- function(var) {
   unlist(lapply(stringr::str_extract_all(var, "[a-zA-Z]"), paste0, collapse = ""))
 }
 
-#' GenStack
+#' GenStackSykehjem
 #' @param dev a
 #' @param outputDir a
 #' @param FILES_RMD_USE_SYKEHJEM a
@@ -18,12 +18,12 @@ ExtractEnglish <- function(var) {
 #' @importFrom readxl read_excel
 #' @importFrom rmarkdown render
 #' @importFrom lubridate today
-#' @export GenStack
-GenStack <- function(
-                     dev = FALSE,
-                     outputDir = fhi::DashboardFolder("results"),
-                     FILES_RMD_USE_SYKEHJEM,
-                     FILES_RMD_USE_SYKEHUS) {
+#' @export GenStackSykehjem
+GenStackSykehjem <- function(
+  dev = FALSE,
+  outputDir = fhi::DashboardFolder("results"),
+  FILES_RMD_USE_SYKEHJEM,
+  FILES_RMD_USE_SYKEHUS) {
   Fylke <- NULL
 
   outputDirDaily <- file.path(outputDir, lubridate::today())
@@ -40,9 +40,9 @@ GenStack <- function(
   da <- da[PrevalensDato == maxDate]
   di <- di[PrevalensDato == maxDate]
 
-  fylkeInstitution <- unique(rbind(da[, c("Fylke", "Institusjon")], di[, c("Fylke", "Institusjon")]))
-  setorder(fylkeInstitution, Fylke, Institusjon)
-  for (f in unique(fylkeInstitution$Fylke)) {
+  fylkeKommune <- unique(rbind(da[, c("Fylke", "Kommune")], di[, c("Fylke", "Kommune")]))
+  setorder(fylkeKommune, Fylke, Kommune)
+  for (f in unique(fylkeKommune$Fylke)) {
     dir.create(file.path(outputDirDaily, "Sykehjem", "Kommune", f))
   }
 
@@ -53,38 +53,49 @@ GenStack <- function(
     ),
     data.table(
       level = "fylke",
-      location = CONFIG$FYLKE
+      location = unique(c(da$Fylke,di$Fylke))
     ),
     data.table(
       level = "kommune",
-      location = unique(fylkeInstitution$Institusjon)
+      location = unique(fylkeKommune$Kommune)
     )
   )
   stack[, order := 1:.N]
-  stack <- merge(stack, fylkeInstitution, by.x = "location", by.y = "Institusjon", all.x = T)
+  stack <- merge(stack, fylkeKommune, by.x = "location", by.y = "Kommune", all.x = T)
   setorder(stack, order)
 
   stack[level == "landsdekkende", outputDirUse := file.path(outputDirDaily, "Sykehjem", "Landsdekkende")]
   stack[level == "fylke", outputDirUse := file.path(outputDirDaily, "Sykehjem", "Fylke")]
   stack[level == "kommune", outputDirUse := file.path(outputDirDaily, "Sykehjem", "Kommune", Fylke)]
+  stack[,Fylke:=NULL]
 
   stack[, RMD := FILES_RMD_USE_SYKEHJEM]
   stack[, dev := dev]
+  stack[, DATE_USE := maxDate]
 
   return(stack)
-  pb <- RAWmisc::ProgressBarCreate(max = nrow(stack))
-  for (i in 1:nrow(stack)) {
-    RAWmisc::ProgressBarSet(pb, i)
+}
 
-    Sys.sleep(1)
-    RenderExternally(
-      input = FILES_RMD_USE_SYKEHJEM,
-      output_file = sprintf("%s.pdf", stack$location[i]),
-      output_dir = stack$outputDirUse[i],
-      params = sprintf("dev=\"%s\",level=\"%s\",location=\"%s\"", dev, stack$level[i], stack$location[i])
-    )
-  }
+#' GenStackSykehus
+#' @param dev a
+#' @param outputDir a
+#' @param FILES_RMD_USE_SYKEHJEM a
+#' @param FILES_RMD_USE_SYKEHUS a
+#' @import data.table
+#' @import fhi
+#' @importFrom readxl read_excel
+#' @importFrom rmarkdown render
+#' @importFrom lubridate today
+#' @export GenStackSykehus
+GenStackSykehus <- function(
+  dev = FALSE,
+  outputDir = fhi::DashboardFolder("results"),
+  FILES_RMD_USE_SYKEHJEM,
+  FILES_RMD_USE_SYKEHUS) {
+  Fylke <- NULL
 
+  outputDirDaily <- file.path(outputDir, lubridate::today())
+  dir.create(outputDirDaily)
   dir.create(file.path(outputDirDaily, "Sykehus"))
   dir.create(file.path(outputDirDaily, "Sykehus", "Landsdekkende"))
   dir.create(file.path(outputDirDaily, "Sykehus", "Helseforetak"))
@@ -93,31 +104,35 @@ GenStack <- function(
   da <- data.table(readxl::read_excel(fhi::DashboardFolder("data_raw", "AntibiotikadataSpesialist.xlsx")))
   di <- data.table(readxl::read_excel(fhi::DashboardFolder("data_raw", "InfeksjonsdataSpesialist.xlsx")))
 
+  maxDate <- max(da$PrevalensDato, di$PrevalensDato)
+  da <- da[PrevalensDato == maxDate]
+  di <- di[PrevalensDato == maxDate]
+
   stack <- rbind(
-    data.table(level = "landsdekkende", location = "Landsdekkende"),
-    data.table(level = "helseforetak", location = unique(c(da$HelseForetak, di$HelseForetak))),
-    data.table(level = "institusjon", location = unique(c(da$Institusjon, di$Institusjon)))
-  )
-
-
-  for (location in c("Landsdekkende", unique(c(da$Institusjon, di$Institusjon)))) {
-    if (location == "Landsdekkende") {
-      outputDirUse <- file.path(outputDirDaily, "Sykehus", "Landsdekkende")
-      level <- "landsdekkende"
-    } else if (location == "Helseforetak") {
-      outputDirUse <- file.path(outputDirDaily, "Sykehus", "Helseforetak")
-      level <- "helseforetak"
-    } else {
-      outputDirUse <- file.path(outputDirDaily, "Sykehus", "Institusjon")
-      level <- "institusjon"
-    }
-    Sys.sleep(1)
-    print(location)
-    RenderExternally(
-      input = FILES_RMD_USE_SYKEHUS,
-      output_file = sprintf("%s.pdf", location),
-      output_dir = outputDirUse,
-      params = sprintf("dev=\"%s\",level=\"%s\",location=\"%s\"", dev, level, location)
+    data.table(
+      level = "landsdekkende",
+      location = "Landsdekkende"
+    ),
+    data.table(
+      level = "helseforetak",
+      location = unique(c(da$HelseForetak,di$HelseForetak))
+    ),
+    data.table(
+      level = "institusjon",
+      location = unique(c(da$Institusjon,di$Institusjon))
     )
-  }
+  )
+  stack[, order := 1:.N]
+  setorder(stack, order)
+
+  stack[level == "landsdekkende", outputDirUse := file.path(outputDirDaily, "Sykehus", "Landsdekkende")]
+  stack[level == "helseforetak", outputDirUse := file.path(outputDirDaily, "Sykehus", "Helseforetak")]
+  stack[level == "institusjon", outputDirUse := file.path(outputDirDaily, "Sykehus", "Institusjon")]
+
+  stack[, RMD := FILES_RMD_USE_SYKEHUS]
+  stack[, dev := dev]
+  stack[, DATE_USE := maxDate]
+
+  return(stack)
+
 }

@@ -4,7 +4,8 @@
 \alias{Table_DeltagelseForekomstHAIogABiSykehjem}
 \title{Table_DeltagelseForekomstHAIogABiSykehjem}
 \usage{
-Table_DeltagelseForekomstHAIogABiSykehjem(di, da, level, DATE_USE)
+Table_DeltagelseForekomstHAIogABiSykehjem(di, da, level, DATE_USE,
+  type = "sykehjem")
 }
 \arguments{
 \item{di}{a}
@@ -14,6 +15,8 @@ Table_DeltagelseForekomstHAIogABiSykehjem(di, da, level, DATE_USE)
 \item{level}{a}
 
 \item{DATE_USE}{a}
+
+\item{type}{sykehjem}
 }
 \description{
 Table_DeltagelseForekomstHAIogABiSykehjem
