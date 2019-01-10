@@ -137,5 +137,13 @@ CleanDA <- function(da){
                       "Ukjent"="Annet/ukjent"
                     ),var="Klassifisering")
 
+  da[,SykehusKlassifisering:=Klassifisering]
+  RAWmisc::RecodeDT(da,
+                    c(
+                      "Kirurgisk profylakse 1"="Kirurgisk profylakse",
+                      "Kirurgisk profylakse 2"="Kirurgisk profylakse",
+                      "Kirurgisk profylakse 3"="Kirurgisk profylakse"
+                    ),var="SykehusKlassifisering")
+
 
 }

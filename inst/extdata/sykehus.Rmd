@@ -108,9 +108,9 @@ ggsave(f, plot = q, width = 297*0.75, height = 210*0.75, units = "mm")
 
 # Antibiotika til behandling over tid
 
-\begin{landscape}
-
 NEED TO FIX ANTIBIOTICS CATEGORIES
+
+\begin{landscape}
 
 ```{r echo=FALSE, fig.height=5, fig.width=5, message=FALSE, warning=FALSE, paged.print=TRUE, results='asis'}
 q <- Figure_AntibiotikaTilBehandlingOverTid1(di=di,da=da,DATE_USE=params$DATE_USE)
@@ -131,13 +131,13 @@ ggsave(f, plot = q, width = 297*0.75, height = 210*0.75, units = "mm")
 
 # Antibiotika til behandling av samfunnservervede nedre luftveisinfeksjoner over tid
 
-\begin{landscape}
-
 NEED TO FIX ANTIBIOTICS CATEGORIES
 
 Could not find "samfunnservervede nedre luftveisinfeksjoner" in "indikasjon"
 
 Decided to just use "nedre luftveisinfeksjoner" instead. Is that ok?
+
+\begin{landscape}
 
 ```{r echo=FALSE, fig.height=5, fig.width=5, message=FALSE, warning=FALSE, paged.print=TRUE, results='asis'}
 q <- Figure_AntibiotikaTilBehandlingOverTid2(di=di,da=da,DATE_USE=params$DATE_USE)
@@ -156,9 +156,49 @@ ggsave(f, plot = q, width = 297*0.75, height = 210*0.75, units = "mm")
 
 \newpage
 
-# Antibiotika til XX
+# Antibiotika til forebygging
 
-\blindtext
+```{r echo=FALSE, message=FALSE, warning=FALSE, paged.print=TRUE, results='asis'}
+Figure_AntibiotikaTilForebygging(di=di,da=da,DATE_USE=DATE_USE)
+```
+
+\newpage
+
+# Antibiotika til behandling
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, paged.print=TRUE, results='asis'}
+Figure_AntibiotikaTilBehandling(di=di,da=da,DATE_USE=DATE_USE, indikasjon=NULL)
+```
+
+\newpage
+
+# Antibiotika til behandling av nedre luftveisinfeksjoner
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, paged.print=TRUE, results='asis'}
+Figure_AntibiotikaTilBehandling(di=di,da=da,DATE_USE=DATE_USE, indikasjon="Nedre luftveisinfeksjon")
+```
+
+\newpage
+
+# Antibiotika til behandling OF URINE
+
+TO DO COLOURING!!!!!
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, paged.print=TRUE, results='asis'}
+Figure_AntibiotikaTilBehandling(di=di,da=da,DATE_USE=DATE_USE, indikasjon=c(
+  "Nedre urinveisinfeksjon",
+  "Øvre urinveisinfeksjon"
+  ),
+  leftVsRightVar="IndikasjonCategorySykehus")
+```
+
+\newpage
+
+# Antibiotika til behandling av klinisk sepsis, laboratoriebekreftet blodbaneinfeksjon og nøytropen feber
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, paged.print=TRUE, results='asis'}
+Figure_AntibiotikaTilBehandling(di=di,da=da,DATE_USE=DATE_USE, indikasjon="Klinisk sepsis, laboratoriebekreftet blodbaneinfeksjon og nøytropen feber")
+```
 
 \newpage
 
