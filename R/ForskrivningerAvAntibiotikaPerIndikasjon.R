@@ -9,54 +9,13 @@
 Data_ForskrivningerAvAntibiotikaPerIndikasjon <- function(di, da, DATE_USE) {
   . <- NULL
 
-  ab <- readxl::read_excel(file.path(system.file("extdata", package = "noispiah"), "2018-08-30_Antibiotikagrupper.xlsx"))
-  setDT(ab)
+  temp <- da[PrevalensDato == DATE_USE & !is.na(forebyggingVsBehandling)]
 
-  temp <- da[InstitusjonType == "Sykehjem" & PrevalensDato == DATE_USE &
-    Klassifisering %in% c(
-      "Helsetjenesteassosiert infeksjon",
-      "Samfunnservervet infeksjon",
-      "Kirpro1",
-      "Kirpro2",
-      "Kirpro3",
-      "Medpro"
-    )]
-
-  temp[, forebyggingVsBehandling := ""]
-  temp[Klassifisering %in% c(
-    "Helsetjenesteassosiert infeksjon",
-    "Samfunnservervet infeksjon"
-  ), forebyggingVsBehandling := "Behandling"]
-  temp[Klassifisering %in% c(
-    "Kirpro1",
-    "Kirpro2",
-    "Kirpro3",
-    "Medpro"
-  ), forebyggingVsBehandling := "Forebygging"]
-  # xtabs(~temp$forebyggingVsBehandling)
-
-  temp[, AB := "Andre antibiotika"]
-  temp[ATCKode %in% ab[`ATCSubstans (virkestoff)` == "Methenamine"]$ATCKode, AB := "Methenamine"]
-  temp[ATCKode %in% ab[Gruppe == "Bredspektrede"]$ATCKode, AB := "Bredspektrede antibiotika"]
-  # xtabs(~temp$AB)
-
-  # xtabs(~temp$forebyggingVsBehandling+temp$AB)
-  temp[, category := sprintf("%s %s", forebyggingVsBehandling, AB)]
-  # xtabs(~temp$category)
-
-
-  temp[, IndikasjonCategory := Indikasjon]
-  temp[Indikasjon %in% c(
-    "Klinisk sepsis med antatt utgangspunkt luftveier",
-    "Klinisk sepsis med antatt utgangspunkt urinveier",
-    "Klinisk sepsis med antatt utgangspunkt abdomen",
-    "Klinisk sepsis med annet antatt utgangspunkt",
-    "Klinisk sepsis med usikkert utgangspunkt",
-    "Laboratoriebekreftet blodbaneinfeksjon",
-    "N\u00F8ytropen feber"
-  ), IndikasjonCategory := "Klinisk sepsis"]
-
-  tab <- temp[forebyggingVsBehandling == "Behandling", .(n = .N), by = .(IndikasjonCategory, category, ATCSubstans, AB, forebyggingVsBehandling)]
+  tab <- temp[forebyggingVsBehandling == "Behandling", .(n = .N), by = .(IndikasjonCategory,
+                                                                         forebyggVsBehandOgMethVsAndre,
+                                                                         ATCSubstans,
+                                                                         ABBredMethAndre,
+                                                                         forebyggingVsBehandling)]
   tab[, denom := sum(n), by = IndikasjonCategory]
 
   return(tab)
@@ -80,11 +39,11 @@ Figure_ForskrivningerAvAntibiotikaPerIndikasjon <- function(di, da, DATE_USE, in
   variable <- NULL
 
   tab <- Data_ForskrivningerAvAntibiotikaPerIndikasjon(di = di, da = da, DATE_USE = DATE_USE)[IndikasjonCategory == indikasjon]
-  tab[, xLab := sprintf("%s (%s)", Avdelingstype, AntallBeboereKl8)]
+  tab[, xLab := sprintf("%s (n=%s)", ATCSubstans, n)]
   tab[, denom := sum(n), by = IndikasjonCategory]
-  tab[, sorting := sum(n), by = ATCSubstans]
+  tab[, sorting := sum(n), by = xLab]
 
-  q <- ggplot(tab, aes(x = reorder(ATCSubstans, sorting), y = n / denom * 100, fill = AB))
+  q <- ggplot(tab, aes(x = reorder(xLab, sorting), y = n / denom * 100, fill = ABBredMethAndre))
   q <- q + geom_col(colour = "black", alpha = 0.5)
   q <- q + scale_fill_brewer("", palette = "Set1", guide = guide_legend(ncol = 3, byrow = T, reverse = TRUE))
   q <- q + scale_x_discrete("Antibiotika (virkestoff)")
@@ -102,4 +61,5 @@ Figure_ForskrivningerAvAntibiotikaPerIndikasjon <- function(di, da, DATE_USE, in
   #          legend.box.margin=margin(c(0,0,0,00)),
   #          legend.direction="horizontal")
   q
+
 }

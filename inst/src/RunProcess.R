@@ -55,6 +55,7 @@ fhi::noispiah_resources_copy(dirname(CONFIG$FILES_RMD_USE_SYKEHJEM))
 
 if(fhi::DashboardIsDev()){
   analysisIter=stack[level=="landsdekkende" & stringr::str_detect(RMD,"sykehjem")]
+  analysisIter=stack[level=="landsdekkende" & stringr::str_detect(RMD,"sykehus")]
   #analysisIter=stack[20]
   file.remove(file.path(analysisIter$outputDirUse,sprintf("%s.pdf",analysisIter$location)))
   fhi::RenderExternally(input=analysisIter$RMD,

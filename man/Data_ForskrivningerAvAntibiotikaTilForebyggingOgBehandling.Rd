@@ -6,7 +6,8 @@
 \title{Data_ForskrivningerAvAntibiotikaTilForebyggingOgBehandling}
 \usage{
 Data_ForskrivningerAvAntibiotikaTilForebyggingOgBehandling(di, da, DATE_USE,
-  group1 = "IndikasjonCategory", group2 = "category")
+  ab = "ABBredMethAndre", group1 = "IndikasjonCategory",
+  group2 = "forebyggVsBehandOgMethVsAndre")
 }
 \arguments{
 \item{di}{a}

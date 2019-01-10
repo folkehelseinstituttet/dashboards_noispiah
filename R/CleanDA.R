@@ -121,4 +121,21 @@ CleanDA <- function(da){
     "Laboratoriebekreftet blodbaneinfeksjon",
     "N\u00F8ytropen feber"
   ), IndikasjonCategory := "Klinisk sepsis"]
+
+  da[, IndikasjonCategorySykehus := IndikasjonCategory]
+  da[IndikasjonCategory %in% c("Klinisk sepsis"), IndikasjonCategorySykehus := "Klinisk sepsis, laboratoriebekreftet blodbaneinfeksjon og nøytropen feber"]
+
+  RAWmisc::RecodeDT(da,
+                    c(
+                      "Helsetjenesteassosiert infeksjon"="Helsetjenesteassosiert infeksjon",
+                      "Samfunnservervet infeksjon"="Samfunnservervet infeksjon",
+                      "Kirpro1"="Kirurgisk profylakse 1",
+                      "Kirpro2"="Kirurgisk profylakse 2",
+                      "Kirpro3"="Kirurgisk profylakse 3",
+                      "Medpro"="Medisinsk profylakse",
+                      "Annet"="Annet/ukjent",
+                      "Ukjent"="Annet/ukjent"
+                    ),var="Klassifisering")
+
+
 }

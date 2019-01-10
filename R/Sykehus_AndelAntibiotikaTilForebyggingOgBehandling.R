@@ -4,29 +4,7 @@
 #' @param DATE_USE a
 #' @export Data_AndelAntibiotikaTilForebyggingOgBehandling
 Data_AndelAntibiotikaTilForebyggingOgBehandling <- function(di, da, DATE_USE) {
-  temp <- da[PrevalensDato == DATE_USE &
-               Klassifisering %in% c(
-                 "Helsetjenesteassosiert infeksjon",
-                 "Samfunnservervet infeksjon",
-                 "Kirpro1",
-                 "Kirpro2",
-                 "Kirpro3",
-                 "Medpro",
-                 "Annet",
-                 "Ukjent"
-               )]
-
-  RAWmisc::RecodeDT(temp,
-                    c(
-                      "Helsetjenesteassosiert infeksjon"="Helsetjenesteassosiert infeksjon",
-                      "Samfunnservervet infeksjon"="Samfunnservervet infeksjon",
-                      "Kirpro1"="Kirurgisk profylakse 1",
-                      "Kirpro2"="Kirurgisk profylakse 2",
-                      "Kirpro3"="Kirurgisk profylakse 3",
-                      "Medpro"="Medisinsk profylakse",
-                      "Annet"="Annet/ukjent",
-                      "Ukjent"="Annet/ukjent"
-                    ),var="Klassifisering")
+  temp <- da[PrevalensDato == DATE_USE & !is.na(Klassifisering)]
 
   tab <- temp[, .(n = .N), by = .(Klassifisering)]
   tab[, denom := sum(n)]

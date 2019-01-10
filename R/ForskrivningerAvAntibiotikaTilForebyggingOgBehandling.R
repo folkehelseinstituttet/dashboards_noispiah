@@ -11,147 +11,20 @@
 Data_ForskrivningerAvAntibiotikaTilForebyggingOgBehandling <- function(di,
                                                                        da,
                                                                        DATE_USE,
+                                                                       ab="ABBredMethAndre",
                                                                        group1="IndikasjonCategory",
-                                                                       group2="category") {
+                                                                       group2="forebyggVsBehandOgMethVsAndre") {
   . <- NULL
 
-  ab <- readxl::read_excel(file.path(system.file("extdata", package = "noispiah"), "2018-08-30_Antibiotikagrupper.xlsx"))
-  setDT(ab)
-
-  temp <- da[PrevalensDato == DATE_USE &
-    Klassifisering %in% c(
-      "Helsetjenesteassosiert infeksjon",
-      "Samfunnservervet infeksjon",
-      "Kirpro1",
-      "Kirpro2",
-      "Kirpro3",
-      "Medpro"
-    )]
-
-  # speciality start
-  temp[,c_spesialitet:=Spesialitet]
-  RAWmisc::RecodeDT(temp,
-    c(
-      "Ortopedisk kirurgi"="Ortopedisk kirurgi",
-
-      "Fødselshjelp og kvinnesykdommer"="Gynekologi",
-      "Generell gynekologi"="Gynekologi",
-      "Gynekologisk onkologi"="Gynekologi",
-      "Obstetrikk"="Gynekologi",
-
-      "Endokrin kirurgi"="Kirurgi",
-      "Gastroenterologisk kirurgi"="Kirurgi",
-      "Generell kirurgi"="Kirurgi",
-      "Karkirurgi"="Kirurgi",
-      "Kirurgi"="Kirurgi",
-      "Kjeve- og ansiktskirurgi"="Kirurgi",
-      "Nevrokirurgi"="Kirurgi",
-      "Plastikkirurgi"="Kirurgi",
-      "Thoraxkirurgi"="Kirurgi",
-      "Urologi"="Kirurgi",
-
-      "Cerebrovaskulære sykdommer"="Indremedisin",
-      "Endokrinologi og metabolisme"="Indremedisin",
-      "Fordøyelsessykdommer"="Indremedisin",
-      "Geriatri"="Indremedisin",
-      "Hematologi (blodsykdommer)"="Indremedisin",
-      "Hjertesykdommer"="Indremedisin",
-      "Indremedisin"="Indremedisin",
-      "Infeksjonsmedisin"="Indremedisin",
-      "Lungesykdommer"="Indremedisin",
-      "Nyresykdommer"="Indremedisin",
-      "Observasjon"="Indremedisin",
-
-      "Nyfødtmedisin"="Barnemedisin",
-      "Barneintensiv"="Barnemedisin",
-      "Barnekirurgi"="Barnemedisin",
-      "Barnesykdommer"="Barnemedisin",
-
-      "Kirurgisk intensiv / overvåking"="Kirurgisk intensiv / overvåking",
-
-      "Medisinsk intensiv / overvåking"="Medisinsk intensiv / overvåking",
-
-      "Onkologi"="Onkologi",
-
-      "Generell nevrologi"="Nevrologi",
-      "Nevrologi"="Nevrologi",
-
-      "Fysikalsk medisin/rehabilitering"="Andre spesialiteter",
-      "Hud- og veneriske sykdommer"="Andre spesialiteter",
-      "Revmatologi"="Andre spesialiteter",
-      "Øre-nese-hals"="Andre spesialiteter",
-      "Øyesykdommer"="Andre spesialiteter",
-
-      "Annet/ukjent"="Annet/ukjent"),
-    "c_spesialitet"
-    )
-
-  temp[,c_spesialitet:=factor(c_spesialitet,levels = c(
-    "Kirurgisk intensiv / overvåking",
-    "Medisinsk intensiv / overvåking",
-    "Ortopedisk kirurgi",
-    "Kirurgi",
-    "Indremedisin",
-    "Onkologi",
-    "Nevrologi",
-    "Barnemedisin",
-    "Gynekologi",
-    "Andre spesialiteter",
-    "Annet/ukjent"
-  ))]
-
-  # speciality end
-
-  temp[, forebyggingVsBehandling := ""]
-  temp[Klassifisering %in% c(
-    "Helsetjenesteassosiert infeksjon",
-    "Samfunnservervet infeksjon"
-  ), forebyggingVsBehandling := "Behandling"]
-  temp[Klassifisering %in% c(
-    "Kirpro1",
-    "Kirpro2",
-    "Kirpro3",
-    "Medpro"
-  ), forebyggingVsBehandling := "Forebygging"]
-  # xtabs(~temp$forebyggingVsBehandling)
-
-  temp[, AB := "andre antibiotika"]
-  temp[ATCKode %in% ab[`ATCSubstans (virkestoff)` == "Methenamine"]$ATCKode, AB := "Methenamine"]
-  temp[ATCKode %in% ab[Gruppe == "Bredspektrede"]$ATCKode, AB := "bredspektrede antibiotika"]
-  # xtabs(~temp$AB)
-
-  # xtabs(~temp$forebyggingVsBehandling+temp$AB)
-  temp[, category := sprintf("%s %s", forebyggingVsBehandling, AB)]
-  RAWmisc::RecodeDT(temp,
-                    switch=c(
-                      "Forebygging Methenamine"="Forebygging Methenamine",
-                      "Forebygging andre antibiotika"="Forebygging andre antibiotika",
-                      "Forebygging bredspektrede antibiotika"="Forebygging andre antibiotika",
-                      "Behandling Methenamine"="Behandling Methenamine",
-                      "Behandling andre antibiotika"="Behandling andre antibiotika",
-                      "Behandling bredspektrede antibiotika"="Behandling andre antibiotika"
-                    ),
-                    "category")
-  # xtabs(~temp$category)
-  # xtabs(~temp$Indikasjon)
-
-
-  temp[, IndikasjonCategory := Indikasjon]
-  temp[Indikasjon %in% c(
-    "Klinisk sepsis med antatt utgangspunkt luftveier",
-    "Klinisk sepsis med antatt utgangspunkt urinveier",
-    "Klinisk sepsis med antatt utgangspunkt abdomen",
-    "Klinisk sepsis med annet antatt utgangspunkt",
-    "Klinisk sepsis med usikkert utgangspunkt",
-    "Laboratoriebekreftet blodbaneinfeksjon",
-    "N\u00F8ytropen feber"
-  ), IndikasjonCategory := "Klinisk sepsis"]
+  temp <- da[PrevalensDato == DATE_USE & !is.na(forebyggingVsBehandling)]
 
   tab <- temp[, .(n = .N), by = .(
     forebyggingVsBehandling,
-    AB,
+    "ab"=get(ab),
     "group1"=get(group1),
     "group2"=get(group2))]
+
+  if(!ab %in% names(tab)) setnames(tab,"ab",ab)
   if(!group1 %in% names(tab)) setnames(tab,"group1",group1)
   if(!group2 %in% names(tab)) setnames(tab,"group2",group2)
 
@@ -176,34 +49,38 @@ Figure_ForskrivningerAvAntibiotikaTilForebyggingOgBehandlingPerIndikasjon <- fun
   tab <- Data_ForskrivningerAvAntibiotikaTilForebyggingOgBehandling(di = di,
                                                                     da = da,
                                                                     DATE_USE = DATE_USE,
+                                                                    ab="forebyggVsBehandOgMethVsAndre",
                                                                     group1="IndikasjonCategory",
-                                                                    group2="category")
+                                                                    group2="forebyggVsBehandOgMethVsAndre")
   tab[, denom := sum(n)]
-  tab[, nCategory := sum(n), by=category]
-  tab[, labCategory := sprintf("%s (n=%s)", category, nCategory)]
+  tab[, catFill := forebyggVsBehandOgMethVsAndre]
+  tab[, nFill := sum(n), by=catFill]
+  tab[, labFill := sprintf("%s (n=%s)", catFill, nFill)]
 
-  ordering <- unique(tab[,c("labCategory","category")])
-  ordering[,category:=factor(category,levels=c(
+  ordering <- unique(tab[,c("labFill","catFill")])
+  ordering[,catFill:=factor(catFill,levels=c(
     "Forebygging Methenamine",
     "Forebygging andre antibiotika",
     "Behandling Methenamine",
     "Behandling andre antibiotika"
   ))]
-  setorder(ordering,-category)
-  tab[,labCategory:=factor(labCategory,levels=ordering$labCategory)]
+  setorder(ordering,-catFill)
+  tab[,labFill:=factor(labFill,levels=ordering$labFill)]
 
-  tab[, nIndikasjonCategory := sum(n), by=IndikasjonCategory]
-  tab[, labIndikasjonCategory := sprintf("%s (n=%s)", IndikasjonCategory, nIndikasjonCategory)]
+  tab[, catX := IndikasjonCategory]
+  tab[, nX := sum(n), by=catX]
+  tab[, labX := sprintf("%s (n=%s)", catX, nX)]
 
-  ordering <- unique(tab[,c("labIndikasjonCategory","IndikasjonCategory","nIndikasjonCategory")])
-  setorder(ordering,nIndikasjonCategory,IndikasjonCategory)
-  tab[,labIndikasjonCategory:=factor(labIndikasjonCategory,levels=ordering$labIndikasjonCategory)]
+  ordering <- unique(tab[,c("labX","catX","nX")])
+  setorder(ordering,nX,catX)
+  tab[,labX:=factor(labX,levels=ordering$labX)]
 
-  q <- ggplot(tab, aes(x = labIndikasjonCategory, y = n / denom * 100, fill = labCategory))
+  q <- ggplot(tab, aes(x = labX, y = n / denom, fill = labFill))
   q <- q + geom_col(colour = "black", alpha = 0.5)
   q <- q + scale_fill_brewer("", palette = "Set1", guide = guide_legend(ncol = 2, byrow = T, reverse = TRUE))
   q <- q + scale_x_discrete("Indikasjon")
-  q <- q + scale_y_continuous(sprintf("Andel av forskrivninger til forebygging og behandling\n(n=%s)", sum(tab$n)))
+  q <- q + scale_y_continuous(sprintf("Andel av forskrivninger til forebygging og behandling\n(n=%s)", sum(tab$n)),
+                              labels = scales::percent)
   q <- q + labs(main = "Prevalens av helsetjenesteassosierte infeksjoner etter avdelingstype")
   q <- q + coord_flip()
   q <- q + theme(legend.position = "bottom")
@@ -234,31 +111,34 @@ Figure_ForskrivningerAvAntibiotikaTilBehandlingPerIndikasjon <- function(di, da,
   tab <- Data_ForskrivningerAvAntibiotikaTilForebyggingOgBehandling(di = di,
                                                                     da = da,
                                                                     DATE_USE = DATE_USE,
-                                                                    group1="IndikasjonCategory",
-                                                                    group2="category")
+                                                                    ab="forebyggVsBehandOgMethVsAndre",
+                                                                    group1="IndikasjonCategorySykehus",
+                                                                    group2="forebyggVsBehandOgMethVsAndre")
   tab <- tab[forebyggingVsBehandling=="Behandling"]
   tab[, denom := sum(n)]
-  tab[, nCategory := sum(n), by=category]
-  tab[, labCategory := sprintf("%s (n=%s)", category, nCategory)]
+  tab[, catFill := forebyggVsBehandOgMethVsAndre]
+  tab[, nFill := sum(n), by=catFill]
+  tab[, labFill := sprintf("%s (n=%s)", catFill, nFill)]
 
-  ordering <- unique(tab[,c("labCategory","category")])
-  ordering[,category:=factor(category,levels=c(
+  ordering <- unique(tab[,c("labFill","catFill")])
+  ordering[,catFill:=factor(catFill,levels=c(
     "Forebygging Methenamine",
     "Forebygging andre antibiotika",
     "Behandling Methenamine",
     "Behandling andre antibiotika"
   ))]
-  setorder(ordering,-category)
-  tab[,labCategory:=factor(labCategory,levels=ordering$labCategory)]
+  setorder(ordering,-catFill)
+  tab[,labFill:=factor(labFill,levels=ordering$labFill)]
 
-  tab[, nIndikasjonCategory := sum(n), by=IndikasjonCategory]
-  tab[, labIndikasjonCategory := sprintf("%s (n=%s)", IndikasjonCategory, nIndikasjonCategory)]
+  tab[, catX := IndikasjonCategorySykehus]
+  tab[, nX := sum(n), by=catX]
+  tab[, labX := sprintf("%s (n=%s)", catX, nX)]
 
-  ordering <- unique(tab[,c("labIndikasjonCategory","IndikasjonCategory","nIndikasjonCategory")])
-  setorder(ordering,nIndikasjonCategory,IndikasjonCategory)
-  tab[,labIndikasjonCategory:=factor(labIndikasjonCategory,levels=ordering$labIndikasjonCategory)]
+  ordering <- unique(tab[,c("labX","catX","nX")])
+  setorder(ordering,nX,catX)
+  tab[,labX:=factor(labX,levels=ordering$labX)]
 
-  q <- ggplot(tab, aes(x = labIndikasjonCategory, y = n / denom, fill = labCategory))
+  q <- ggplot(tab, aes(x = labX, y = n / denom, fill = labFill))
   q <- q + geom_col(colour = "black", alpha = 0.5)
   q <- q + scale_fill_brewer("", palette = "Set1", guide = guide_legend(ncol = 2, byrow = T, reverse = TRUE))
   q <- q + scale_x_discrete("Indikasjon")
@@ -295,21 +175,37 @@ Figure_ForskrivningerAvAntibiotikaTilBehandlingPerSpesialitet <- function(di, da
   tab <- Data_ForskrivningerAvAntibiotikaTilForebyggingOgBehandling(di = di,
                                                                     da = da,
                                                                     DATE_USE = DATE_USE,
+                                                                    ab="ABBredMethAndre",
                                                                     group1="c_spesialitet",
                                                                     group2="c_spesialitet")
   tab <- tab[forebyggingVsBehandling=="Behandling"]
+
   tab[, denom := sum(n)]
-  tab[, nSpesialitet := sum(n), by=c_spesialitet]
-  tab[, labSpesialitet := sprintf("%s (n=%s)", c_spesialitet, nSpesialitet)]
+  tab[, catFill := ABBredMethAndre]
+  tab[, nFill := sum(n), by=catFill]
+  tab[, labFill := sprintf("%s (n=%s)", catFill, nFill)]
 
-  ordering <- unique(tab[,c("labSpesialitet","c_spesialitet")])
-  setorder(ordering,-c_spesialitet,labSpesialitet)
-  tab[,labSpesialitet:=factor(labSpesialitet,levels=ordering$labSpesialitet)]
+  ordering <- unique(tab[,c("labFill","catFill")])
+  ordering[,catFill:=factor(catFill,levels=c(
+    "Methenamine",
+    "andre antibiotika",
+    "bredspektrde antibiotika"
+  ))]
+  setorder(ordering,-catFill)
+  tab[,labFill:=factor(labFill,levels=ordering$labFill)]
 
-  q <- ggplot(tab, aes(x = labSpesialitet, y = n / denom, fill = AB))
+  tab[, catX := c_spesialitet]
+  tab[, nX := sum(n), by=catX]
+  tab[, labX := sprintf("%s (n=%s)", catX, nX)]
+
+  ordering <- unique(tab[,c("labX","catX","nX")])
+  setorder(ordering,-catX)
+  tab[,labX:=factor(labX,levels=ordering$labX)]
+
+  q <- ggplot(tab, aes(x = labX, y = n / denom, fill = labFill))
   q <- q + geom_col(colour = "black", alpha = 0.5)
   q <- q + scale_fill_brewer("", palette = "Set1", guide = guide_legend(ncol = 2, byrow = T, reverse = TRUE))
-  q <- q + scale_x_discrete("Spesialitet")
+  q <- q + scale_x_discrete("Indikasjon")
   q <- q + scale_y_continuous(sprintf("Andel av forskrivninger til behandling (n=%s)", sum(tab$n)),
                               labels=scales::percent)
   q <- q + labs(main = "Prevalens av helsetjenesteassosierte infeksjoner etter avdelingstype")
@@ -323,4 +219,5 @@ Figure_ForskrivningerAvAntibiotikaTilBehandlingPerSpesialitet <- function(di, da
     legend.direction = "horizontal"
   )
   q
+
 }

@@ -31,6 +31,10 @@ di <- readxl::read_excel(fhi::DashboardFolder("data_raw","InfeksjonsdataSpesiali
 setDT(da)
 setDT(di)
 
+level <- params$level
+DATE_USE <- params$DATE_USE
+CleanDA(da)
+
 if(params$level=="landsdekkende"){
   
 } else if(params$level=="helseforetak"){
@@ -40,8 +44,6 @@ if(params$level=="landsdekkende"){
   da <- da[Institusjon==params$location]
   di <- di[Institusjon==params$location]
 }
-
-DATE_USE=params$DATE_USE
 ```
 
 \newpage 
@@ -59,6 +61,8 @@ Figure_AndelAntibiotikaTilForebyggingOgBehandling(di=di,da=da,DATE_USE=DATE_USE)
 # Indikasjoner for forskrivning av antibiotika til behandling 
 
 NEED TO FIX ANTIBIOTICS CATEGORIES
+
+The ordering that was given, does not exist???????
 
 \begin{landscape}
 
@@ -94,7 +98,7 @@ ggsave(f, plot = q, width = 297*0.75, height = 210*0.75, units = "mm")
 \begin{figure}
 \begin{center}
 \includegraphics{`r f`}
-\caption{\label{fig:figs2}Andel forskrivninger av antibiotika til forebygging og behandling i sykehjem, per indikasjon}
+\caption{\label{fig:figs3}Andel forskrivninger av antibiotika til forebygging og behandling i sykehjem, per indikasjon}
 \end{center}
 \end{figure}
 
@@ -104,7 +108,51 @@ ggsave(f, plot = q, width = 297*0.75, height = 210*0.75, units = "mm")
 
 # Antibiotika til behandling over tid
 
-\blindtext
+\begin{landscape}
+
+NEED TO FIX ANTIBIOTICS CATEGORIES
+
+```{r echo=FALSE, fig.height=5, fig.width=5, message=FALSE, warning=FALSE, paged.print=TRUE, results='asis'}
+q <- Figure_AntibiotikaTilBehandlingOverTid1(di=di,da=da,DATE_USE=params$DATE_USE)
+f <- sprintf("%s.png",tempfile())
+ggsave(f, plot = q, width = 297*0.75, height = 210*0.75, units = "mm")
+```
+
+\begin{figure}
+\begin{center}
+\includegraphics{`r f`}
+\caption{\label{fig:figs4}Andel forskrivninger av antibiotika til forebygging og behandling i sykehjem, per indikasjon}
+\end{center}
+\end{figure}
+
+\end{landscape}
+
+\newpage
+
+# Antibiotika til behandling av samfunnservervede nedre luftveisinfeksjoner over tid
+
+\begin{landscape}
+
+NEED TO FIX ANTIBIOTICS CATEGORIES
+
+Could not find "samfunnservervede nedre luftveisinfeksjoner" in "indikasjon"
+
+Decided to just use "nedre luftveisinfeksjoner" instead. Is that ok?
+
+```{r echo=FALSE, fig.height=5, fig.width=5, message=FALSE, warning=FALSE, paged.print=TRUE, results='asis'}
+q <- Figure_AntibiotikaTilBehandlingOverTid2(di=di,da=da,DATE_USE=params$DATE_USE)
+f <- sprintf("%s.png",tempfile())
+ggsave(f, plot = q, width = 297*0.75, height = 210*0.75, units = "mm")
+```
+
+\begin{figure}
+\begin{center}
+\includegraphics{`r f`}
+\caption{\label{fig:figs5}Andel forskrivninger av antibiotika til forebygging og behandling i sykehjem, per indikasjon}
+\end{center}
+\end{figure}
+
+\end{landscape}
 
 \newpage
 

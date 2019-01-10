@@ -120,7 +120,7 @@ Ser ut som søylediagrammet i rapportforslaget ditt viser resultater fra sykehus
 \begin{landscape}
 
 ```{r echo=FALSE, fig.height=5, fig.width=5, message=FALSE, warning=FALSE, paged.print=TRUE, results='asis'}
-q <- Figure_ForskrivningerAvAntibiotikaTilForebyggingOgBehandlingPerIndikasjon(di=di,da=da,DATE_USE=params$DATE_USE)
+q <- Figure_ForskrivningerAvAntibiotikaTilForebyggingOgBehandlingPerIndikasjon(di=di,da=da,DATE_USE=DATE_USE)
 f <- sprintf("%s.png",tempfile())
 ggsave(f, plot = q, width = 297*0.75, height = 210*0.75, units = "mm")
 ```
