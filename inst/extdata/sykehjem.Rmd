@@ -35,7 +35,8 @@ setDT(di)
 
 level <- params$level
 DATE_USE <- params$DATE_USE
-CleanDA(da)
+CleanDA(da, type="sykehjem")
+CleanDI(di, type="sykehjem")
 
 if(level=="landsdekkende"){
   

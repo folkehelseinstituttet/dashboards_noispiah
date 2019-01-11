@@ -1,9 +1,18 @@
 #' CleanDA
 #' @param da a
+#' @param type a
 #' @export CleanDA
-CleanDA <- function(da){
+CleanDA <- function(da, type="sykehjem"){
   ab <- readxl::read_excel(file.path(system.file("extdata", package = "noispiah"), "2018-08-30_Antibiotikagrupper.xlsx"))
   setDT(ab)
+
+  if(type=="sykehjem"){
+    da[,NumberPeople:=AntallBeboereKl8]
+    da[,NumberPeopleSomGisAntibiotika:=AntallBeboereSomGisAntibiotika]
+  } else {
+    da[,NumberPeople:=AntallPasienterKl8]
+    da[,NumberPeopleSomGisAntibiotika:=AntallPasienterSomGisAntibiotika]
+  }
 
   da[, forebyggingVsBehandling := as.character(NA)]
   da[Klassifisering %in% c(

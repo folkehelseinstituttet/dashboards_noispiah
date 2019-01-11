@@ -1,12 +1,11 @@
-#' Data_DeltagelseForekomstHAIogABiSykehjem
+#' Data_PrevalensHAIPerSpesialitet
 #' @param di a
 #' @param da a
 #' @param level a
 #' @param DATE_USE a
-#' @param type sykehjem
 #' @import data.table
-#' @export Data_DeltagelseForekomstHAIogABiSykehjem
-Data_DeltagelseForekomstHAIogABiSykehjem <- function(di, da, level, DATE_USE, type="sykehjem") {
+#' @export Data_PrevalensHAIPerSpesialitet
+Data_PrevalensHAIPerSpesialitet <- function(di, da, level, DATE_USE) {
   . <- NULL
   InstitusjonType <- NULL
   PrevalensDato <- NULL
@@ -67,14 +66,14 @@ Data_DeltagelseForekomstHAIogABiSykehjem <- function(di, da, level, DATE_USE, ty
   }
 
   t1a <- di[PrevalensDato == DATE_USE,
-    .(
-      antallSykehjemHAI = length(unique(InstitusjonId)),
-      antallBeboereHAI = sum(NumberPeople),
-      antallBeboereMedInfeksjonHAI = sum(NumberPeopleMedInfeksjon),
-      antallInfeksjonerHAI = sum(antallInfeksjonerHAI)
-    ),
-    by = .(get(varGrouping))
-  ]
+            .(
+              antallSykehjemHAI = length(unique(InstitusjonId)),
+              antallBeboereHAI = sum(NumberPeople),
+              antallBeboereMedInfeksjonHAI = sum(NumberPeopleMedInfeksjon),
+              antallInfeksjonerHAI = sum(antallInfeksjonerHAI)
+            ),
+            by = .(get(varGrouping))
+            ]
   t1b <- di[PrevalensDato == DATE_USE,
             .(
               antallSykehjemHAI = length(unique(InstitusjonId)),
@@ -225,20 +224,20 @@ Table_DeltagelseForekomstHAIogABiSykehjem <- function(di, da, level, DATE_USE, t
   )
 
   xtab <- xtable::xtable(tab,
-    caption = "Deltagelse, forekomst av helsetjenesteassosierte infeksjoner og bruk av antibiotika i sykehjem"
+                         caption = "Deltagelse, forekomst av helsetjenesteassosierte infeksjoner og bruk av antibiotika i sykehjem"
   )
 
   xtable::align(xtab) <- "r|r||r|r|r|r||r|r|r|r|"
 
   xtable::print.xtable(xtab,
-    include.rownames = FALSE,
-    include.colnames = FALSE,
-    sanitize.colnames.function = function(x) {
-      x
-    },
-    caption.placement = "top",
-    add.to.row = addtorow,
-    hline.after = c(-1, 0, nrow(xtab) - 1, nrow(xtab)),
-    comment = F
+                       include.rownames = FALSE,
+                       include.colnames = FALSE,
+                       sanitize.colnames.function = function(x) {
+                         x
+                       },
+                       caption.placement = "top",
+                       add.to.row = addtorow,
+                       hline.after = c(-1, 0, nrow(xtab) - 1, nrow(xtab)),
+                       comment = F
   )
 }

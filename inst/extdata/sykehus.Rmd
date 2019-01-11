@@ -33,7 +33,8 @@ setDT(di)
 
 level <- params$level
 DATE_USE <- params$DATE_USE
-CleanDA(da)
+CleanDA(da, type="sykehus")
+CleanDI(di, type="sykehus")
 
 if(params$level=="landsdekkende"){
   
@@ -204,7 +205,9 @@ Figure_AntibiotikaTilBehandling(di=di,da=da,DATE_USE=DATE_USE, indikasjon="Klini
 
 # Deltagelse, forekomst av helsetjenesteassosierte infeksjoner og bruk av antibiotika i sykehus
 
-\blindtext
+I think there is something wrong with:
+
+`Prevalens av HAI (%)`
 
 \begin{landscape}
 
