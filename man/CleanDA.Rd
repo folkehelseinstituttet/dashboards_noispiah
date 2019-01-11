@@ -4,10 +4,12 @@
 \alias{CleanDA}
 \title{CleanDA}
 \usage{
-CleanDA(da)
+CleanDA(da, type = "sykehjem")
 }
 \arguments{
 \item{da}{a}
+
+\item{type}{a}
 }
 \description{
 CleanDA
