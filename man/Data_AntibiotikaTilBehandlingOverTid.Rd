@@ -4,7 +4,8 @@
 \alias{Data_AntibiotikaTilBehandlingOverTid}
 \title{Data_AntibiotikaTilBehandlingOverTid}
 \usage{
-Data_AntibiotikaTilBehandlingOverTid(di, da, indikasjon = NULL)
+Data_AntibiotikaTilBehandlingOverTid(di, da, indikasjon = NULL,
+  ab = "sykehusAB2", klassifisering = NULL)
 }
 \arguments{
 \item{di}{a}
@@ -12,6 +13,10 @@ Data_AntibiotikaTilBehandlingOverTid(di, da, indikasjon = NULL)
 \item{da}{a}
 
 \item{indikasjon}{a}
+
+\item{ab}{a}
+
+\item{klassifisering}{a}
 
 \item{DATE_USE}{a}
 }

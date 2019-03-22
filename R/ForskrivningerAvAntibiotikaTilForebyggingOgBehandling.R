@@ -52,12 +52,23 @@ Figure_ForskrivningerAvAntibiotikaTilForebyggingOgBehandlingPerIndikasjon <- fun
                                                                     ab="forebyggVsBehandOgMethVsAndre",
                                                                     group1="IndikasjonCategory",
                                                                     group2="forebyggVsBehandOgMethVsAndre")
+  if(nrow(tab)==0) return(no_data_graph())
   tab[, denom := sum(n)]
   tab[, catFill := forebyggVsBehandOgMethVsAndre]
   tab[, nFill := sum(n), by=catFill]
   tab[, labFill := sprintf("%s (n=%s)", catFill, nFill)]
 
+  skeleton <- data.table(
+    catFill=c(
+      "Forebygging Methenamine",
+      "Forebygging andre antibiotika",
+      "Behandling Methenamine",
+      "Behandling andre antibiotika"
+    )
+  )
   ordering <- unique(tab[,c("labFill","catFill")])
+  ordering <- merge(skeleton,ordering,by="catFill",all=T)
+  ordering[is.na(labFill),labFill:=glue::glue("{catFill} (n=0)",catFill=catFill)]
   ordering[,catFill:=factor(catFill,levels=c(
     "Forebygging Methenamine",
     "Forebygging andre antibiotika",
@@ -77,21 +88,18 @@ Figure_ForskrivningerAvAntibiotikaTilForebyggingOgBehandlingPerIndikasjon <- fun
 
   q <- ggplot(tab, aes(x = labX, y = n / denom, fill = labFill))
   q <- q + geom_col(colour = "black", alpha = 0.5)
-  q <- q + scale_fill_brewer("", palette = "Set1", guide = guide_legend(ncol = 2, byrow = T, reverse = TRUE))
-  q <- q + scale_x_discrete("Indikasjon")
-  q <- q + scale_y_continuous(sprintf("Andel av forskrivninger til forebygging og behandling\n(n=%s)", sum(tab$n)),
+  q <- q + scale_fill_manual("",
+                             values=c("green",
+                                      "darkgreen",
+                                      "yellow",
+                                      "purple"),
+                             drop=F, guide = guide_legend(ncol = 2, byrow = T, reverse = T))
+  q <- q + scale_x_discrete("Indikasjon (antall forskrivninger)")
+  q <- q + scale_y_continuous(sprintf("Andel (%%) av forskrivninger til forebygging og behandling\n(n=%s)", sum(tab$n)),
                               labels = scales::percent)
-  q <- q + labs(main = "Prevalens av helsetjenesteassosierte infeksjoner etter avdelingstype")
   q <- q + coord_flip()
   q <- q + theme(legend.position = "bottom")
-  q <- q + labs(caption = "\n\n\n\n\n\n")
-  q <- q + theme(
-    legend.position = c(0.0, -0.13),
-    legend.justification = c(0.5, 1),
-    legend.box.margin = margin(c(0, 0, 0, 00)),
-    legend.direction = "horizontal"
-  )
-  q
+  lemon::grid_arrange_shared_legend(q, plot=F)
 }
 
 #' Figure_ForskrivningerAvAntibiotikaTilBehandlingPerIndikasjon
@@ -111,26 +119,29 @@ Figure_ForskrivningerAvAntibiotikaTilBehandlingPerIndikasjon <- function(di, da,
   tab <- Data_ForskrivningerAvAntibiotikaTilForebyggingOgBehandling(di = di,
                                                                     da = da,
                                                                     DATE_USE = DATE_USE,
-                                                                    ab="forebyggVsBehandOgMethVsAndre",
-                                                                    group1="IndikasjonCategorySykehus",
+                                                                    ab="sykehusAB1",
+                                                                    group1="IndikasjonCategorySykehusMedKlassifiseringNedreLuftveisinfeksjon",
                                                                     group2="forebyggVsBehandOgMethVsAndre")
+  if(nrow(tab)==0) return(no_data_graph())
+
   tab <- tab[forebyggingVsBehandling=="Behandling"]
   tab[, denom := sum(n)]
-  tab[, catFill := forebyggVsBehandOgMethVsAndre]
+  tab[, catFill := sykehusAB1]
   tab[, nFill := sum(n), by=catFill]
   tab[, labFill := sprintf("%s (n=%s)", catFill, nFill)]
 
+  skeleton <- data.table(
+    catFill=levels(tab$catFill)
+  )
   ordering <- unique(tab[,c("labFill","catFill")])
-  ordering[,catFill:=factor(catFill,levels=c(
-    "Forebygging Methenamine",
-    "Forebygging andre antibiotika",
-    "Behandling Methenamine",
-    "Behandling andre antibiotika"
-  ))]
+  ordering <- merge(skeleton,ordering,by="catFill",all=T)
+  ordering[is.na(labFill),labFill:=glue::glue("{catFill} (n=0)",catFill=catFill)]
+
+  ordering[,catFill:=factor(catFill,levels=levels(tab$catFill))]
   setorder(ordering,-catFill)
   tab[,labFill:=factor(labFill,levels=ordering$labFill)]
 
-  tab[, catX := IndikasjonCategorySykehus]
+  tab[, catX := IndikasjonCategorySykehusMedKlassifiseringNedreLuftveisinfeksjon]
   tab[, nX := sum(n), by=catX]
   tab[, labX := sprintf("%s (n=%s)", catX, nX)]
 
@@ -138,23 +149,30 @@ Figure_ForskrivningerAvAntibiotikaTilBehandlingPerIndikasjon <- function(di, da,
   setorder(ordering,nX,catX)
   tab[,labX:=factor(labX,levels=ordering$labX)]
 
+  yColours <- rep("black",length=nrow(ordering))
+  yColours[stringr::str_detect(ordering$catX,"nedre luftveisinfeksjon")] <- "red"
+
   q <- ggplot(tab, aes(x = labX, y = n / denom, fill = labFill))
   q <- q + geom_col(colour = "black", alpha = 0.5)
-  q <- q + scale_fill_brewer("", palette = "Set1", guide = guide_legend(ncol = 2, byrow = T, reverse = TRUE))
-  q <- q + scale_x_discrete("Indikasjon")
+  q <- q + scale_fill_manual("",
+                             values=c(
+                               "blue",
+                               "purple",
+                               "cyan",
+                               "green",
+                               "red",
+                               "orange"
+                             ),
+                             drop=F, guide = guide_legend(ncol = 3, byrow = T, reverse = TRUE))
+  q <- q + scale_x_discrete("Indikasjon (antall forskrivninger)")
   q <- q + scale_y_continuous(sprintf("Andel av forskrivninger til behandling (n=%s)", sum(tab$n)),
                               labels=scales::percent)
   q <- q + labs(main = "Prevalens av helsetjenesteassosierte infeksjoner etter avdelingstype")
   q <- q + coord_flip()
   q <- q + theme(legend.position = "bottom")
-  q <- q + labs(caption = "\n\n\n\n\n\n")
-  q <- q + theme(
-    legend.position = c(0.0, -0.13),
-    legend.justification = c(0.5, 1),
-    legend.box.margin = margin(c(0, 0, 0, 00)),
-    legend.direction = "horizontal"
-  )
-  q
+  q <- q + theme(axis.text.y = element_text(colour=yColours))
+  lemon::grid_arrange_shared_legend(q, plot=F)
+
 }
 
 
@@ -175,22 +193,25 @@ Figure_ForskrivningerAvAntibiotikaTilBehandlingPerSpesialitet <- function(di, da
   tab <- Data_ForskrivningerAvAntibiotikaTilForebyggingOgBehandling(di = di,
                                                                     da = da,
                                                                     DATE_USE = DATE_USE,
-                                                                    ab="ABBredMethAndre",
+                                                                    ab="sykehusAB1",
                                                                     group1="c_spesialitet",
                                                                     group2="c_spesialitet")
   tab <- tab[forebyggingVsBehandling=="Behandling"]
+  if(nrow(tab)==0) return(no_data_graph())
 
   tab[, denom := sum(n)]
-  tab[, catFill := ABBredMethAndre]
+  tab[, catFill := sykehusAB1]
   tab[, nFill := sum(n), by=catFill]
   tab[, labFill := sprintf("%s (n=%s)", catFill, nFill)]
 
+  skeleton <- data.table(
+    catFill=levels(tab$catFill)
+  )
   ordering <- unique(tab[,c("labFill","catFill")])
-  ordering[,catFill:=factor(catFill,levels=c(
-    "Methenamine",
-    "andre antibiotika",
-    "bredspektrde antibiotika"
-  ))]
+  ordering <- merge(skeleton,ordering,by="catFill",all=T)
+  ordering[is.na(labFill),labFill:=glue::glue("{catFill} (n=0)",catFill=catFill)]
+
+  ordering[,catFill:=factor(catFill,levels=levels(tab$catFill))]
   setorder(ordering,-catFill)
   tab[,labFill:=factor(labFill,levels=ordering$labFill)]
 
@@ -199,25 +220,26 @@ Figure_ForskrivningerAvAntibiotikaTilBehandlingPerSpesialitet <- function(di, da
   tab[, labX := sprintf("%s (n=%s)", catX, nX)]
 
   ordering <- unique(tab[,c("labX","catX","nX")])
-  setorder(ordering,-catX)
+  setorder(ordering,nX)
   tab[,labX:=factor(labX,levels=ordering$labX)]
 
   q <- ggplot(tab, aes(x = labX, y = n / denom, fill = labFill))
   q <- q + geom_col(colour = "black", alpha = 0.5)
-  q <- q + scale_fill_brewer("", palette = "Set1", guide = guide_legend(ncol = 2, byrow = T, reverse = TRUE))
-  q <- q + scale_x_discrete("Indikasjon")
+  q <- q + scale_fill_manual("",
+                             values=c(
+                               "blue",
+                               "purple",
+                               "cyan",
+                               "green",
+                               "red",
+                               "orange"
+                             ),
+                             drop=F, guide = guide_legend(ncol = 3, byrow = T, reverse = TRUE))
+  q <- q + scale_x_discrete("Spesialitet (antall forskrivninger)")
   q <- q + scale_y_continuous(sprintf("Andel av forskrivninger til behandling (n=%s)", sum(tab$n)),
                               labels=scales::percent)
   q <- q + labs(main = "Prevalens av helsetjenesteassosierte infeksjoner etter avdelingstype")
   q <- q + coord_flip()
   q <- q + theme(legend.position = "bottom")
-  q <- q + labs(caption = "\n\n\n\n\n\n")
-  q <- q + theme(
-    legend.position = c(0.0, -0.13),
-    legend.justification = c(0.5, 1),
-    legend.box.margin = margin(c(0, 0, 0, 00)),
-    legend.direction = "horizontal"
-  )
-  q
-
+  lemon::grid_arrange_shared_legend(q, plot=F)
 }

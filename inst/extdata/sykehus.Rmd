@@ -12,14 +12,21 @@ header: "Prevalensundersøkelsen for helsetjenesteassosierte infeksjoner og anti
 footer: "Folkehelseinstituttet, Oslo, Norge"
 authors:
   - "_"
+
 editor_options: 
   chunk_output_type: console
 ---
 
 ```{r message=FALSE, warning=FALSE, include=FALSE, paged.print=FALSE}
+package_dir = params$package_dir
+dev = params$dev
+level <- params$level
+location <- params$location
+DATE_USE <- params$DATE_USE
+
 fhi::DashboardInitialiseOpinionated("noispiah",
-                                    PACKAGE_DIR=params$package_dir,
-                                    FORCE_DEV_PACKAGE_LOAD = params$dev,
+                                    PACKAGE_DIR=package_dir,
+                                    FORCE_DEV_PACKAGE_LOAD = dev,
                                     SILENT=TRUE)
 
 suppressMessages(library(data.table))
@@ -31,183 +38,41 @@ di <- readxl::read_excel(fhi::DashboardFolder("data_raw","InfeksjonsdataSpesiali
 setDT(da)
 setDT(di)
 
-level <- params$level
-DATE_USE <- params$DATE_USE
-CleanDA(da, type="sykehus")
+
+da <- CleanDA(da, type="sykehus")
 CleanDI(di, type="sykehus")
 
-if(params$level=="landsdekkende"){
+da_all <- copy(da)
+di_all <- copy(di)
+
+if(level=="landsdekkende"){
   
-} else if(params$level=="helseforetak"){
-  da <- da[HelseForetak==params$location]
-  di <- di[HelseForetak==params$location]
-} else if(params$level=="institusjon"){
-  da <- da[Institusjon==params$location]
-  di <- di[Institusjon==params$location]
+} else if(level=="helseforetak"){
+  da <- da[HelseForetak==location]
+  di <- di[HelseForetak==location]
+} else if(level=="institusjon"){
+  da <- da[Institusjon==location]
+  di <- di[Institusjon==location]
 }
 ```
 
 \newpage 
 
-# Antibiotika til forebygging og behandling
+# Sykehus
 
-\blindtext
+I denne rapporten finner du resultater fra prevalensundersøkelsen som består av to deler, én om helsetjenesteassosierte infeksjoner og én om antibiotikabruk. I antibiotikadelen skal all systemisk bruk av antibiotika (inkludert metenamin) og antimykotika til forebygging og behandling registreres, mens følgende helsetjenesteassosierte infeksjoner skal registreres i infeksjonsdelen: urinveisinfeksjoner, nedre luftveisinfeksjoner, infeksjoner i operasjonsområder og blodbaneinfeksjoner.
 
-```{r echo=FALSE, message=FALSE, warning=FALSE, paged.print=TRUE, results='asis'}
-Figure_AndelAntibiotikaTilForebyggingOgBehandling(di=di,da=da,DATE_USE=DATE_USE)
-```
+Hvis antall pasienter eller forskrivninger av antibiotika er lavt, må resultatene tolkes med varsomhet, da tilfeldige variasjoner kan gi store utslag. 
 
-\newpage
+Det er viktig at hvert sykehus/helseforetak (HF) vurderer forekomsten av helsetjenesteassosierte infeksjoner i egen institusjon, og behovet for å endre eller iverksette tiltak for å forebygge slike infeksjoner. Den enkelte helseinstitusjon bør også vurdere om deres bruk av antibiotika er i tråd med Nasjonal faglig retningslinje for bruk av antibiotika i sykehus (www.google.com).
 
-# Indikasjoner for forskrivning av antibiotika til behandling 
-
-NEED TO FIX ANTIBIOTICS CATEGORIES
-
-The ordering that was given, does not exist???????
-
-\begin{landscape}
-
-```{r echo=FALSE, fig.height=5, fig.width=5, message=FALSE, warning=FALSE, paged.print=TRUE, results='asis'}
-q <- Figure_ForskrivningerAvAntibiotikaTilBehandlingPerIndikasjon(di=di,da=da,DATE_USE=params$DATE_USE)
-f <- sprintf("%s.png",tempfile())
-ggsave(f, plot = q, width = 297*0.75, height = 210*0.75, units = "mm")
-```
-
-\begin{figure}
-\begin{center}
-\includegraphics{`r f`}
-\caption{\label{fig:figs2}Andel forskrivninger av antibiotika til forebygging og behandling i sykehjem, per indikasjon}
-\end{center}
-\end{figure}
-
-\end{landscape}
+I overensstemmelse med Helse- og omsorgsdepartementets handlingsplan mot antibiotikaresistens i helsetjenesten, er piperacillin med enzymhemmer, 2. og 3. generasjons cefalosporiner, kinoloner og karbapenemer definert som bredspektrede antibiotika i rapporten. 
 
 \newpage
 
-# Antibiotika til behandling per spesialitet
+# Sykehus: deltagelse, forekomst av helsetjenesteassosierte infeksjoner og bruk av antibiotika
 
-NEED TO FIX ANTIBIOTICS CATEGORIES
-
-\begin{landscape}
-
-```{r echo=FALSE, fig.height=5, fig.width=5, message=FALSE, warning=FALSE, paged.print=TRUE, results='asis'}
-q <- Figure_ForskrivningerAvAntibiotikaTilBehandlingPerSpesialitet(di=di,da=da,DATE_USE=params$DATE_USE)
-f <- sprintf("%s.png",tempfile())
-ggsave(f, plot = q, width = 297*0.75, height = 210*0.75, units = "mm")
-```
-
-\begin{figure}
-\begin{center}
-\includegraphics{`r f`}
-\caption{\label{fig:figs3}Andel forskrivninger av antibiotika til forebygging og behandling i sykehjem, per indikasjon}
-\end{center}
-\end{figure}
-
-\end{landscape}
-
-\newpage
-
-# Antibiotika til behandling over tid
-
-NEED TO FIX ANTIBIOTICS CATEGORIES
-
-\begin{landscape}
-
-```{r echo=FALSE, fig.height=5, fig.width=5, message=FALSE, warning=FALSE, paged.print=TRUE, results='asis'}
-q <- Figure_AntibiotikaTilBehandlingOverTid1(di=di,da=da,DATE_USE=params$DATE_USE)
-f <- sprintf("%s.png",tempfile())
-ggsave(f, plot = q, width = 297*0.75, height = 210*0.75, units = "mm")
-```
-
-\begin{figure}
-\begin{center}
-\includegraphics{`r f`}
-\caption{\label{fig:figs4}Andel forskrivninger av antibiotika til forebygging og behandling i sykehjem, per indikasjon}
-\end{center}
-\end{figure}
-
-\end{landscape}
-
-\newpage
-
-# Antibiotika til behandling av samfunnservervede nedre luftveisinfeksjoner over tid
-
-NEED TO FIX ANTIBIOTICS CATEGORIES
-
-Could not find "samfunnservervede nedre luftveisinfeksjoner" in "indikasjon"
-
-Decided to just use "nedre luftveisinfeksjoner" instead. Is that ok?
-
-\begin{landscape}
-
-```{r echo=FALSE, fig.height=5, fig.width=5, message=FALSE, warning=FALSE, paged.print=TRUE, results='asis'}
-q <- Figure_AntibiotikaTilBehandlingOverTid2(di=di,da=da,DATE_USE=params$DATE_USE)
-f <- sprintf("%s.png",tempfile())
-ggsave(f, plot = q, width = 297*0.75, height = 210*0.75, units = "mm")
-```
-
-\begin{figure}
-\begin{center}
-\includegraphics{`r f`}
-\caption{\label{fig:figs5}Andel forskrivninger av antibiotika til forebygging og behandling i sykehjem, per indikasjon}
-\end{center}
-\end{figure}
-
-\end{landscape}
-
-\newpage
-
-# Antibiotika til forebygging
-
-```{r echo=FALSE, message=FALSE, warning=FALSE, paged.print=TRUE, results='asis'}
-Figure_AntibiotikaTilForebygging(di=di,da=da,DATE_USE=DATE_USE)
-```
-
-\newpage
-
-# Antibiotika til behandling
-
-```{r echo=FALSE, message=FALSE, warning=FALSE, paged.print=TRUE, results='asis'}
-Figure_AntibiotikaTilBehandling(di=di,da=da,DATE_USE=DATE_USE, indikasjon=NULL)
-```
-
-\newpage
-
-# Antibiotika til behandling av nedre luftveisinfeksjoner
-
-```{r echo=FALSE, message=FALSE, warning=FALSE, paged.print=TRUE, results='asis'}
-Figure_AntibiotikaTilBehandling(di=di,da=da,DATE_USE=DATE_USE, indikasjon="Nedre luftveisinfeksjon")
-```
-
-\newpage
-
-# Antibiotika til behandling OF URINE
-
-TO DO COLOURING!!!!!
-
-```{r echo=FALSE, message=FALSE, warning=FALSE, paged.print=TRUE, results='asis'}
-Figure_AntibiotikaTilBehandling(di=di,da=da,DATE_USE=DATE_USE, indikasjon=c(
-  "Nedre urinveisinfeksjon",
-  "Øvre urinveisinfeksjon"
-  ),
-  leftVsRightVar="IndikasjonCategorySykehus")
-```
-
-\newpage
-
-# Antibiotika til behandling av klinisk sepsis, laboratoriebekreftet blodbaneinfeksjon og nøytropen feber
-
-```{r echo=FALSE, message=FALSE, warning=FALSE, paged.print=TRUE, results='asis'}
-Figure_AntibiotikaTilBehandling(di=di,da=da,DATE_USE=DATE_USE, indikasjon="Klinisk sepsis, laboratoriebekreftet blodbaneinfeksjon og nøytropen feber")
-```
-
-\newpage
-
-# Deltagelse, forekomst av helsetjenesteassosierte infeksjoner og bruk av antibiotika i sykehus
-
-I think there is something wrong with:
-
-`Prevalens av HAI (%)`
+Tabell 1 viser deltagelse, forekomst av helsetjenesteassosierte infeksjoner og bruk av antibiotika i sykehus i den aktuelle prevalensundersøkelsen. Én pasient kan på undersøkelsesdagen få flere typer antibiotika og ha flere typer helsetjenesteassosierte infeksjoner. Følgelig kan prevalens av antibiotikaforskrivninger og helsetjenesteassosierte infeksjoner være høyere enn henholdsvis andel pasienter som fikk minst ett antibiotikum og andel pasienter med minst én helsetjenesteassosiert infeksjon.
 
 \begin{landscape}
 
@@ -222,12 +87,207 @@ Table_DeltagelseForekomstHAIogABiSykehjem(
 
 \end{landscape}
 
-
 \newpage
 
 # Prevalens av helsetjenesteassosierte infeksjoner blant pasienter i sykehus per spesialitet
 
-\blindtext
+Figur 1 viser prevalens av helsetjenesteassosierte infeksjoner blant pasienter i sykehus, samlet og per spesialitet. Underspesialiteter som ikke er vist i egen søyle, er gruppert under hovedspesialitet (jf. registreringsmalen). 
+Resultatene kan brukes til å endre eller iverksette målrettede tiltak for forebygging av helsetjenesteassosierte infeksjoner i sykehus.
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, paged.print=TRUE, results='asis', fig.cap='\\label{fig:figs11}Prevalens av helsetjenesteassosierte infeksjoner blant pasienter i sykehus, per spesialitet'}
+Figure_PrevalensHAIPerSpesialitet(di=di,da=da,DATE_USE=DATE_USE)
+```
 
 \newpage
+
+# Antibiotika til forebygging og behandling
+
+Figur 2 viser forskrivningen av antibiotika til forebygging, behandling og annet/ukjent. Den viser også forskrivningen av antibiotika til forebygging fordelt på kirurgisk profylakse 1, 2 og 3 og medisinsk profylakse, samt forskrivningen av antibiotika til behandling av helsetjenesteassosierte og samfunnservervede infeksjoner. 
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, paged.print=TRUE, results='asis', fig.cap='\\label{fig:figs1}Antibiotika til forebygging og behandling'}
+Figure_AndelAntibiotikaTilForebyggingOgBehandling(di=di,da=da,DATE_USE=DATE_USE)
+```
+
+\newpage
+
+# Antibiotika til behandling per indikasjon
+
+Figur 3 viser forskrivningen av antibiotika til behandling per indikasjon. I overenstemmelse med anbefalingene i Nasjonal faglig retningslinje for bruk av antibiotika i sykehus er indikasjonen nedre luftveisinfeksjoner inndelt i helsetjenesteassosierte og samfunnservervede infeksjoner. Bruken av bredspektrede antibiotika er spesifisert i figuren. 
+
+\begin{landscape}
+
+```{r echo=FALSE, fig.height=5, fig.width=5, message=FALSE, warning=FALSE, paged.print=TRUE, results='asis'}
+q <- Figure_ForskrivningerAvAntibiotikaTilBehandlingPerIndikasjon(di=di,da=da,DATE_USE=params$DATE_USE)
+f <- sprintf("%s.png",tempfile())
+ggsave(f, plot = q, width = 297*0.75, height = 210*0.75, units = "mm")
+```
+
+\begin{figure}
+\begin{center}
+\includegraphics{`r f`}
+\caption{\label{fig:figs2}Antibiotika til behandling per indikasjon}
+\end{center}
+\end{figure}
+
+\end{landscape}
+
+\newpage
+
+# Antibiotika til behandling, per spesialitet
+
+Figur 4 viser hvordan forskrivningene av antibiotika til behandling er fordelt på spesialiteter. Underspesialiteter som ikke er vist i egen søyle, er gruppert under hovedspesialitet (jf. registreringsmalen).  Bruken av bredspektrede antibiotika er spesifisert i figuren. 
+
+\begin{landscape}
+
+```{r echo=FALSE, fig.height=5, fig.width=5, message=FALSE, warning=FALSE, paged.print=TRUE, results='asis'}
+q <- Figure_ForskrivningerAvAntibiotikaTilBehandlingPerSpesialitet(di=di,da=da,DATE_USE=params$DATE_USE)
+f <- sprintf("%s.png",tempfile())
+ggsave(f, plot = q, width = 297*0.75, height = 210*0.75, units = "mm")
+```
+
+\begin{figure}
+\begin{center}
+\includegraphics{`r f`}
+\caption{\label{fig:figs3}Antibiotika til behandling per spesialitet}
+\end{center}
+\end{figure}
+
+\end{landscape}
+
+\newpage
+
+# Antibiotika til behandling per undersøkelsestidspunkt fra 2015
+
+Figur 5 viser fordelingen av bredspektrede antibiotika, fenoksymetyl- og benzylpenicillin samt andre antibiotika per undersøkelsestidspunkt fra og med 2015. Bredspektrede antibiotika er definert som i Helse- og omsorgsdepartementets Handlingsplan mot antibiotikaresistens i helsetjenesten, og inkluderer piperacillin med enzymhemmer, 2. og 3. generasjons cefalosporiner, kinoloner og karbapenemer.
+
+\begin{landscape}
+
+```{r echo=FALSE, fig.height=5, fig.width=5, message=FALSE, warning=FALSE, paged.print=TRUE, results='asis'}
+q <- Figure_AntibiotikaTilBehandlingOverTid1(di=di,da=da,da_all=da_all,DATE_USE=params$DATE_USE)
+f <- sprintf("%s.png",tempfile())
+ggsave(f, plot = q, width = 297*0.75, height = 210*0.75, units = "mm")
+```
+
+\begin{figure}
+\begin{center}
+\includegraphics{`r f`}
+\caption{\label{fig:figs4}Antibiotika til behandling per undersøkelsestidspunkt fra 2015}
+\end{center}
+\end{figure}
+
+\end{landscape}
+
+\newpage
+
+# Antibiotika til behandling av samfunnservervede nedre luftveisinfeksjoner per undersøkelsestidspunkt fra 2015
+
+Figur 6 viser fordelingen av 3. generasjons cefalosporiner, piperacillin med enzymhemmer, fenoksymetyl- og benzylpenicillin samt andre antibiotika per undersøkelsestidspunkt fra og med 2015. 
+
+\begin{landscape}
+
+```{r echo=FALSE, fig.height=5, fig.width=5, message=FALSE, warning=FALSE, paged.print=TRUE, results='asis'}
+q <- Figure_AntibiotikaTilBehandlingOverTid2(di=di,da=da,DATE_USE=params$DATE_USE)
+f <- sprintf("%s.png",tempfile())
+ggsave(f, plot = q, width = 297*0.75, height = 210*0.75, units = "mm")
+```
+
+\begin{figure}
+\begin{center}
+\includegraphics{`r f`}
+\caption{\label{fig:figs5}Antibiotika til behandling av samfunnservervede nedre luftveisinfeksjoner per undersøkelsestidspunkt fra 2015}
+\end{center}
+\end{figure}
+
+\end{landscape}
+
+\newpage
+
+# Antibiotika til behandling av nedre luftveisinfeksjoner
+
+Figur 7 viser forskrivningen av antibiotika (virkestoff) til behandling av nedre luftveisinfeksjoner. I overensstemmelse med anbefalingene i Nasjonal faglig retningslinje for bruk av antibiotika i sykehus, er antibiotika til behandling av helsetjenesteassosierte og samfunnservervede nedre luftveisinfeksjoner vist hver for seg, henholdsvis til venstre og høyre i figuren. Bredspektrede antibiotika er vist i oransje.
+
+```{r echo=FALSE, fig.height=6, fig.width=7.25, message=FALSE, warning=FALSE, paged.print=TRUE, results='asis', fig.cap='\\label{fig:figs8}Antibiotika (virkestoff) til behandling av nedre luftveisinfeksjoner'}
+Figure_AntibiotikaTilBehandling(di=di,
+                                da=da,
+                                DATE_USE=DATE_USE, 
+                                indikasjon="Nedre luftveisinfeksjon",
+                                captionLeft="Helsetjenesteassosierte\ninfeksjoner (n={n})",
+                                captionRight="Samfunnservervede\ninfeksjoner (n={n})",
+                                xLab="Andel (%) av forskrivinger til behandling av nedre luftveisinfeksjoner\n"
+                                )
+```
+
+\newpage
+
+# Antibiotika til behandling av urinveisinfeksjoner
+
+Figur 8 viser forskrivningen av antibiotika (virkestoff) til behandling av urinveisinfeksjoner. I overensstemmelse med anbefalingene i Nasjonal faglig retningslinje for bruk av antibiotika i sykehus, er antibiotika til behandling av nedre og øvre urinveisinfeksjoner vist hver for seg, henholdsvis til venstre og høyre i figuren, og det er spesifisert om behandlingen gjelder kvinner eller menn. 
+
+```{r echo=FALSE, fig.height=6, fig.width=7.25, message=FALSE, warning=FALSE, paged.print=TRUE, results='asis', fig.cap='\\label{fig:figs9}Antibiotika (virkestoff) til behandling av urinveisinfeksjoner'}
+Figure_AntibiotikaTilBehandling(di=di,da=da,DATE_USE=DATE_USE, indikasjon=c(
+  "Nedre urinveisinfeksjon",
+  "Øvre urinveisinfeksjon"
+  ),
+  leftVsRightVar="IndikasjonCategorySykehus",
+  extraGrouping="Kjonn",
+  captionLeft="Nedre urinveisinfeksjoner\n(n={n})",
+  captionRight="Øvre urinveisinfeksjon\n(n={n})",
+  xLab="Andel (%) av forskrivinger til behandling av urinveisinfeksjoner",
+  colours=c("green","purple")
+  )
+```
+
+\newpage
+
+
+# Antibiotika til behandling av klinisk sepsis, laboratoriebekreftet blodbaneinfeksjon og nøytropen feber
+
+Figur 9 viser forskrivning av antibiotika (virkestoff) til behandling av klinisk sepsis, laboratoriebekreftet blodbaneinfeksjon og nøytropen feber. Antibiotika til behandling av helsetjenesteassosierte og samfunnservervede infeksjoner er vist henholdsvis til venstre og høyre i figuren. Bredspektrede antibiotika er vist i oransje.
+
+```{r echo=FALSE, fig.height=6, fig.width=7.25, message=FALSE, warning=FALSE, paged.print=TRUE, results='asis', fig.cap='\\label{fig:figs10}Antibiotika (virkestoff) til behandling av klinisk sepsis, laboratoriebekreftet blodbaneinfeksjon og nøytropen feber'}
+Figure_AntibiotikaTilBehandling(
+  di=di,
+  da=da,
+  DATE_USE=DATE_USE,
+  indikasjon="Klinisk sepsis, laboratoriebekreftet blodbaneinfeksjon og nøytropen feber",
+  captionLeft="Helsetjenesteassosierte\ninfeksjoner (n={n})",
+  captionRight="Samfunnservervede\ninfeksjoner (n={n})",
+  xLab="Andel (%) av forskrivinger til behandling av klinisk sepsis,\nlaboratoriebekreftet blodbaneinfeksjon og nøytropen feber"
+)
+```
+
+# Antibiotika til behandling
+
+Figur 10 viser forskrivning av antibiotika (virkestoff) til behandling. Antibiotika til behandling av helsetjenesteassosierte og samfunnservervede infeksjoner er vist henholdsvis til venstre og høyre i figuren. Bredspektrede antibiotika er vist i oransje.
+
+```{r echo=FALSE, fig.height=6, fig.width=7.25, message=FALSE, warning=FALSE, paged.print=TRUE, results='asis', fig.cap='\\label{fig:figs7}Antibiotika (virkestoff) til behandling'}
+Figure_AntibiotikaTilBehandling(
+  di=di,
+  da=da,
+  DATE_USE=DATE_USE,
+  indikasjon=NULL,
+  captionLeft="Helsetjenesteassosierte\ninfeksjoner (n={n})",
+  captionRight="Samfunnservervede\ninfeksjoner (n={n})",
+  xLab="Andel (%) av forskrivinger til behandling")
+```
+
+\newpage
+
+# Antibiotika til forebygging
+
+Figur 11 viser forskrivning av antibiotika (virkestoff) til forebygging. Antibiotika forskrevet som medisinsk og kirurgisk profylakse er vist henholdsvis til venstre og høyre i figuren. Bredspektrede antibiotika er vist i oransje.
+
+```{r echo=FALSE, fig.height=6, fig.width=7.25, message=FALSE, warning=FALSE, paged.print=TRUE, results='asis', fig.cap='\\label{fig:figs6}Antibiotika (virkestoff) til forebygging'}
+Figure_AntibiotikaTilBehandling(di=di,
+                                da=da,
+                                DATE_USE=DATE_USE, 
+                                indikasjon=NULL,
+                                ab="sykehusAB4",
+                                extraGrouping="sykehusAB5",
+                                captionLeft="Helsetjenesteassosierte\ninfeksjoner (n={n})",
+                                captionRight="Samfunnservervede\ninfeksjoner (n={n})",
+                                xLab="Andel (%) av forskrivinger til forebygging",
+                                xforebyggingVsBehandling="Forebygging"
+                                )
+```
 

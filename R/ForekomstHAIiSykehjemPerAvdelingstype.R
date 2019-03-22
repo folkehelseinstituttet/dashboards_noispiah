@@ -81,6 +81,12 @@ Data_ForekomstHAIiSykehjemPerAvdelingstype <- function(di, da, DATE_USE) {
     ),
     by = .(Avdelingstype)
   ]
+  tabx <- copy(tab)
+  tabx[,Avdelingstype:=NULL]
+  tabx <- tabx[, lapply(.SD, sum, na.rm= TRUE)]
+  tabx[,Avdelingstype:="Alle avdelinger samlet"]
+  tab <- rbind(tab,tabx)
+
   tab <- melt.data.table(tab, id.vars = c("Avdelingstype", "AntallBeboereKl8"))
   tab[, perc := value / AntallBeboereKl8 * 100]
   RAWmisc::RecodeDT(
@@ -88,7 +94,7 @@ Data_ForekomstHAIiSykehjemPerAvdelingstype <- function(di, da, DATE_USE) {
     switch = c(
       "antallInfeksjonerUrine" = "Urinveisinfeksjon",
       "antallInfeksjonerNedreLuftveis" = "Nedre luftveisinfeksjon",
-      "antallInfeksjonerOperasjonsOmrade" = "Infeksjoner i operasjonsomr\u00E5det",
+      "antallInfeksjonerOperasjonsOmrade" = "Infeksjon i operasjonsomr\u00E5det",
       "antallInfeksjonerHud" = "Hudinfeksjon"
     ),
     var = "variable"
@@ -96,7 +102,7 @@ Data_ForekomstHAIiSykehjemPerAvdelingstype <- function(di, da, DATE_USE) {
 
   tab[, variable := factor(variable, levels = c(
     "Hudinfeksjon",
-    "Infeksjoner i operasjonsomr\u00E5det",
+    "Infeksjon i operasjonsomr\u00E5det",
     "Nedre luftveisinfeksjon",
     "Urinveisinfeksjon"
   ))]
@@ -128,19 +134,47 @@ Figure_ForekomstHAIiSykehjemPerAvdelingstype <- function(di, da, DATE_USE) {
   variable <- NULL
 
   tab <- Data_ForekomstHAIiSykehjemPerAvdelingstype(di = di, da = da, DATE_USE = DATE_USE)
-  tab[, xLab := sprintf("%s (%s)", Avdelingstype, FormatNorwegian(AntallBeboereKl8))]
+
+  if(nrow(tab)==0) return(no_data_graph())
+  if(sum(tab$AntallBeboereKl8)==0) return(no_data_graph())
+
+  x <- tab[Avdelingstype=="Alle avdelinger samlet"]
+  setorder(x,variable)
+  levels(tab$variable) <- glue::glue("{lab} (n={n})",
+                                     lab=levels(tab$variable),
+                                     n=FormatNorwegian(x$value))
+  #tab[,variable:=factor(variable,levels=rev(levels(tab$variable)))]
+
+  tab[, xLab := sprintf("%s (N=%s)", Avdelingstype, FormatNorwegian(AntallBeboereKl8))]
   tab[, total:=sum(perc),by=xLab]
   ordering <- unique(tab[,c("total","xLab")])
   setorder(ordering,total)
+  ordering[,o:=1:.N]
+  ordering[stringr::str_detect(xLab,"Alle avdelinger samlet"),o:=100000]
+  setorder(ordering,o)
   tab[,xLab:=factor(xLab,levels=ordering$xLab)]
 
   q <- ggplot(tab, aes(x = xLab, y = perc, fill = variable))
   q <- q + geom_bar(stat = "identity", colour = "black", alpha = 0.5)
-  q <- q + scale_fill_brewer("", palette = "Set1", guide = guide_legend(ncol = 2, byrow = T, reverse = TRUE))
-  q <- q + scale_x_discrete("Avdelingstype (antall beboere)")
+  q <- q + scale_fill_manual("",
+                             values=c("red",
+                                      "green",
+                                      "blue",
+                                      "yellow"),
+                             drop=F, guide = guide_legend(ncol = 2, byrow = T, reverse = T))
+  q <- q + scale_x_discrete("Avdelingstype (N=antall beboere)")
   q <- q + scale_y_continuous("Prevalens av helsetjenesteassosierte infeksjoner (%)")
   q <- q + labs(main = "Prevalens av helsetjenesteassosierte infeksjoner etter avdelingstype")
   q <- q + coord_flip()
   q <- q + theme(legend.position = "bottom")
-  q
+  lemon::grid_arrange_shared_legend(q)
 }
+
+
+
+
+
+
+
+
+

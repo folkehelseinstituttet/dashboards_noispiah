@@ -6,7 +6,7 @@
 \usage{
 Data_AntibiotikaTilXX(di, da, DATE_USE, indikasjon = NULL,
   xforebyggingVsBehandling = "Forebygging", ab = "ABBredMethAndre",
-  leftVsRightVar = "SykehusKlassifisering")
+  leftVsRightVar = "SykehusKlassifisering", extraGrouping = ab)
 }
 \arguments{
 \item{di}{a}
@@ -22,6 +22,8 @@ Data_AntibiotikaTilXX(di, da, DATE_USE, indikasjon = NULL,
 \item{ab}{a}
 
 \item{leftVsRightVar}{a}
+
+\item{extraGrouping}{a}
 }
 \description{
 Data_AntibiotikaTilXX

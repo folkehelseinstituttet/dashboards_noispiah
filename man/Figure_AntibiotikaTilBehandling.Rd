@@ -5,7 +5,12 @@
 \title{Figure_AntibiotikaTilBehandling}
 \usage{
 Figure_AntibiotikaTilBehandling(di, da, DATE_USE, indikasjon = NULL,
-  ab = "ABBredMethAndre", leftVsRightVar = "SykehusKlassifisering")
+  ab = "sykehusAB4", leftVsRightVar = "SykehusKlassifisering",
+  extraGrouping = "sykehusAB5",
+  captionLeft = "Helsetjenesteassosierte\\ninfeksjoner (n={n})",
+  captionRight = "Samfunnservervede\\ninfeksjoner (n={n})",
+  xLab = "Andel (\%) av forskrivinger til behandling av nedre luftveisinfeksjoner",
+  colours = c("orange", "blue"), xforebyggingVsBehandling = "Behandling")
 }
 \arguments{
 \item{di}{a}
@@ -19,6 +24,18 @@ Figure_AntibiotikaTilBehandling(di, da, DATE_USE, indikasjon = NULL,
 \item{ab}{a}
 
 \item{leftVsRightVar}{a}
+
+\item{extraGrouping}{a}
+
+\item{captionLeft}{a}
+
+\item{captionRight}{a}
+
+\item{xLab}{a}
+
+\item{colours}{a}
+
+\item{xforebyggingVsBehandling}{a}
 }
 \description{
 Figure_AntibiotikaTilBehandling

@@ -140,6 +140,9 @@ Data_DeltagelseForekomstHAIogABiSykehjem <- function(di, da, level, DATE_USE, ty
   daTemp2 <- da[PrevalensDato == DATE_USE,
                 .(AntallForskrivningerAB = sum(!is.na(ATCSubstans)))
                 ]
+  if(nrow(daTemp2)==0){
+    daTemp2 <- data.table(AntallForskrivningerAB=0)
+  }
 
   t2b <- cbind(daTemp1, daTemp2)
   t2b[,get:="ØØØ"]
@@ -153,16 +156,36 @@ Data_DeltagelseForekomstHAIogABiSykehjem <- function(di, da, level, DATE_USE, ty
   tab <- merge(t1, t2, by = varGrouping, all = T)
   tab[get(varGrouping)=="ØØØ",(varGrouping):="Sammenslått"]
 
+  # fixing missing
+  tab[is.na(antallSykehjemAB),antallSykehjemAB:=0]
+
+  # making pretty
+  tab[,xandelBeboereMedInfeksjonHAI:=sprintf("%s%% (n=%s)",andelBeboereMedInfeksjonHAI,antallBeboereMedInfeksjonHAI)]
+  tab[,xprevalensAvInfeksjonerHAI:=sprintf("%s%% (n=%s)",prevalensAvInfeksjonerHAI,antallInfeksjonerHAI)]
+
+  tab[,xAndelBeboereSomGisAB:=sprintf("%s%% (n=%s)",AndelBeboereSomGisAB,antallBeboerePaAB)]
+  tab[,xPrevalensAvABbruk:=sprintf("%s%% (n=%s)",PrevalensAvABbruk,AntallForskrivningerAB)]
+
+  # fixing percentages w/ denoms of 0
+  tab[antallSykehjemHAI==0,antallBeboereHAI:=0]
+  tab[antallSykehjemHAI==0,xandelBeboereMedInfeksjonHAI:="-"]
+  tab[antallSykehjemHAI==0,xprevalensAvInfeksjonerHAI:="-"]
+
+  tab[antallSykehjemAB==0,antallBeboereAB:=0]
+  tab[antallSykehjemAB==0,xAndelBeboereSomGisAB:="-"]
+  tab[antallSykehjemAB==0,xPrevalensAvABbruk:="-"]
+
+
   tab <- tab[, c(
     varGrouping,
     "antallSykehjemHAI",
     "antallBeboereHAI",
-    "andelBeboereMedInfeksjonHAI",
-    "prevalensAvInfeksjonerHAI",
+    "xandelBeboereMedInfeksjonHAI",
+    "xprevalensAvInfeksjonerHAI",
     "antallSykehjemAB",
     "antallBeboereAB",
-    "AndelBeboereSomGisAB",
-    "PrevalensAvABbruk"
+    "xAndelBeboereSomGisAB",
+    "xPrevalensAvABbruk"
   ), with = F]
   tab <- as.matrix(tab)
 
@@ -193,17 +216,19 @@ Table_DeltagelseForekomstHAIogABiSykehjem <- function(di, da, level, DATE_USE, t
       varGrouping <- "Institusjon"
     }
     di[,NumberPeople:=AntallBeboereKl8]
+    peopleLabel <- "beboere"
   } else {
     if (!level %in% c("landsdekkende", "helseforetak", "institusjon")) stop("Bad level")
 
     if (level == "landsdekkende") {
-      varGrouping <- "HelseForetak"
+      varGrouping <- "Helseforetak"
     } else if (level == "helseforetak") {
-      varGrouping <- "Institusjon"
+      varGrouping <- "Sykehus"
     } else if (level == "institusjon") {
-      varGrouping <- "Institusjon"
+      varGrouping <- "Sykehus"
     }
     di[,NumberPeople:=AntallPasienterKl8]
+    peopleLabel <- "pasienter"
   }
 
   addtorow <- list()
@@ -212,20 +237,20 @@ Table_DeltagelseForekomstHAIogABiSykehjem <- function(di, da, level, DATE_USE, t
     "& \\multicolumn{4}{c||}{HAI} & \\multicolumn{4}{c|}{Bruk av antibiotika} \\\\\n",
     " \\hline\n",
     paste0(c(
-      sprintf("\\multicolumn{1}{|r||}{%s}", varGrouping),
-      "\\multicolumn{1}{p{1.0cm}}{Antall sykehjem}",
-      "\\multicolumn{1}{p{1.1cm}}{Antall beboere}",
-      "\\multicolumn{1}{p{1.5cm}}{Andel beboere med minst én HAI (\\%)}",
-      "\\multicolumn{1}{p{1.2cm}||}{Prevalens av HAI (\\%)}",
-      "\\multicolumn{1}{p{1.0cm}}{Antall sykehjem}",
-      "\\multicolumn{1}{p{1.1cm}}{Antall beboere}",
-      "\\multicolumn{1}{p{2cm}}{Andel beboere som fikk minst ett antibiotikum (\\%)}",
-      "\\multicolumn{1}{p{2.75cm}|}{Prevalens av antibiotikabrukforskrivningert (\\%)}  \\\\\n"
+      glue::glue("\\multicolumn{{1}}{{|r||}}{{{varGrouping}}}"),
+      glue::glue("\\multicolumn{{1}}{{p{{0.9cm}}}}{{Antall {type}}}"),
+      glue::glue("\\multicolumn{{1}}{{p{{1.1cm}}}}{{Antall {peopleLabel}}}"),
+      glue::glue("\\multicolumn{{1}}{{p{{1.7cm}}}}{{Andel (antall) {peopleLabel} med minst én HAI (\\%)}}"),
+      "\\multicolumn{1}{p{1.3cm}||}{Prevalens av (antall) HAI (\\%)}",
+      glue::glue("\\multicolumn{{1}}{{p{{0.9cm}}}}{{Antall {type}}}"),
+      glue::glue("\\multicolumn{{1}}{{p{{1.1cm}}}}{{Antall {peopleLabel}}}"),
+      glue::glue("\\multicolumn{{1}}{{p{{2cm}}}}{{Andel (antall) {peopleLabel} som fikk minst ett antibiotikum (\\%)}}"),
+      "\\multicolumn{1}{p{2.75cm}|}{Prevalens av (antall) antibiotikaforskrivninger (\\%)}  \\\\\n"
     ), collapse = " & ")
   )
 
   xtab <- xtable::xtable(tab,
-    caption = "Deltagelse, forekomst av helsetjenesteassosierte infeksjoner og bruk av antibiotika i sykehjem"
+    caption = sprintf("Deltagelse, forekomst av helsetjenesteassosierte infeksjoner og bruk av antibiotika i %s",type)
   )
 
   xtable::align(xtab) <- "r|r||r|r|r|r||r|r|r|r|"

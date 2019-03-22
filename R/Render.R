@@ -36,7 +36,7 @@ GenStackSykehjem <- function(
   da <- data.table(readxl::read_excel(fhi::DashboardFolder("data_raw", "AntibiotikadataPrimer.xlsx")))
   di <- data.table(readxl::read_excel(fhi::DashboardFolder("data_raw", "InfeksjonsdataPrimer.xlsx")))
 
-  maxDate <- max(da$PrevalensDato, di$PrevalensDato)
+  maxDate <- as.character(max(da$PrevalensDato, di$PrevalensDato))
   da <- da[PrevalensDato == maxDate]
   di <- di[PrevalensDato == maxDate]
 
@@ -68,6 +68,10 @@ GenStackSykehjem <- function(
   stack[level == "fylke", outputDirUse := file.path(outputDirDaily, "Sykehjem", "Fylke")]
   stack[level == "kommune", outputDirUse := file.path(outputDirDaily, "Sykehjem", "Kommune", Fylke)]
   stack[,Fylke:=NULL]
+  stack[,output_pdf := glue::glue(
+    "{outputDirUse}/{location}.pdf",
+    outputDirUse=outputDirUse,
+    location=location)]
 
   stack[, RMD := FILES_RMD_USE_SYKEHJEM]
   stack[, dev := dev]
@@ -104,7 +108,7 @@ GenStackSykehus <- function(
   da <- data.table(readxl::read_excel(fhi::DashboardFolder("data_raw", "AntibiotikadataSpesialist.xlsx")))
   di <- data.table(readxl::read_excel(fhi::DashboardFolder("data_raw", "InfeksjonsdataSpesialist.xlsx")))
 
-  maxDate <- max(da$PrevalensDato, di$PrevalensDato)
+  maxDate <- as.character(max(da$PrevalensDato, di$PrevalensDato))
   da <- da[PrevalensDato == maxDate]
   di <- di[PrevalensDato == maxDate]
 
@@ -128,6 +132,10 @@ GenStackSykehus <- function(
   stack[level == "landsdekkende", outputDirUse := file.path(outputDirDaily, "Sykehus", "Landsdekkende")]
   stack[level == "helseforetak", outputDirUse := file.path(outputDirDaily, "Sykehus", "Helseforetak")]
   stack[level == "institusjon", outputDirUse := file.path(outputDirDaily, "Sykehus", "Institusjon")]
+  stack[,output_pdf := glue::glue(
+    "{outputDirUse}/{location}.pdf",
+    outputDirUse=outputDirUse,
+    location=location)]
 
   stack[, RMD := FILES_RMD_USE_SYKEHUS]
   stack[, dev := dev]

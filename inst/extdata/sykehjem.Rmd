@@ -19,9 +19,15 @@ editor_options:
 ---
 
 ```{r message=FALSE, warning=FALSE, include=FALSE, paged.print=FALSE}
+package_dir = params$package_dir
+dev = params$dev
+level <- params$level
+location <- params$location
+DATE_USE <- params$DATE_USE
+
 fhi::DashboardInitialiseOpinionated("noispiah",
-                                    PACKAGE_DIR=params$package_dir,
-                                    FORCE_DEV_PACKAGE_LOAD = params$dev,
+                                    PACKAGE_DIR=package_dir,
+                                    FORCE_DEV_PACKAGE_LOAD =dev,
                                     SILENT=TRUE)
 
 suppressMessages(library(data.table))
@@ -33,42 +39,43 @@ di <- readxl::read_excel(fhi::DashboardFolder("data_raw","InfeksjonsdataPrimer.x
 setDT(da)
 setDT(di)
 
-level <- params$level
-DATE_USE <- params$DATE_USE
-CleanDA(da, type="sykehjem")
+da <- CleanDA(da, type="sykehjem")
 CleanDI(di, type="sykehjem")
+
+da_all <- copy(da)
+di_all <- copy(di)
 
 if(level=="landsdekkende"){
   
 } else if(level=="fylke"){
-  da <- da[Fylke==params$location]
-  di <- di[Fylke==params$location]
+  da <- da[Fylke==location]
+  di <- di[Fylke==location]
 } else if(level=="kommune"){
-  da <- da[Institusjon==params$location]
-  di <- di[Institusjon==params$location]
+  da <- da[Kommune==location]
+  di <- di[Kommune==location]
 }
 ```
 
 \newpage 
 
-# Sykehjem: deltagelse i NOIS-PIAH, forekomst av helsetjenesteassosierte infeksjoner og bruk av antibiotika
+# Sykehus
 
-Prevalensundersøkelsen består av to deler, én for helsetjenesteassosierte infeksjoner og én for antibiotikabruk. I antibiotikadelen skal all systemisk bruk av antibiotika (inkludert metenamin) og antimykotika til forebygging og behandling registreres, mens følgende helsetjenesteassosierte infeksjoner skal registreres i infeksjonsdelen: urinveisinfeksjoner, nedre luftveisinfeksjoner, infeksjoner i operasjonsområder og hudinfeksjoner. 
+I denne rapporten finner du resultater fra prevalensundersøkelsen som består av to deler, én om helsetjenesteassosierte infeksjoner og én om antibiotikabruk. I antibiotikadelen skal all systemisk bruk av antibiotika (inkludert metenamin) og antimykotika til forebygging og behandling registreres, mens følgende helsetjenesteassosierte infeksjoner skal registreres i infeksjonsdelen: urinveisinfeksjoner, nedre luftveisinfeksjoner, infeksjoner i operasjonsområder og blodbaneinfeksjoner.
+Hvis antall beboere eller forskrivninger av antibiotika er lavt, må resultatene tolkes med varsomhet, da tilfeldige variasjoner kan gi store utslag. 
 
-I henhold til NOIS-registerforskriften er det obligatorisk for sykehjem å registrere både helsetjenesteassosierte infeksjoner og antibiotikabruk. Ved uoverensstemmelse mellom antall sykehjem i infeksjons- og antibiotikadelen av undersøkelsen (tabell 1), har et eller flere sykehjem kun levert resultater fra en av de to delundersøkelsene Ved likt antall sykehjem, men uoverensstemmelse mellom antall beboere (tabell 1), har en eller flere avdelinger kun levert resultater fra en av delundersøkelsene.
+Det er viktig at hvert sykehjem vurderer forekomsten av helsetjenesteassosierte infeksjoner i egen institusjon, og behovet for å endre eller iverksette tiltak for å forebygge slike infeksjoner. Det enkelte sykehjem bør også vurdere om deres bruk av antibiotika er i tråd med Nasjonal faglig retningslinje for antibiotikabruk i primærhelsetjenesten (www.google.com).
+
+I overensstemmelse med Helse- og omsorgsdepartementets handlingsplan mot antibiotikaresistens i helsetjenesten, er piperacillin med enzymhemmer, 2. og 3. generasjons cefalosporiner, kinoloner og karbapenemer definert som bredspektrede antibiotika i rapporten.
+
+\newpage
+
+# Sykehjem: deltagelse, forekomst av helsetjenesteassosierte infeksjoner og bruk av antibiotika
+
+I henhold til NOIS-registerforskriften er det obligatorisk for sykehjem å registrere både helsetjenesteassosierte infeksjoner og antibiotikabruk. Ved uoverensstemmelse mellom antall sykehjem i infeksjons- og antibiotikadelen av undersøkelsen (tabell 1), har et eller flere sykehjem kun levert resultater fra én av de to delundersøkelsene.
 
 I antibiotikadelen av undersøkelsen skal antall beboere som fikk minst ett antibiotikum registreres. I tillegg skal forskrivning per beboer spesifiseres med hensyn til hvilke antibiotika (ett eller flere) som ble gitt og hvordan de ble administrert, samt alder og kjønn på beboeren. Hvis et eller flere sykehjem kun registrerer antall beboere som fikk antibiotika - og unnlater å registrere forskrivning per beboer - vil prevalens av antibiotikaforskrivning bli lavere enn andel beboere som fikk minst ett antibiotikum (tabell 1). 
 
 Én beboer kan på undersøkelsesdagen få flere antibiotika og ha flere typer helsetjenesteassosierte infeksjoner. Følgelig kan prevalens av antibiotikaforskrivning og helsetjenesteassosierte infeksjoner være høyere enn henholdsvis andel beboere som fikk antibiotika og andel beboere med helsetjenesteassosierte infeksjoner (tabell 1). 
-
-Tabellen ser veldig bra ut, men følgende bør endres:
-
-- Table 1 må endres til Tabell 1
-- Andel beboere med minst én HAI (%)
-- Prevalens av HAI (%)
-- Andel beboere som fikk minst ett antibiotikum (%)
-- Prevalens av antibiotikaforskrivninger (%)
-- Kan du legge inn "Hele landet" nederst i tabellen?
 
 \begin{landscape}
 
@@ -82,45 +89,21 @@ Table_DeltagelseForekomstHAIogABiSykehjem(di=di,da=da,level=level,DATE_USE=DATE_
 
 # Prevalens av helsetjenesteassosierte infeksjoner blant beboere i sykehjem, per avdelingstype
 
-Resultatene i diagram 2 kan brukes til å endre eller iverksette målrettede tiltak for forebygging av helsetjenesteassosierte infeksjoner i sykehjem. 
-
-Søylediagrammet ser veldig bra ut, men følgende bør endres:
-
-- Store tall skal ordnes i grupper på tre og tre sifre. Det skal ikke være punktum noe sted. Firesifrede tall kan også skrives sammen. Dvs. at 14520 skal skrives 14 520.
-
-- Kombinert kort− og langtids (3966) bør endres til Kombinert kort− og langtidsavdeling (3966)
-
-- Prevalens av helsetjenesteassosierte infeksjoner (%) 
-
-- I forklaringen bør infeksjonene skrives i entall (dvs. urinveisinfeksjon, nedre luftveisinfeksjon, infeksjon i operasjonsområdet, hudinfeksjon), slik at vi unngår bruk av flertallsformen "infeksjoner i operasjonsområder", som klinger dårlig. 
-
-- Det er ønskelig at avdelingstype vises fra høyest til lavest prevalens, med høyest øverst.
+Figur 1 viser prevalens av helsetjenesteassosierte infeksjoner blant beboere i sykehjem, samlet og per avdelingstype. Resultatene kan brukes til å endre eller iverksette målrettede tiltak for forebygging av helsetjenesteassosierte infeksjoner i sykehjem.
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, paged.print=TRUE, results='asis', fig.cap='\\label{fig:figs1}Prevalens av helsetjenesteassosierte infeksjoner blant beboere i sykehjem, per avdelingstype'}
-Figure_ForekomstHAIiSykehjemPerAvdelingstype(di=di,da=da,DATE_USE=params$DATE_USE)
+Figure_ForekomstHAIiSykehjemPerAvdelingstype(di=di,da=da,DATE_USE=DATE_USE)
 ```
 
 \newpage
 
-# Andel forskrivninger av antibiotika til forebygging og behandling i sykehjem, per indikasjon
+# Antibiotika til forebygging og behandling, per indikasjon
 
-Resultatene i diagram 3 kan brukes til å iverksette målrettede tiltak for fornuftig antibiotikabruk i sykehjem, spesifisert i Nasjonal faglig retningslinje for bruk av antibiotika i primærhelsetjenesten. 
-
-Ser ut som søylediagrammet i rapportforslaget ditt viser resultater fra sykehus i stedet for fra sykehjem, og at antall forskrivninger per indikasjon utgjør 100 %. I bestillingen utgjør totalt antall forskrivninger – alle indikasjoner – 100 % (jf. dummy-diagrammet nedenfor), for å få frem hvilke indikasjoner det forskrives mye og lite antibiotika til. 
-
-Ønskede endringer av søylediagrammet:
-
-- Det er ønskelig at indikasjonene vises fra høyest til lavest andel, med høyest øverst.
-- Det er ønskelig at antall forskrivninger vises i parentes etter hver indikasjon (n=XX) på y-aksen.
-- Søylene har flere inndelinger enn vi bestilte. I tillegg ønsker vi å fjerne én av inndelingene i bestillingen, nemlig andel bredspektrede antibiotika til behandling, og erstatte den med "Behandling metenamin". Vi ønsker altså følgende inndelinger av søylene og gjerne med antall forskrivninger i parentes etter:
-  1. Forebygging metenamin (n=xx)
-  2. Forebygging andre antibiotika (n=xx)
-  3. Behandling metenamin (n=xx)
-  4. Behandling andre antibiotika (n=xx)
+Figur 2 viser bruk av antibiotika i sykehjem per indikasjon. Andel forskrivninger av antibiotika (inkludert metenamin) til forebygging og behandling er spesifisert.  Metenamin (Hiprex) er i Nasjonal faglig retningslinje for antibiotikabruk i primærhelsetjenesten, kun anbefalt til forebygging av urinveisinfeksjoner.
 
 \begin{landscape}
 
-```{r echo=FALSE, fig.height=5, fig.width=5, message=FALSE, warning=FALSE, paged.print=TRUE, results='asis'}
+```{r echo=FALSE, message=FALSE, warning=FALSE, paged.print=TRUE, results='asis', fig.cap='\\label{fig:figs2}Andel forskrivninger av antibiotika til forebygging og behandling i sykehjem, per indikasjon'}
 q <- Figure_ForskrivningerAvAntibiotikaTilForebyggingOgBehandlingPerIndikasjon(di=di,da=da,DATE_USE=DATE_USE)
 f <- sprintf("%s.png",tempfile())
 ggsave(f, plot = q, width = 297*0.75, height = 210*0.75, units = "mm")
@@ -137,62 +120,32 @@ ggsave(f, plot = q, width = 297*0.75, height = 210*0.75, units = "mm")
 
 \newpage
 
-# Forskrivning av antibiotika (virkestoff) til behandling av nedre urinveisinfeksjoner i sykehjem
+# Forskrivning av antibiotika til behandling av nedre urinveisinfeksjoner
 
-Ved hjelp av Nasjonal faglig retningslinje for bruk av antibiotika i primærhelsetjenesten kan du vurdere om bruken av antibiotika i diagram 4 er i tråd med retningslinjen. Forskrivning er ikke vist per kjønn, siden anbefalingene for kvinner og menn i sykehjem med unntak av behandlingstid, er de samme. 
+Ved hjelp av Nasjonal faglig retningslinje for bruk av antibiotika i primærhelsetjenesten kan du vurdere om bruken av antibiotika til behandling av nedre urinveisinfeksjoner vist i figur 3, er i tråd med retningslinjen. Forskrivning er ikke vist per kjønn, siden anbefalingene for kvinner og menn i sykehjem er de samme med unntak av behandlingstid. Bruken av bredspektrede antibiotika er spesifisert i figuren.
 
-Forskrivning av antibiotika til øvre og nedre urinveisinfeksjoner vises ikke samlet, fordi anbefalingene i retningslinjen er forskjellige ved disse indikasjonene. Få forskrivninger med indikasjon øvre urinveisinfeksjon gjør at disse av pålitelighetshensyn ikke er vist.
+Figur 3 viser kun forskrivning til behandling, mens metenamin (Hiprex) i retningslinjen kun er anbefalt til forebygging av urinveisinfeksjoner. Følgelig vil bruk av metenamin vist i figur 3, indikere feilbruk og/eller feilregistrering.
 
-Diagram 4 viser kun forskrivning til behandling, mens metenamin (Hiprex) i retningslinjen kun er anbefalt til forebygging av urinveisinfeksjoner. Følgelig vil bruk av metenamin vist i diagram 4, indikere feilbruk og/eller feilregistrering.
-
-Søylediagrammet ser veldig bra ut, men følgende bør endres:
-
-- Andel (%) av forskrivninger til behandling av nedre urinveisinfeksjoner (n=456) 
-- Diagrammet viser kun forskrivninger til behandling, følgelig kan behandling utelates fra forklaringene. Det er heller ikke nødvendig å gi metenamin-søylen egen farge.
-- Det er ønskelig at antibiotika (virkestoff) vises fra høyest til lavest forskrivning, med høyest øverst. 
-
-\begin{landscape}
-
-```{r echo=FALSE, fig.height=5, fig.width=5, message=FALSE, warning=FALSE, paged.print=TRUE, results='asis'}
-q <- Figure_ForskrivningerAvAntibiotikaPerIndikasjon(di=di,da=da,DATE_USE=params$DATE_USE,indikasjon="Nedre urinveisinfeksjon")
-f <- sprintf("%s.png",tempfile())
-ggsave(f, plot = q, width = 297*0.75, height = 210*0.75, units = "mm")
+```{r echo=FALSE, message=FALSE, warning=FALSE, paged.print=TRUE, results='asis', fig.cap='\\label{fig:figs3}Forskrivning av antibiotika (virkestoff) til behandling av nedre urinveisinfeksjoner'}
+Figure_ForskrivningerAvAntibiotikaPerIndikasjon(di=di,da=da,DATE_USE=DATE_USE,indikasjon="Nedre urinveisinfeksjon")
 ```
-
-\begin{figure}  
-\begin{center}  
-\includegraphics{`r f`}
-\caption{\label{fig:figs3}Forskrivning av antibiotika (virkestoff) til behandling av nedre urinveisinfeksjoner i sykehjem}  
-\end{center}  
-\end{figure}  
-
-\end{landscape}
 
 \newpage
 
-# Forskrivning av antibiotika (virkestoff) til behandling av nedre luftveisinfeksjoner i sykehjem
+# Forskrivning av antibiotika til behandling av nedre luftveisinfeksjoner
 
-Ved hjelp av Nasjonal faglig retningslinje for bruk av antibiotika i primærhelsetjenesten kan du vurdere om bruken av antibiotika i diagram 5 er i tråd med retningslinjen. 
-Søylediagrammet ser veldig bra ut, men følgende bør endres:
+Ved hjelp av Nasjonal faglig retningslinje for bruk av antibiotika i primærhelsetjenesten kan du vurdere om bruken av antibiotika til behandling av nedre luftveisinfeksjoner vist i figur 4, er i tråd med retningslinjen. Bruken av bredspektrede antibiotika er spesifisert i figuren.
 
-- Andel (%) av forskrivninger til behandling av nedre urinveisinfeksjoner (n=456) 
-- Diagrammet viser kun forskrivninger til behandling, følgelig kan behandling utelates fra forklaringene. 
-- Det er ønskelig at antibiotika (virkestoff) vises fra høyest til lavest forskrivning, med høyest øverst. 
-
-\begin{landscape}
-
-```{r echo=FALSE, fig.height=5, fig.width=5, message=FALSE, warning=FALSE, paged.print=TRUE, results='asis'}
-q <- Figure_ForskrivningerAvAntibiotikaPerIndikasjon(di=di,da=da,DATE_USE=params$DATE_USE,indikasjon="Nedre luftveisinfeksjon")
-f <- sprintf("%s.png",tempfile())
-ggsave(f, plot = q, width = 297*0.75, height = 210*0.75, units = "mm")
+```{r echo=FALSE, message=FALSE, warning=FALSE, paged.print=TRUE, results='asis', fig.cap='\\label{fig:figs4}Forskrivning av antibiotika (virkestoff) til behandling av nedre luftveisinfeksjoner'}
+Figure_ForskrivningerAvAntibiotikaPerIndikasjon(di=di,da=da,DATE_USE=DATE_USE,indikasjon="Nedre luftveisinfeksjon")
 ```
 
-\begin{figure}
-\begin{center}
-\includegraphics{`r f`}
-\caption{\label{fig:figs4}Forskrivning av antibiotika (virkestoff) til behandling av nedre luftveisinfeksjoner i sykehjem}
-\end{center}
-\end{figure}
+\newpage
 
-\end{landscape}
+# Forskrivning av antibiotika til behandling av hud- og bløtdelsinfeksjoner
 
+Ved hjelp av Nasjonal faglig retningslinje for bruk av antibiotika i primærhelsetjenesten kan du vurdere om bruken av antibiotika til behandling av hud- og bløtdelsinfeksjoner vist i figur 5, er i tråd med retningslinjen. Bruken av bredspektrede antibiotika er spesifisert i figuren.
+
+```{r echo=FALSE, message=FALSE, warning=FALSE, paged.print=TRUE, results='asis', fig.cap='\\label{fig:figs5}Forskrivning av antibiotika (virkestoff) til behandling av hud- og bløtdelsinfeksjoner'}
+Figure_ForskrivningerAvAntibiotikaPerIndikasjon(di=di,da=da,DATE_USE=DATE_USE,indikasjon="Hud- og bløtdelsinfeksjon, ekskl. postoperativ sårinfeksjon")
+```

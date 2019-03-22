@@ -4,7 +4,8 @@
 \alias{Figure_AntibiotikaTilBehandlingOverTid2}
 \title{Figure_AntibiotikaTilBehandlingOverTid2}
 \usage{
-Figure_AntibiotikaTilBehandlingOverTid2(di, da, DATE_USE)
+Figure_AntibiotikaTilBehandlingOverTid2(di, da, DATE_USE,
+  klassifisering = "Samfunnservervet infeksjon")
 }
 \arguments{
 \item{di}{a}
@@ -12,6 +13,8 @@ Figure_AntibiotikaTilBehandlingOverTid2(di, da, DATE_USE)
 \item{da}{a}
 
 \item{DATE_USE}{a}
+
+\item{klassifisering}{a}
 }
 \description{
 Figure_AntibiotikaTilBehandlingOverTid2

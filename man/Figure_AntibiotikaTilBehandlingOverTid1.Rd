@@ -4,12 +4,14 @@
 \alias{Figure_AntibiotikaTilBehandlingOverTid1}
 \title{Figure_AntibiotikaTilBehandlingOverTid1}
 \usage{
-Figure_AntibiotikaTilBehandlingOverTid1(di, da, DATE_USE)
+Figure_AntibiotikaTilBehandlingOverTid1(di, da, da_all, DATE_USE)
 }
 \arguments{
 \item{di}{a}
 
 \item{da}{a}
+
+\item{da_all}{a}
 
 \item{DATE_USE}{a}
 }
