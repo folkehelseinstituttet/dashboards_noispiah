@@ -123,8 +123,8 @@ Figure_ForskrivningerAvAntibiotikaTilBehandlingPerIndikasjon <- function(di, da,
                                                                     group1="IndikasjonCategorySykehusMedKlassifiseringNedreLuftveisinfeksjon",
                                                                     group2="forebyggVsBehandOgMethVsAndre")
   if(nrow(tab)==0) return(no_data_graph())
-
   tab <- tab[forebyggingVsBehandling=="Behandling"]
+  if(nrow(tab)==0) return(no_data_graph())
   tab[, denom := sum(n)]
   tab[, catFill := sykehusAB1]
   tab[, nFill := sum(n), by=catFill]

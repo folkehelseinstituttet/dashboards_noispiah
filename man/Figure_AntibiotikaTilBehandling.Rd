@@ -10,7 +10,8 @@ Figure_AntibiotikaTilBehandling(di, da, DATE_USE, indikasjon = NULL,
   captionLeft = "Helsetjenesteassosierte\\ninfeksjoner (n={n})",
   captionRight = "Samfunnservervede\\ninfeksjoner (n={n})",
   xLab = "Andel (\%) av forskrivinger til behandling av nedre luftveisinfeksjoner",
-  colours = c("orange", "blue"), xforebyggingVsBehandling = "Behandling")
+  colours = c("orange", "blue"),
+  xforebyggingVsBehandling = "Behandling")
 }
 \arguments{
 \item{di}{a}

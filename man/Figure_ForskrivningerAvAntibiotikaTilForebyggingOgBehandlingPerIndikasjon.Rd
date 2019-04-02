@@ -5,7 +5,8 @@
 \alias{Figure_ForskrivningerAvAntibiotikaTilForebyggingOgBehandlingPerIndikasjon}
 \title{Figure_ForskrivningerAvAntibiotikaTilForebyggingOgBehandlingPerIndikasjon}
 \usage{
-Figure_ForskrivningerAvAntibiotikaTilForebyggingOgBehandlingPerIndikasjon(di,
+
+  Figure_ForskrivningerAvAntibiotikaTilForebyggingOgBehandlingPerIndikasjon(di,
   da, DATE_USE)
 }
 \arguments{

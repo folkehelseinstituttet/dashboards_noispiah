@@ -52,31 +52,7 @@ CleanDI <- function(di, type="sykehjem"){
          AntallPrimareBlodbaneinfeksjoner_AnnetSykehjem +
          AntallSekundareBlodbaneinfeksjoner_EgenInstitusjon +
          AntallSekundareBlodbaneinfeksjoner_AnnetSykehus +
-         AntallSekundareBlodbaneinfeksjoner_AnnetSykehjem +
-         AntallInfeksjonerBenLedd_EgenInstitusjon +
-         AntallInfeksjonerBenLedd_AnnetSykehus +
-         AntallInfeksjonerBenLedd_AnnetSykehjem +
-         AntallInfeksjonerSentralnervesystemet_EgenInstitusjon +
-         AntallInfeksjonerSentralnervesystemet_AnnetSykehus +
-         AntallInfeksjonerSentralnervesystemet_AnnetSykehjem +
-         AntallInfeksjonerHjerteKar_EgenInstitusjon +
-         AntallInfeksjonerHjerteKar_AnnetSykehus +
-         AntallInfeksjonerHjerteKar_AnnetSykehjem +
-         AntallInfeksjonerOyeOreNeseHalsMunn_EgenInstitusjon +
-         AntallInfeksjonerOyeOreNeseHalsMunn_AnnetSykehus +
-         AntallInfeksjonerOyeOreNeseHalsMunn_AnnetSykehjem +
-         AntallInfeksjonerMageTarm_EgenInstitusjon +
-         AntallInfeksjonerMageTarm_AnnetSykehus +
-         AntallInfeksjonerMageTarm_AnnetSykehjem +
-         AntallInfeksjonerKjonnsorganene_EgenInstitusjon +
-         AntallInfeksjonerKjonnsorganene_AnnetSykehus +
-         AntallInfeksjonerKjonnsorganene_AnnetSykehjem +
-         AntallInfeksjonerHudBlotvev_EgenInstitusjon +
-         AntallInfeksjonerHudBlotvev_AnnetSykehus +
-         AntallInfeksjonerHudBlotvev_AnnetSykehjem +
-         AntallInfeksjonerAndreDisseminerte_EgenInstitusjon +
-         AntallInfeksjonerAndreDisseminerte_AnnetSykehus +
-         AntallInfeksjonerAndreDisseminerte_AnnetSykehjem
+         AntallSekundareBlodbaneinfeksjoner_AnnetSykehjem
        ]
 
     di[,antallInfeksjonerHAIIperasjonsOmradet :=

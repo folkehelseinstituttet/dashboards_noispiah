@@ -5,8 +5,8 @@
 \alias{Data_ForskrivningerAvAntibiotikaTilForebyggingOgBehandling}
 \title{Data_ForskrivningerAvAntibiotikaTilForebyggingOgBehandling}
 \usage{
-Data_ForskrivningerAvAntibiotikaTilForebyggingOgBehandling(di, da, DATE_USE,
-  ab = "ABBredMethAndre", group1 = "IndikasjonCategory",
+Data_ForskrivningerAvAntibiotikaTilForebyggingOgBehandling(di, da,
+  DATE_USE, ab = "ABBredMethAndre", group1 = "IndikasjonCategory",
   group2 = "forebyggVsBehandOgMethVsAndre")
 }
 \arguments{

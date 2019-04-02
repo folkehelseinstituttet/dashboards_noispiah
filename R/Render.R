@@ -13,6 +13,7 @@ ExtractEnglish <- function(var) {
 #' @param outputDir a
 #' @param FILES_RMD_USE_SYKEHJEM a
 #' @param FILES_RMD_USE_SYKEHUS a
+#' @param requested_date a
 #' @import data.table
 #' @import fhi
 #' @importFrom readxl read_excel
@@ -23,7 +24,8 @@ GenStackSykehjem <- function(
   dev = FALSE,
   outputDir = fhi::DashboardFolder("results"),
   FILES_RMD_USE_SYKEHJEM,
-  FILES_RMD_USE_SYKEHUS) {
+  FILES_RMD_USE_SYKEHUS,
+  requested_date=NULL) {
   Fylke <- NULL
 
   outputDirDaily <- file.path(outputDir, lubridate::today())
@@ -36,7 +38,11 @@ GenStackSykehjem <- function(
   da <- data.table(readxl::read_excel(fhi::DashboardFolder("data_raw", "AntibiotikadataPrimer.xlsx")))
   di <- data.table(readxl::read_excel(fhi::DashboardFolder("data_raw", "InfeksjonsdataPrimer.xlsx")))
 
-  maxDate <- as.character(max(da$PrevalensDato, di$PrevalensDato))
+  if(is.null(requested_date)){
+    maxDate <- as.character(max(da$PrevalensDato, di$PrevalensDato))
+  } else {
+    maxDate <- requested_date
+  }
   da <- da[PrevalensDato == maxDate]
   di <- di[PrevalensDato == maxDate]
 
@@ -85,6 +91,7 @@ GenStackSykehjem <- function(
 #' @param outputDir a
 #' @param FILES_RMD_USE_SYKEHJEM a
 #' @param FILES_RMD_USE_SYKEHUS a
+#' @param requested_date a
 #' @import data.table
 #' @import fhi
 #' @importFrom readxl read_excel
@@ -95,7 +102,8 @@ GenStackSykehus <- function(
   dev = FALSE,
   outputDir = fhi::DashboardFolder("results"),
   FILES_RMD_USE_SYKEHJEM,
-  FILES_RMD_USE_SYKEHUS) {
+  FILES_RMD_USE_SYKEHUS,
+  requested_date=NULL) {
   Fylke <- NULL
 
   outputDirDaily <- file.path(outputDir, lubridate::today())
@@ -108,7 +116,11 @@ GenStackSykehus <- function(
   da <- data.table(readxl::read_excel(fhi::DashboardFolder("data_raw", "AntibiotikadataSpesialist.xlsx")))
   di <- data.table(readxl::read_excel(fhi::DashboardFolder("data_raw", "InfeksjonsdataSpesialist.xlsx")))
 
-  maxDate <- as.character(max(da$PrevalensDato, di$PrevalensDato))
+  if(is.null(requested_date)){
+    maxDate <- as.character(max(da$PrevalensDato, di$PrevalensDato))
+  } else {
+    maxDate <- requested_date
+  }
   da <- da[PrevalensDato == maxDate]
   di <- di[PrevalensDato == maxDate]
 

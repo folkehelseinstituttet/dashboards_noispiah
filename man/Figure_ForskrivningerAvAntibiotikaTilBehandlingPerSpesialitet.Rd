@@ -5,7 +5,8 @@
 \alias{Figure_ForskrivningerAvAntibiotikaTilBehandlingPerSpesialitet}
 \title{Figure_ForskrivningerAvAntibiotikaTilBehandlingPerSpesialitet}
 \usage{
-Figure_ForskrivningerAvAntibiotikaTilBehandlingPerSpesialitet(di, da, DATE_USE)
+Figure_ForskrivningerAvAntibiotikaTilBehandlingPerSpesialitet(di, da,
+  DATE_USE)
 }
 \arguments{
 \item{di}{a}

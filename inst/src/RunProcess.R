@@ -14,21 +14,29 @@ convert_stack_to_list <- function(stack){
 
 CheckData()
 
+if(fhi::DashboardIsDev()){
+  requested_date <- "2018-05-30"
+} else {
+  requested_date <- NULL
+}
+
 stackA <- GenStackSykehus(dev=fhi::DashboardIsDev(),
                          FILES_RMD_USE_SYKEHJEM=CONFIG$FILES_RMD_USE_SYKEHJEM,
-                         FILES_RMD_USE_SYKEHUS=CONFIG$FILES_RMD_USE_SYKEHUS)
+                         FILES_RMD_USE_SYKEHUS=CONFIG$FILES_RMD_USE_SYKEHUS,
+                         requested_date=requested_date)
 stackB <- GenStackSykehjem(dev=fhi::DashboardIsDev(),
                            FILES_RMD_USE_SYKEHJEM=CONFIG$FILES_RMD_USE_SYKEHJEM,
-                           FILES_RMD_USE_SYKEHUS=CONFIG$FILES_RMD_USE_SYKEHUS)
+                           FILES_RMD_USE_SYKEHUS=CONFIG$FILES_RMD_USE_SYKEHUS,
+                           requested_date=requested_date)
 stack <- rbind(stackA,stackB)
-#stack <- stack[stringr::str_detect(outputDirUse,"Sykehjem")]
+#stack <- stack[stringr::str_detect(outputDirUse,"Sykehus")]
 stack_list <- convert_stack_to_list(stack)
 
 # copy over the resources
 fhi::noispiah_resources_copy(dirname(CONFIG$FILES_RMD_USE_SYKEHJEM))
 
-which(stringr::str_detect(stack$output_pdf,"øre"))
-#x <- stack_list[[153]]
+which(stringr::str_detect(stack$output_pdf,"Haraldsplass diakonale sykehus"))
+#x <- stack_list[[80]]
 res <- pbmclapply(stack_list,
                   function(x){
                     Sys.sleep(1)

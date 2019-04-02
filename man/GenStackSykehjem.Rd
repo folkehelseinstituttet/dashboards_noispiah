@@ -4,8 +4,9 @@
 \alias{GenStackSykehjem}
 \title{GenStackSykehjem}
 \usage{
-GenStackSykehjem(dev = FALSE, outputDir = fhi::DashboardFolder("results"),
-  FILES_RMD_USE_SYKEHJEM, FILES_RMD_USE_SYKEHUS)
+GenStackSykehjem(dev = FALSE,
+  outputDir = fhi::DashboardFolder("results"), FILES_RMD_USE_SYKEHJEM,
+  FILES_RMD_USE_SYKEHUS, requested_date = NULL)
 }
 \arguments{
 \item{dev}{a}
@@ -15,6 +16,8 @@ GenStackSykehjem(dev = FALSE, outputDir = fhi::DashboardFolder("results"),
 \item{FILES_RMD_USE_SYKEHJEM}{a}
 
 \item{FILES_RMD_USE_SYKEHUS}{a}
+
+\item{requested_date}{a}
 }
 \description{
 GenStackSykehjem
