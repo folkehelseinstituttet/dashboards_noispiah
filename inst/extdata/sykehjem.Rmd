@@ -3,14 +3,14 @@ output:
   fhi::noispiah_document:
     fig_caption: yes
 params:
-  dev: TRUE
-  package_dir: "."
   level: landsdekkende
   location: "Landsdekkende"
+  fylke: "X"
   DATE_USE: 2018-05-30
+  date_display: "2. kvartal 2018"
 title: "Prevalensundersøkelsen av helsetjenesteassosierte infeksjoner og antibiotikabruk i sykehjem (NOIS-PIAH)"
-sub_title: "`r ifelse(params$location=='Landsdekkende','Nasjonale resultater',params$location)` --- `r params$DATE_USE`"
-header: "Prevalensundersøkelsen for helsetjenesteassosierte infeksjoner og antibiotikabruk \\newline `r params$location` --- `r params$DATE_USE`"
+sub_title: "`r dplyr::case_when(params$location=='Landsdekkende' ~ 'Nasjonale resultater',params$level=='fylke' ~ params$location, params$level=='kommune' ~ glue::glue('{params$location} kommune'))` --- `r params$date_display`"
+header: "Prevalensundersøkelsen av helsetjenesteassosierte infeksjoner og antibiotikabruk \\newline ``r dplyr::case_when(params$location=='Landsdekkende' ~ 'Nasjonale resultater',params$level=='fylke' ~ params$location, params$level=='kommune' ~ glue::glue('{params$location} kommune'))` --- `r params$date_display`"
 footer: "Folkehelseinstituttet, Oslo, Norge"
 authors:
   - "_"
@@ -19,22 +19,20 @@ editor_options:
 ---
 
 ```{r message=FALSE, warning=FALSE, include=FALSE, paged.print=FALSE}
-package_dir = params$package_dir
-dev = params$dev
+knitr::opts_chunk$set(fig.width=7.25, fig.height=6) 
+suppressMessages(suppressPackageStartupMessages(fd::initialize("noispiah")))
+
+dev = fd::config$is_dev
 level <- params$level
 location <- params$location
+fylke <- params$fylke
 DATE_USE <- params$DATE_USE
-
-fhi::DashboardInitialiseOpinionated("noispiah",
-                                    PACKAGE_DIR=package_dir,
-                                    FORCE_DEV_PACKAGE_LOAD =dev,
-                                    SILENT=TRUE)
 
 suppressMessages(library(data.table))
 suppressMessages(library(ggplot2))
 
-da <- readxl::read_excel(fhi::DashboardFolder("data_raw","AntibiotikadataPrimer.xlsx"))
-di <- readxl::read_excel(fhi::DashboardFolder("data_raw","InfeksjonsdataPrimer.xlsx"))
+da <- readxl::read_excel(fd::path("data_raw","AntibiotikadataPrimer.xlsx"))
+di <- readxl::read_excel(fd::path("data_raw","InfeksjonsdataPrimer.xlsx"))
 
 setDT(da)
 setDT(di)
@@ -51,21 +49,22 @@ if(level=="landsdekkende"){
   da <- da[Fylke==location]
   di <- di[Fylke==location]
 } else if(level=="kommune"){
-  da <- da[Kommune==location]
-  di <- di[Kommune==location]
+  da <- da[Kommune==location & Fylke==fylke]
+  di <- di[Kommune==location & Fylke==fylke]
 }
 ```
 
 \newpage 
 
-# Sykehus
+# Sykehjem
 
-I denne rapporten finner du resultater fra prevalensundersøkelsen som består av to deler, én om helsetjenesteassosierte infeksjoner og én om antibiotikabruk. I antibiotikadelen skal all systemisk bruk av antibiotika (inkludert metenamin) og antimykotika til forebygging og behandling registreres, mens følgende helsetjenesteassosierte infeksjoner skal registreres i infeksjonsdelen: urinveisinfeksjoner, nedre luftveisinfeksjoner, infeksjoner i operasjonsområder og blodbaneinfeksjoner.
+I denne rapporten finner du resultater fra prevalensundersøkelsen som består av to deler, én om helsetjenesteassosierte infeksjoner og én om antibiotikabruk. I antibiotikadelen skal all systemisk bruk av antibiotika (inkludert antiseptikumet metenamin) og antimykotika til forebygging og behandling registreres, mens følgende helsetjenesteassosierte infeksjoner skal registreres i infeksjonsdelen: urinveisinfeksjoner, nedre luftveisinfeksjoner, infeksjoner i operasjonsområder og blodbaneinfeksjoner.
+
 Hvis antall beboere eller forskrivninger av antibiotika er lavt, må resultatene tolkes med varsomhet, da tilfeldige variasjoner kan gi store utslag. 
 
-Det er viktig at hvert sykehjem vurderer forekomsten av helsetjenesteassosierte infeksjoner i egen institusjon, og behovet for å endre eller iverksette tiltak for å forebygge slike infeksjoner. Det enkelte sykehjem bør også vurdere om deres bruk av antibiotika er i tråd med Nasjonal faglig retningslinje for antibiotikabruk i primærhelsetjenesten (www.google.com).
+Det er viktig at hvert sykehjem vurderer forekomsten av helsetjenesteassosierte infeksjoner i egen institusjon, og behovet for å endre eller iverksette tiltak for å forebygge slike infeksjoner. Det enkelte sykehjem bør også vurdere om deres bruk av antibiotika er i tråd med [Nasjonal faglig retningslinje for antibiotikabruk i primærhelsetjenesten](nasjonale faglige retningslinjer for antibiotikabruk i sykehus).
 
-I overensstemmelse med Helse- og omsorgsdepartementets handlingsplan mot antibiotikaresistens i helsetjenesten, er piperacillin med enzymhemmer, 2. og 3. generasjons cefalosporiner, kinoloner og karbapenemer definert som bredspektrede antibiotika i rapporten.
+I overensstemmelse med Helse- og omsorgsdepartementets handlingsplan mot antibiotikaresistens i helsetjenesten, er penicillin med enzymhemmer, 2. og 3. generasjons cefalosporiner, kinoloner og karbapenemer definert som bredspektrede antibiotika i rapporten.
 
 \newpage
 
@@ -87,11 +86,11 @@ Table_DeltagelseForekomstHAIogABiSykehjem(di=di,da=da,level=level,DATE_USE=DATE_
 
 \newpage
 
-# Prevalens av helsetjenesteassosierte infeksjoner blant beboere i sykehjem, per avdelingstype
+# Prevalens av helsetjenesteassosierte infeksjoner blant beboere i sykehjem per avdelingstype
 
 Figur 1 viser prevalens av helsetjenesteassosierte infeksjoner blant beboere i sykehjem, samlet og per avdelingstype. Resultatene kan brukes til å endre eller iverksette målrettede tiltak for forebygging av helsetjenesteassosierte infeksjoner i sykehjem.
 
-```{r echo=FALSE, message=FALSE, warning=FALSE, paged.print=TRUE, results='asis', fig.cap='\\label{fig:figs1}Prevalens av helsetjenesteassosierte infeksjoner blant beboere i sykehjem, per avdelingstype'}
+```{r echo=FALSE, message=FALSE, warning=FALSE, paged.print=TRUE, results='asis', fig.cap='\\label{fig:figs1}Prevalens av helsetjenesteassosierte infeksjoner blant beboere i sykehjem per avdelingstype'}
 Figure_ForekomstHAIiSykehjemPerAvdelingstype(di=di,da=da,DATE_USE=DATE_USE)
 ```
 
@@ -99,7 +98,7 @@ Figure_ForekomstHAIiSykehjemPerAvdelingstype(di=di,da=da,DATE_USE=DATE_USE)
 
 # Antibiotika til forebygging og behandling, per indikasjon
 
-Figur 2 viser bruk av antibiotika i sykehjem per indikasjon. Andel forskrivninger av antibiotika (inkludert metenamin) til forebygging og behandling er spesifisert.  Metenamin (Hiprex) er i Nasjonal faglig retningslinje for antibiotikabruk i primærhelsetjenesten, kun anbefalt til forebygging av urinveisinfeksjoner.
+Figur 2 viser bruk av antibiotika i sykehjem per indikasjon. Andel forskrivninger av antibiotika (inkludert antiseptikumet metenamin) til forebygging og behandling er spesifisert.  Metenamin (Hiprex) er i Nasjonal faglig retningslinje for antibiotikabruk i primærhelsetjenesten, kun anbefalt til forebygging av urinveisinfeksjoner.
 
 \begin{landscape}
 
@@ -137,7 +136,7 @@ Figure_ForskrivningerAvAntibiotikaPerIndikasjon(di=di,da=da,DATE_USE=DATE_USE,in
 Ved hjelp av Nasjonal faglig retningslinje for bruk av antibiotika i primærhelsetjenesten kan du vurdere om bruken av antibiotika til behandling av nedre luftveisinfeksjoner vist i figur 4, er i tråd med retningslinjen. Bruken av bredspektrede antibiotika er spesifisert i figuren.
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, paged.print=TRUE, results='asis', fig.cap='\\label{fig:figs4}Forskrivning av antibiotika (virkestoff) til behandling av nedre luftveisinfeksjoner'}
-Figure_ForskrivningerAvAntibiotikaPerIndikasjon(di=di,da=da,DATE_USE=DATE_USE,indikasjon="Nedre luftveisinfeksjon")
+Figure_ForskrivningerAvAntibiotikaPerIndikasjon(di=di,da=da,DATE_USE=DATE_USE,indikasjon="Nedre luftveisinfeksjon", with_metenamin=F)
 ```
 
 \newpage
@@ -146,6 +145,14 @@ Figure_ForskrivningerAvAntibiotikaPerIndikasjon(di=di,da=da,DATE_USE=DATE_USE,in
 
 Ved hjelp av Nasjonal faglig retningslinje for bruk av antibiotika i primærhelsetjenesten kan du vurdere om bruken av antibiotika til behandling av hud- og bløtdelsinfeksjoner vist i figur 5, er i tråd med retningslinjen. Bruken av bredspektrede antibiotika er spesifisert i figuren.
 
-```{r echo=FALSE, message=FALSE, warning=FALSE, paged.print=TRUE, results='asis', fig.cap='\\label{fig:figs5}Forskrivning av antibiotika (virkestoff) til behandling av hud- og bløtdelsinfeksjoner'}
-Figure_ForskrivningerAvAntibiotikaPerIndikasjon(di=di,da=da,DATE_USE=DATE_USE,indikasjon="Hud- og bløtdelsinfeksjon, ekskl. postoperativ sårinfeksjon")
+```{r echo=FALSE, message=FALSE, warning=FALSE, paged.print=TRUE, results='asis', fig.cap='\\label{fig:figs5}Forskrivning av antibiotika (virkestoff) til behandling av hud- og bløtdelsinfeksjoner, ekskl. postoperative sårinfeksjoner'}
+Figure_ForskrivningerAvAntibiotikaPerIndikasjon(
+  di=di,
+  da=da,
+  DATE_USE=DATE_USE,
+  indikasjon="Hud- og bløtdelsinfeksjon, ekskl. postoperativ sårinfeksjon", 
+  display_name="Hud- og bløtdelsinfeksjon",
+  with_metenamin=F)
 ```
+
+

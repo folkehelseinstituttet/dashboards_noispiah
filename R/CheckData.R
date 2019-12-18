@@ -5,11 +5,11 @@
 #' @importFrom lubridate today
 #' @importFrom stringr str_detect
 #' @export CheckData
-CheckData <- function(raw = fhi::DashboardFolder("data_raw")) {
-  if (file.exists(file.path(raw, "DONE.txt")) & !fhi::DashboardIsDev()) {
-    fhi::DashboardMsg(raw)
-    fhi::DashboardMsg(CONFIG$FORCE_TESTING)
-    fhi::DashboardMsg("DONE.txt exists")
+CheckData <- function(raw = fd::path("data_raw")) {
+  if (file.exists(file.path(raw, "DONE.txt")) & !fd::config$is_dev) {
+    fd::msg(raw)
+    fd::msg(CONFIG$FORCE_TESTING)
+    fd::msg("DONE.txt exists")
     quit(save = "no")
   }
 
@@ -17,10 +17,10 @@ CheckData <- function(raw = fhi::DashboardFolder("data_raw")) {
 
   dataFilesExist <- TRUE
   for (f in noispiah::CONFIG$FILES_DATA) {
-    if (!RAWmisc::IsFileStable(file.path(raw, f))) dataFilesExist <- FALSE
+    if (!fhi::file_stable(file.path(raw, f))) dataFilesExist <- FALSE
   }
   if (!dataFilesExist) {
-    fhi::DashboardMsg("No new data files")
+    fd::msg("No new data files")
     quit(save = "no")
   }
 
@@ -31,7 +31,7 @@ CheckData <- function(raw = fhi::DashboardFolder("data_raw")) {
   for (f in CONFIG$FILES_RMD_RAW) {
     files <- list.files(file.path(raw, "rapporter"))
     filesTypeF <- files[stringr::str_detect(files, f)]
-    if (length(filesTypeF) == 0 | fhi::DashboardIsDev()) {
+    if (length(filesTypeF) == 0 | fd::config$is_dev) {
       file.copy(system.file("extdata", f, package = "noispiah"), file.path(raw, "rapporter", sprintf("%s_%s", lubridate::today(), f)), overwrite = TRUE)
     }
 
@@ -44,7 +44,7 @@ CheckData <- function(raw = fhi::DashboardFolder("data_raw")) {
       sykehus.Rmd = {
         SetConfig("FILES_RMD_USE_SYKEHUS", file.path(raw, "rapporter", filesTypeF))
       }, {
-        fhi::DashboardMsg("ERROR")
+        fd::msg("ERROR")
       }
     )
   }

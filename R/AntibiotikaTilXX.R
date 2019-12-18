@@ -139,6 +139,24 @@ Figure_AntibiotikaTilBehandling <- function(di, da, DATE_USE, indikasjon=NULL,
                                leftVsRightVar=leftVsRightVar,
                                extraGrouping=extraGrouping)
   if(nrow(tab)==0) return(no_data_graph())
+  num_ab <- length(unique(tab$ab))
+  if(num_ab<5){
+    tab_empty <- tab[1]
+    lab_pos <- 1
+  } else if(num_ab<10){
+    tab_empty <- tab[1:2]
+    lab_pos <- 2
+  } else if(num_ab<20) {
+    tab_empty <- tab[1:3]
+    lab_pos <- 3
+  } else {
+    tab_empty <- tab[1:4]
+    lab_pos <- 4
+  }
+  tab_empty[,ab:=unlist(lapply(1:.N, function(x)paste0(rep(" ",x),collapse="")))]
+  tab_empty[,Left:=0]
+  tab_empty[,Right:=0]
+  tab <- rbind(tab,tab_empty)
   ordering <- tab[,.(n=sum(Left,na.rm=T)+sum(Right,na.rm=T)),by=.(ab)]
   setorder(ordering,n)
   tab[,ab:=factor(ab,levels=ordering$ab)]
@@ -149,33 +167,53 @@ Figure_AntibiotikaTilBehandling <- function(di, da, DATE_USE, indikasjon=NULL,
                      xLab=xLab,
                      n=tab$denomLeft[1]+tab$denomRight[1])
 
-  maxVal <- max(c(tab$Left/tab$denomLeft[1],tab$Right/tab$denomRight[1]),na.rm=T)+0.05
+  tab[,numLeft:=sum(Left,na.rm=T),by=.(ab)]
+  tab[,numRight:=sum(Right,na.rm=T),by=.(ab)]
+  maxVal <- max(c(tab$numLeft/tab$denomLeft[1],tab$numRight/tab$denomRight[1]),na.rm=T)+0.05
+  tab[,numLeft:=NULL]
+  tab[,numRight:=NULL]
 
   if(maxVal < 0.35){
     xBreaks <- seq(-1,1,0.05)
-    xLabs <- paste0(round(abs(seq(-1,1,0.05))*100),"%")
-  } else {
+  } else if(maxVal < 0.5) {
     xBreaks <- seq(-1,1,0.1)
-    xLabs <- paste0(round(abs(seq(-1,1,0.1))*100),"%")
+  } else {
+    xBreaks <- seq(-1,1,0.25)
   }
+  xLabs <- paste0(round(abs(xBreaks)*100),"%")
 
   q <- ggplot(tab, aes(x = ab, fill=extraGrouping))
-  q <- q + geom_col(mapping=aes(y=-Left/denomLeft),alpha=0.75,width=0.75)
-  q <- q + geom_col(mapping=aes(y=Right/denomRight),alpha=0.75,width=0.75)
+  q <- q + geom_col(mapping=aes(y=-Left/denomLeft),colour = "black", alpha = 1,width=0.75)
+  q <- q + geom_col(mapping=aes(y=Right/denomRight),colour = "black", alpha = 1,width=0.75)
   q <- q + geom_hline(yintercept=0)
   q <- q + coord_flip()
   q <- q + scale_fill_manual("",
                              values=colours,
                              drop=F, guide = guide_legend(ncol = 2, byrow = T, reverse = F))
   #q <- q + scale_colour_brewer("", palette = "Set1", guide = guide_legend(ncol = 3, byrow = T, reverse = TRUE))
-  q <- q + scale_x_discrete("Antibiotika (virkestoff)")
+  q <- q + scale_x_discrete("Antibiotika (virkestoff)", expand = expand_scale(add = c(1, 0)))
   q <- q + scale_y_continuous(xLab,
                               lim=c(-maxVal,maxVal),
                               breaks=xBreaks,
-                              labels=xLabs)
+                              labels=xLabs,
+                              expand=c(0,0))
+  q <- q + fhiplot::theme_fhi_lines()
+  q <- q + theme(axis.line.y=element_blank())
   q <- q + theme(legend.position = "bottom")
-  q <- q + annotate("text", x = ordering$ab[3], y = -maxVal, label = glue::glue(captionLeft,n=tab$denomLeft[1]), hjust=0)
-  q <- q + annotate("text", x = ordering$ab[3], y = maxVal, label = glue::glue(captionRight,n=tab$denomRight[1]), hjust=1)
+  q <- q + geom_label(mapping=aes(
+    x = ordering$ab[lab_pos],
+    y = -maxVal,
+    label = glue::glue(captionLeft,n=tab$denomLeft[1])),
+    hjust=0,
+    vjust=1,
+    fill="white")
+  q <- q + geom_label(mapping=aes(
+    x = ordering$ab[lab_pos],
+    y = maxVal,
+    label = glue::glue(captionRight,n=tab$denomRight[1])),
+    hjust=1,
+    vjust=1,
+    fill="white")
   # q <- q + labs(caption="\n\n\n\n\n\n")
   # q <- q + theme(legend.position=c(0.0,-0.13),
   #          legend.justification=c(0.5, 1),

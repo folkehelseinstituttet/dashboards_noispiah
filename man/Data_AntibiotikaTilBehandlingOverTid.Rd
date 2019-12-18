@@ -17,8 +17,6 @@ Data_AntibiotikaTilBehandlingOverTid(di, da, indikasjon = NULL,
 \item{ab}{a}
 
 \item{klassifisering}{a}
-
-\item{DATE_USE}{a}
 }
 \description{
 Data_AntibiotikaTilBehandlingOverTid

@@ -1,7 +1,6 @@
 #' Data_AntibiotikaTilBehandlingOverTid
 #' @param di a
 #' @param da a
-#' @param DATE_USE a
 #' @param indikasjon a
 #' @param ab a
 #' @param klassifisering a
@@ -37,7 +36,6 @@ Data_AntibiotikaTilBehandlingOverTid <- function(di, da, indikasjon=NULL, ab="sy
 #' @param di a
 #' @param da a
 #' @param da_all a
-#' @param DATE_USE a
 #' @import data.table
 #' @import ggplot2
 #' @export Figure_AntibiotikaTilBehandlingOverTid1
@@ -75,18 +73,21 @@ Figure_AntibiotikaTilBehandlingOverTid1 <- function(di, da, da_all, DATE_USE) {
   tab[is.nan(prop), prop:=0]
 
   q <- ggplot(tab, aes(x = xVal, y = prop, fill = ab))
-  q <- q + geom_col(alpha=0.7)
+  q <- q + geom_col(colour = "black", alpha = 1)
   q <- q + scale_fill_manual("",
                                values=c("blue",
-                                        "green",
+                                        "purple",
                                         "orange"),
                                drop=F, guide = guide_legend(ncol = 3, byrow = T, reverse = T))
-  q <- q + scale_x_continuous("Undersøkelsestidspunkt (antall forskrivninger)",
+  q <- q + scale_x_continuous("Undersøkelsestidspunkt (n=antall forskrivninger)",
                               breaks=ordering$xVal,
                               labels=ordering$xLab)
   q <- q + scale_y_continuous("Andel (%) av forskrivninger til behandling\nper undersøkelsestidspunkt",
-                              labels=scales::percent)
+                              labels=scales::percent,
+                              expand=c(0,0))
   q <- q + expand_limits(y=0)
+  q <- q + fhiplot::theme_fhi_lines()
+  q <- q + theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5))
   q <- q + theme(legend.position = "bottom")
   # q <- q + labs(caption="\n\n\n\n\n\n")
   # q <- q + theme(legend.position=c(0.0,-0.13),
@@ -133,19 +134,22 @@ Figure_AntibiotikaTilBehandlingOverTid2 <- function(di, da, DATE_USE, klassifise
   tab[,ab:=factor(ab, levels=rev(levels(ab)))]
 
   q <- ggplot(tab, aes(x = xVal, y = n / denom, fill = ab))
-  q <- q + geom_col(alpha=0.7)
+  q <- q + geom_col(colour = "black", alpha = 1)
   q <- q + scale_fill_manual("",
                                values=c(
                                  "blue",
-                                 "green",
-                                 "red",
-                                 "orange"),
-                               drop=F, guide = guide_legend(ncol = 4, byrow = T, reverse = T))
-  q <- q + scale_x_continuous("Undersøkelsestidspunkt (antall forskrivninger)",
+                                 "purple",
+                                 "orange",
+                                 "green"),
+                               drop=F, guide = guide_legend(ncol = 2, byrow = T, reverse = T))
+  q <- q + scale_x_continuous("Undersøkelsestidspunkt (n=antall forskrivninger)",
                               breaks=ordering$xVal,
                               labels=ordering$xLab)
-  q <- q + scale_y_continuous("Andel (%) av forskrivninger til behandling\nper undersøkelsestidspunkt",
-                              labels=scales::percent)
+  q <- q + scale_y_continuous("Andel (%) av forskrivninger til behandling av samfunnservervede\nnedre luftveisinfeksjoner per undersøkelsestidspunkt",
+                              labels=scales::percent,
+                              expand=c(0,0))
+  q <- q + fhiplot::theme_fhi_lines()
+  q <- q + theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5))
   q <- q + theme(legend.position = "bottom")
   # q <- q + labs(caption="\n\n\n\n\n\n")
   # q <- q + theme(legend.position=c(0.0,-0.13),
@@ -155,3 +159,8 @@ Figure_AntibiotikaTilBehandlingOverTid2 <- function(di, da, DATE_USE, klassifise
   q
 
 }
+
+
+
+
+

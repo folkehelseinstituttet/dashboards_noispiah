@@ -40,21 +40,26 @@ Figure_AndelAntibiotikaTilForebyggingOgBehandling <- function(di, da, DATE_USE) 
   tab[,xLab:=factor(xLab,levels=xLab)]
 
   fillVals <- unique(tab[,c("grouping","groupingLab")])
-  fillVals[,colours:=""]
-  fillVals[grouping %in% c("Behandling"), colours:="green"]
-  fillVals[grouping %in% c("Forebygging"), colours:="yellow"]
-  fillVals[grouping %in% c("Annet/ukjent"), colours:="gray"]
+  skeleton <- data.table(grouping=c("Annet/ukjent","Behandling","Forebygging"),
+                         colours=c("gray","green","yellow"))
+  fillVals <- merge(fillVals,skeleton,by="grouping",all.y=T)
+  fillVals[is.na(groupingLab),groupingLab:=glue::glue("{grouping} (n=0)",grouping=grouping)]
   fillValsVector <- fillVals$colours
   names(fillValsVector) <- fillVals$groupingLab
 
+  tab[,groupingLab:=factor(groupingLab,levels=names(fillValsVector))]
+
   q <- ggplot(tab, aes(x = xLab, y = prop, fill= groupingLab))
-  q <- q + geom_col(colour = "black", alpha = 0.5)
-  q <- q + scale_x_discrete("Klassifisering (antall forskrivninger)")
+  q <- q + geom_col(colour = "black", alpha = 1)
+  q <- q + scale_x_discrete("Klassifisering (n=antall forskrivninger)")
   q <- q + scale_y_continuous("Andel (%) forskrivninger antibiotika\ntil forebygging og behandling",
-                              labels=scales::percent)
+                              labels=scales::percent,
+                              expand=c(0,0),
+                              lim=c(0,max(tab$prop)*1.1))
   #q <- q + labs(main = "Andel antibiotika til forebygging og behandling")
   q <- q + coord_flip()
-  q <- q + scale_fill_manual("",values=fillValsVector)
+  q <- q + scale_fill_manual("",values=fillValsVector, drop=F)
+  q <- q + fhiplot::theme_fhi_lines()
   q <- q + theme(legend.position = "bottom")
   #q <- q + theme(axis.title.y = element_text(hjust=0.5))
   lemon::grid_arrange_shared_legend(q)

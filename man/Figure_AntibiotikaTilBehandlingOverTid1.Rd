@@ -12,8 +12,6 @@ Figure_AntibiotikaTilBehandlingOverTid1(di, da, da_all, DATE_USE)
 \item{da}{a}
 
 \item{da_all}{a}
-
-\item{DATE_USE}{a}
 }
 \description{
 Figure_AntibiotikaTilBehandlingOverTid1

@@ -16,6 +16,8 @@ Data_ForskrivningerAvAntibiotikaTilForebyggingOgBehandling(di, da,
 
 \item{DATE_USE}{a}
 
+\item{ab}{a}
+
 \item{group1}{a}
 
 \item{group2}{a}

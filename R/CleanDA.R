@@ -3,7 +3,7 @@
 #' @param type a
 #' @export CleanDA
 CleanDA <- function(da, type="sykehjem"){
-  ab <- readxl::read_excel(file.path(system.file("extdata", package = "noispiah"), "2018-08-30_Antibiotikagrupper.xlsx"))
+  ab <- readxl::read_excel(file.path(system.file("extdata", package = "noispiah"), "2019-05-06_Antibiotikagrupper.xlsx"))
   setDT(ab)
 
   if(type=="sykehjem"){
@@ -15,74 +15,33 @@ CleanDA <- function(da, type="sykehjem"){
 
     CleanSpesialitet(da)
 
-    da[!is.na(ATCKode), sykehusAB1:="Andre antibiotika"]
-    da[ATCKode %in% c(
-      "J01CR05"
-    ), sykehusAB1:="Piperacillin med enzymhemmer"]
-    da[ATCKode %in% c(
-      "J01DC02"
-    ), sykehusAB1:="2. generasjons cefalosporiner"]
-    da[ATCKode %in% c(
-      "J01DD01",
-      "J01DD02",
-      "J01DD04",
-      "J01DD52"
-    ), sykehusAB1:="3. generasjons cefalosporiner"]
-    da[ATCKode %in% c(
-      "J01MA01",
-      "J01MA02",
-      "J01MA12",
-      "JO1MA14"
-    ), sykehusAB1:="Kinoloner"]
-    da[ATCKode %in% c(
-      "J01DH02",
-      "J01DH03",
-      "J01DH51"
-    ), sykehusAB1:="Karbapenemer"]
-
+    ab_1 <- ab[!is.na(sykehusAB1),c("ATCKode","sykehusAB1","sykehusAB1_order")]
+    ab_1_order <- unique(ab_1[,c("sykehusAB1","sykehusAB1_order")])
+    setorder(ab_1_order,sykehusAB1_order)
+    da[ab_1,on="ATCKode",sykehusAB1:=sykehusAB1]
+    da[is.na(sykehusAB1),sykehusAB1:="Andre antibiotika"]
     da[,sykehusAB1:=factor(sykehusAB1,levels=c(
-      "Piperacillin med enzymhemmer",
-      "2. generasjons cefalosporiner",
-      "3. generasjons cefalosporiner",
-      "Kinoloner",
-      "Karbapenemer",
+      ab_1_order$sykehusAB1,
       "Andre antibiotika"
     ))]
 
-    #
-    da[!is.na(ATCKode), sykehusAB2:="Andre antibiotika"]
-    da[ATCKode %in% ab[Gruppe == "Bredspektrede"]$ATCKode, sykehusAB2 := "Bredspektrede antibiotika"]
-    da[ATCKode %in% c(
-      "J01CE01",
-      "J01CE02"
-    ), sykehusAB2:="Fenoksymetyl- og benzylpenicillin"]
-
+    ab_2 <- ab[!is.na(sykehusAB2),c("ATCKode","sykehusAB2","sykehusAB2_order")]
+    ab_2_order <- unique(ab_2[,c("sykehusAB2","sykehusAB2_order")])
+    setorder(ab_2_order,sykehusAB2_order)
+    da[ab_2,on="ATCKode",sykehusAB2:=sykehusAB2]
+    da[is.na(sykehusAB2),sykehusAB2:="Andre antibiotika"]
     da[,sykehusAB2:=factor(sykehusAB2,levels=c(
-      "Bredspektrede antibiotika",
-      "Fenoksymetyl- og benzylpenicillin",
+      ab_2_order$sykehusAB2,
       "Andre antibiotika"
     ))]
 
-    #
-    da[!is.na(ATCKode), sykehusAB3:="Andre antibiotika"]
-    da[ATCKode %in% c(
-      "J01DD01",
-      "J01DD02",
-      "J01DD04",
-      "J01DD52"
-    ), sykehusAB3:="3. generasjons cefalosporiner"]
-    da[ATCKode %in% c(
-      "J01CR05"
-    ), sykehusAB3:="Bredspektrede penicilliner"]
-    da[ATCKode %in% c(
-      "J01CE01",
-      "J01CE02"
-    ), sykehusAB3:="Fenoksymetyl- og benzylpenicillin"]
-
+    ab_3 <- ab[!is.na(sykehusAB3),c("ATCKode","sykehusAB3","sykehusAB3_order")]
+    ab_3_order <- unique(ab_3[,c("sykehusAB3","sykehusAB3_order")])
+    setorder(ab_3_order,sykehusAB3_order)
+    da[ab_3,on="ATCKode",sykehusAB3:=sykehusAB3]
+    da[is.na(sykehusAB3),sykehusAB3:="Andre antibiotika"]
     da[,sykehusAB3:=factor(sykehusAB3,levels=c(
-      "3. generasjons cefalosporiner",
-      "Bredspektrede penicilliner",
-      "Fenoksymetyl- og benzylpenicillin",
+      ab_3_order$sykehusAB3,
       "Andre antibiotika"
     ))]
 
@@ -120,8 +79,12 @@ CleanDA <- function(da, type="sykehjem"){
 
   # AB, Bred, Meth, Andre
   da[, ABBredMethAndre := "andre antibiotika"]
-  da[ATCKode %in% ab[`ATCSubstans (virkestoff)` == "Methenamine"]$ATCKode, ABBredMethAndre := "Methenamine"]
+  da[ATCKode %in% ab[`ATCSubstans (virkestoff)` %in% c("Methenamine","Metenamin")]$ATCKode, ABBredMethAndre := "Metenamin"]
   da[ATCKode %in% ab[Gruppe == "Bredspektrede"]$ATCKode, ABBredMethAndre := "bredspektrede antibiotika"]
+  # xtabs(~temp$AB)
+
+  da[, ABBredAndre := ABBredMethAndre]
+  da[ABBredMethAndre == "Metenamin", ABBredAndre := "bredspektrede antibiotika"]
   # xtabs(~temp$AB)
 
   # xtabs(~temp$forebyggingVsBehandling+temp$AB)
@@ -129,10 +92,10 @@ CleanDA <- function(da, type="sykehjem"){
   da[, forebyggVsBehandOgMethVsAndre := sprintf("%s %s", forebyggingVsBehandling, ABBredMethAndre)]
   RAWmisc::RecodeDT(da,
                     switch=c(
-                      "Forebygging Methenamine"="Forebygging Methenamine",
+                      "Forebygging Metenamin"="Forebygging metenamin",
                       "Forebygging andre antibiotika"="Forebygging andre antibiotika",
                       "Forebygging bredspektrede antibiotika"="Forebygging andre antibiotika",
-                      "Behandling Methenamine"="Behandling Methenamine",
+                      "Behandling Metenamin"="Behandling metenamin",
                       "Behandling andre antibiotika"="Behandling andre antibiotika",
                       "Behandling bredspektrede antibiotika"="Behandling andre antibiotika"
                     ),
@@ -146,21 +109,12 @@ CleanDA <- function(da, type="sykehjem"){
     "Klinisk sepsis med annet antatt utgangspunkt",
     "Klinisk sepsis med usikkert utgangspunkt",
     "Laboratoriebekreftet blodbaneinfeksjon",
-    "N\u00F8ytropen feber"
+    "N\u00F8ytropen feber",
+    "Neutropen feber"
   ), IndikasjonCategory := "Klinisk sepsis"]
 
   da[, IndikasjonCategorySykehus := IndikasjonCategory]
   da[IndikasjonCategory %in% c("Klinisk sepsis"), IndikasjonCategorySykehus := "Klinisk sepsis, laboratoriebekreftet blodbaneinfeksjon og nøytropen feber"]
-
-  da[Indikasjon %in% c(
-    "Klinisk sepsis med antatt utgangspunkt luftveier",
-    "Klinisk sepsis med antatt utgangspunkt urinveier",
-    "Klinisk sepsis med antatt utgangspunkt abdomen",
-    "Klinisk sepsis med annet antatt utgangspunkt",
-    "Klinisk sepsis med usikkert utgangspunkt",
-    "Laboratoriebekreftet blodbaneinfeksjon",
-    "N\u00F8ytropen feber"
-  ), IndikasjonCategory := "Klinisk sepsis"]
 
   da[, IndikasjonCategorySykehusMedKlassifiseringNedreLuftveisinfeksjon:=IndikasjonCategorySykehus]
   da[Klassifisering=="Helsetjenesteassosiert infeksjon" & IndikasjonCategorySykehus=="Nedre luftveisinfeksjon",

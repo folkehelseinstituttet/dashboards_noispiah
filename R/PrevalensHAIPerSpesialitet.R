@@ -59,27 +59,36 @@ Figure_PrevalensHAIPerSpesialitet <- function(di, da, level, DATE_USE) {
                                        "Infeksjon i operasjonsområdet",
                                        "Urinveisinfeksjon",
                                        "Nedre luftveisinfeksjon",
-                                       "Bodbaneinfeksjon"),
+                                       "Blodbaneinfeksjon"),
                                      n=x$value)
-  tab[,variable:=factor(variable,levels=rev(levels(tab$variable)))]
+  #tab[,variable:=factor(variable,levels=rev(levels(tab$variable)))]
 
-  ordering <- unique(tab[,c("antallBeboere","xCat")])
-  ordering[,xLab:=sprintf("%s (N=%s)",xCat,antallBeboere)]
-  setorder(ordering,xCat)
+  #ordering <- unique(tab[,c("antallBeboere","xCat")])
+  ordering <- tab[,.(
+    prop=sum(prop),
+    antallBeboere=unique(antallBeboere)
+    ),
+    keyby=.(xCat)]
+  ordering[,xLab:=sprintf("%s (n=%s)",xCat,antallBeboere)]
+  setorder(ordering,prop)
+  ordering[,o:=1:.N]
+  ordering[stringr::str_detect(xLab,"Alle spesialiteter samlet"),o:=100000]
+  setorder(ordering,o)
   ordering[,xLab:=factor(xLab,levels=xLab)]
 
   tab <- merge(tab,ordering[,c("xCat","xLab")],by="xCat")
 
   tab <- tab[antallBeboere>0]
+  tab[, total_height := sum(prop), by=.(xLab)]
   if(sum(tab$prop>0)>0){
-    limits <- NULL
+    limits <- c(0, max(tab$total_height)*1.1)
   } else {
     limits <- c(0,1)
   }
   tab[prop==0,prop:=0.0001]
 
   q <- ggplot(tab, aes(x = xLab,y=prop,fill=variable))
-  q <- q + geom_col(alpha=0.75, col="black")
+  q <- q + geom_col(alpha=1, col="black")
   q <- q + coord_flip()
   q <- q + scale_fill_manual("",
                              values=c("red",
@@ -87,11 +96,14 @@ Figure_PrevalensHAIPerSpesialitet <- function(di, da, level, DATE_USE) {
                                       "yellow",
                                       "green"),
                              drop=F, guide = guide_legend(ncol = 2, byrow = T, reverse = T))
-  q <- q + scale_x_discrete("Spesialitet (antall pasienter)")
+  q <- q + scale_x_discrete("Spesialitet (n=antall pasienter)")
   q <- q + scale_y_continuous("Prevalens av helsetjeneseassosierte infeksjoner (%)",
                               labels=scales::percent,
-                              limits=limits)
+                              limits=limits,
+                              expand=c(0,0))
   q <- q + labs(main = "Prevalens av helsetjenesteassosierte infeksjoner etter avdelingstype")
+  q <- q + fhiplot::theme_fhi_lines()
   q <- q + theme(legend.position = "bottom")
+  q
   return(lemon::grid_arrange_shared_legend(q))
 }

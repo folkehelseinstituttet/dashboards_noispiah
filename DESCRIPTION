@@ -15,7 +15,12 @@ Imports:
   ggplot2,
   processx,
   readxl,
-  uuid
+  uuid,
+  crayon,
+  glue,
+  lemon,
+  scales,
+  fhiplot
 Suggests:
   testthat
 Remotes: raubreywhite/RAWmisc, folkehelseinstituttet/fhi

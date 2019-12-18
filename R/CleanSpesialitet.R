@@ -31,10 +31,10 @@ CleanSpesialitet <- function(d){
                         "S0307" ="Indremedisin", # "Lungesykdommer"
                         "S0308" ="Indremedisin", # "Nyresykdommer"
 
-                        "S04" = "Gynekologi", # "Fødselshjelp og kvinnesykdommer"
-                        "S0401" ="Gynekologi", # "Generell gynekologi"
-                        "S0402" ="Gynekologi", # "Gynekologisk onkologi"
-                        "S0403" ="Gynekologi", # "Obstetrikk"
+                        "S04" = "Fødselshjelp og kvinnesykdommer", # "Fødselshjelp og kvinnesykdommer"
+                        "S0401" ="Fødselshjelp og kvinnesykdommer", # "Generell gynekologi"
+                        "S0402" ="Fødselshjelp og kvinnesykdommer", # "Gynekologisk onkologi"
+                        "S0403" ="Fødselshjelp og kvinnesykdommer", # "Obstetrikk"
 
                         "S05"="Hud- og veneriske sykdommer", # "Hud- og veneriske sykdommer"
 
@@ -71,7 +71,7 @@ CleanSpesialitet <- function(d){
       "Kirurgi",
       "Ortopedisk kirurgi",
       "Indremedisin",
-      "Gynekologi",
+      "Fødselshjelp og kvinnesykdommer",
       "Hud- og veneriske sykdommer",
       "Barnesykdommer",
       "Nevrologi",

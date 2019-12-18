@@ -44,7 +44,7 @@ Data_ForekomstHAIiSykehjemPerAvdelingstype <- function(di, da, DATE_USE) {
   AntallForskrivningerAB <- NULL
 
   Avdelingstype <- NULL
-  perc <- NULL
+  prop <- NULL
   value <- NULL
   variable <- NULL
   xLab <- NULL
@@ -88,7 +88,7 @@ Data_ForekomstHAIiSykehjemPerAvdelingstype <- function(di, da, DATE_USE) {
   tab <- rbind(tab,tabx)
 
   tab <- melt.data.table(tab, id.vars = c("Avdelingstype", "AntallBeboereKl8"))
-  tab[, perc := value / AntallBeboereKl8 * 100]
+  tab[, prop := value / AntallBeboereKl8]
   RAWmisc::RecodeDT(
     tab,
     switch = c(
@@ -145,8 +145,8 @@ Figure_ForekomstHAIiSykehjemPerAvdelingstype <- function(di, da, DATE_USE) {
                                      n=FormatNorwegian(x$value))
   #tab[,variable:=factor(variable,levels=rev(levels(tab$variable)))]
 
-  tab[, xLab := sprintf("%s (N=%s)", Avdelingstype, FormatNorwegian(AntallBeboereKl8))]
-  tab[, total:=sum(perc),by=xLab]
+  tab[, xLab := sprintf("%s (n=%s)", Avdelingstype, FormatNorwegian(AntallBeboereKl8))]
+  tab[, total:=sum(prop),by=xLab]
   ordering <- unique(tab[,c("total","xLab")])
   setorder(ordering,total)
   ordering[,o:=1:.N]
@@ -154,19 +154,25 @@ Figure_ForekomstHAIiSykehjemPerAvdelingstype <- function(di, da, DATE_USE) {
   setorder(ordering,o)
   tab[,xLab:=factor(xLab,levels=ordering$xLab)]
 
-  q <- ggplot(tab, aes(x = xLab, y = perc, fill = variable))
-  q <- q + geom_bar(stat = "identity", colour = "black", alpha = 0.5)
+  tab[, total_height := sum(prop), by=.(xLab)]
+
+  q <- ggplot(tab, aes(x = xLab, y = prop, fill = variable))
+  q <- q + geom_bar(stat = "identity", colour = "black", alpha = 1)
   q <- q + scale_fill_manual("",
                              values=c("red",
                                       "green",
                                       "blue",
                                       "yellow"),
                              drop=F, guide = guide_legend(ncol = 2, byrow = T, reverse = T))
-  q <- q + scale_x_discrete("Avdelingstype (N=antall beboere)")
-  q <- q + scale_y_continuous("Prevalens av helsetjenesteassosierte infeksjoner (%)")
+  q <- q + scale_x_discrete("Avdelingstype (n=antall beboere)")
+  q <- q + scale_y_continuous("Prevalens av helsetjenesteassosierte infeksjoner (%)",
+                              labels = scales::percent,
+                              expand=c(0,0),
+                              limits=c(0,max(tab$total_height)*1.1),)
   q <- q + labs(main = "Prevalens av helsetjenesteassosierte infeksjoner etter avdelingstype")
   q <- q + coord_flip()
   q <- q + theme(legend.position = "bottom")
+  q <- q + fhiplot::theme_fhi_lines()
   lemon::grid_arrange_shared_legend(q)
 }
 

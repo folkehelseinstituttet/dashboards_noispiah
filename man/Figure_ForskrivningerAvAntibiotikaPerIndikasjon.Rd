@@ -5,7 +5,8 @@
 \title{Figure_ForskrivningerAvAntibiotikaPerIndikasjon}
 \usage{
 Figure_ForskrivningerAvAntibiotikaPerIndikasjon(di, da, DATE_USE,
-  indikasjon = "Nedre urinveisinfeksjon")
+  indikasjon = "Nedre urinveisinfeksjon", display_name = indikasjon,
+  with_metenamin = T)
 }
 \arguments{
 \item{di}{a}
@@ -15,6 +16,10 @@ Figure_ForskrivningerAvAntibiotikaPerIndikasjon(di, da, DATE_USE,
 \item{DATE_USE}{a}
 
 \item{indikasjon}{a}
+
+\item{display_name}{a}
+
+\item{with_metenamin}{a}
 }
 \description{
 Figure_ForskrivningerAvAntibiotikaPerIndikasjon

@@ -4,7 +4,8 @@
 \alias{Data_ForskrivningerAvAntibiotikaPerIndikasjon}
 \title{Data_ForskrivningerAvAntibiotikaPerIndikasjon}
 \usage{
-Data_ForskrivningerAvAntibiotikaPerIndikasjon(di, da, DATE_USE)
+Data_ForskrivningerAvAntibiotikaPerIndikasjon(di, da, DATE_USE,
+  with_metenamin = T)
 }
 \arguments{
 \item{di}{a}
@@ -12,6 +13,8 @@ Data_ForskrivningerAvAntibiotikaPerIndikasjon(di, da, DATE_USE)
 \item{da}{a}
 
 \item{DATE_USE}{a}
+
+\item{with_metenamin}{a}
 }
 \description{
 Data_ForskrivningerAvAntibiotikaPerIndikasjon
