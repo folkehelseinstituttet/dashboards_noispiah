@@ -99,8 +99,8 @@ gen_stack_sykehjem <- function(
 
   stack <- merge(stack, fylkeKommune, by.x = "location", by.y = "kommune", all.x = T)
   setorder(stack, order)
-  stack[level=="fylke",fylke:=location]
-  stack[level=='landsdekkende',fylke:="norge"]
+  stack[level == "fylke", fylke := location]
+  stack[level == "landsdekkende", fylke := "norge"]
 
   stack[level == "landsdekkende", outputDirUse := file.path(outputDirDaily, "Sykehjem", "Landsdekkende")]
   stack[level == "fylke", outputDirUse := file.path(outputDirDaily, "Sykehjem", "Fylke")]
@@ -143,11 +143,11 @@ gen_stack_sykehjem <- function(
   CONFIG$VALID_SYKEHJEM <- stack$location_lower
 
   abonnenter <- get_abonnenter_sykehjem(abonnenter_file)
-  #compare_subset_to_ref(sub=na.omit(unique(abonnenter$kommune_code)), ref=stack$municip_code)
-  abonnenter[stack[level=="kommune"], on="kommune_code==municip_code", uuid_1:=uuid]
+  # compare_subset_to_ref(sub=na.omit(unique(abonnenter$kommune_code)), ref=stack$municip_code)
+  abonnenter[stack[level == "kommune"], on = "kommune_code==municip_code", uuid_1 := uuid]
 
-  #compare_subset_to_ref(sub=na.omit(unique(abonnenter$fylke_code)), ref=stack$county_code)
-  abonnenter[stack[level=="fylke"], on="fylke_code==county_code", uuid_2:=uuid]
+  # compare_subset_to_ref(sub=na.omit(unique(abonnenter$fylke_code)), ref=stack$county_code)
+  abonnenter[stack[level == "fylke"], on = "fylke_code==county_code", uuid_2 := uuid]
 
   abonnenter[nasjonal == "ja", uuid_3 := stack[level == "landsdekkende"]$uuid]
   abonnenter[, base_dir := fs::path(outputDirDaily, "Epost", "Sykehjem", epost)]
@@ -190,11 +190,11 @@ gen_stack_sykehjem <- function(
     abonnenter_to_cat(to_cat, file = to_file, append = T)
   }
 
-  abonnenter <- abonnenter[,c("navn","epost","from_1","to_1","uuid_1","from_2","to_2","uuid_2","from_3","to_3","uuid_3")]
+  abonnenter <- abonnenter[, c("navn", "epost", "from_1", "to_1", "uuid_1", "from_2", "to_2", "uuid_2", "from_3", "to_3", "uuid_3")]
   abonnenter <- melt.data.table(abonnenter, measure = patterns("^from_", "^to_", "^uuid_"), value.name = c("from", "to", "uuid"))
   abonnenter <- na.omit(abonnenter)
-  abonnenter[,variable:=NULL]
-  abonnenter[,type:="sykehjem"]
+  abonnenter[, variable := NULL]
+  abonnenter[, type := "sykehjem"]
 
   return(list(
     stack = stack,
@@ -353,11 +353,11 @@ gen_stack_sykehus <- function(
     abonnenter_to_cat(to_cat, file = to_file, append = T)
   }
 
-  abonnenter <- abonnenter[,c("navn","epost","from_1","to_1","uuid_1","from_2","to_2","uuid_2","from_3","to_3","uuid_3")]
+  abonnenter <- abonnenter[, c("navn", "epost", "from_1", "to_1", "uuid_1", "from_2", "to_2", "uuid_2", "from_3", "to_3", "uuid_3")]
   abonnenter <- melt.data.table(abonnenter, measure = patterns("^from_", "^to_", "^uuid_"), value.name = c("from", "to", "uuid"))
   abonnenter <- na.omit(abonnenter)
-  abonnenter[,variable:=NULL]
-  abonnenter[,type:="sykehus"]
+  abonnenter[, variable := NULL]
+  abonnenter[, type := "sykehus"]
 
   return(list(
     stack = stack,
@@ -375,17 +375,17 @@ gen_plan_email <- function(
                            dev = TRUE,
                            abonnenter) {
   emails <- copy(abonnenter)
-  setnames(emails,"epost","email")
-  #emails[,email:=rev(tstrsplit(to,"/"))[2]]
-  emails[,file_name:=rev(tstrsplit(to,"/"))[1]]
-  emails[,from:=NULL]
-  emails[,uuid:=NULL]
-  setnames(emails,"to","file_absolute")
+  setnames(emails, "epost", "email")
+  # emails[,email:=rev(tstrsplit(to,"/"))[2]]
+  emails[, file_name := rev(tstrsplit(to, "/"))[1]]
+  emails[, from := NULL]
+  emails[, uuid := NULL]
+  setnames(emails, "to", "file_absolute")
 
-  if(dev){
-    emails_to_replace <- c(emails[type=="sykehus"]$email[1],emails[type=="sykehjem"]$email[1])
-    emails[email %in% emails_to_replace, email:="riwh@fhi.no"]
-    emails <- emails[email=="riwh@fhi.no"]
+  if (dev) {
+    emails_to_replace <- c(emails[type == "sykehus"]$email[1], emails[type == "sykehjem"]$email[1])
+    emails[email %in% emails_to_replace, email := "riwh@fhi.no"]
+    emails <- emails[email == "riwh@fhi.no"]
   }
 
   plan_email <- plnr::Plan$new(name_arg = "arg_email")
