@@ -15,8 +15,8 @@ ExtractEnglish <- function(var) {
   unlist(lapply(stringr::str_extract_all(var, "[a-zA-Z]"), paste0, collapse = ""))
 }
 
-get_abonnenter_sykehjem <- function(){
-  abonnenter <- readxl::read_excel(fd::path("config","abonnenter-2019-09-25.xlsx"), sheet = "SYKEHJEM")
+get_abonnenter_sykehjem <- function(abonnenter_file){
+  abonnenter <- readxl::read_excel(fd::path("config",abonnenter_file), sheet = "SYKEHJEM")
   setDT(abonnenter)
   abonnenter <- abonnenter[!is.na(epost)]
   abonnenter[,kommune_code:=tolower(kommune_code)]
@@ -32,6 +32,7 @@ get_abonnenter_sykehjem <- function(){
 #' @param FILES_RMD_USE_SYKEHJEM a
 #' @param FILES_RMD_USE_SYKEHUS a
 #' @param requested_date a
+#' @param abonnenter_file a
 #' @import data.table
 #' @import fhi
 #' @importFrom readxl read_excel
@@ -43,7 +44,9 @@ gen_stack_sykehjem <- function(
   outputDir = fd::path("results"),
   FILES_RMD_USE_SYKEHJEM,
   FILES_RMD_USE_SYKEHUS,
-  requested_date=NULL) {
+  requested_date=NULL,
+  abonnenter_file
+  ) {
   Fylke <- NULL
 
   outputDirDaily <- file.path(outputDir, lubridate::today())
@@ -192,8 +195,8 @@ gen_stack_sykehjem <- function(
     ))
 }
 
-get_abonnenter_sykehus <- function(){
-  abonnenter <- readxl::read_excel(fd::path("config","abonnenter-2019-09-25.xlsx"), sheet = "SYKEHUS")
+get_abonnenter_sykehus <- function(abonnenter_file){
+  abonnenter <- readxl::read_excel(fd::path("config",abonnenter_file), sheet = "SYKEHUS")
   setDT(abonnenter)
   abonnenter <- abonnenter[!is.na(epost)]
   abonnenter[,sykehus:=tolower(sykehus)]
@@ -209,6 +212,7 @@ get_abonnenter_sykehus <- function(){
 #' @param FILES_RMD_USE_SYKEHJEM a
 #' @param FILES_RMD_USE_SYKEHUS a
 #' @param requested_date a
+#' @param abonnenter_file a
 #' @import data.table
 #' @import fhi
 #' @importFrom readxl read_excel
@@ -220,7 +224,9 @@ gen_stack_sykehus <- function(
   outputDir = fd::path("results"),
   FILES_RMD_USE_SYKEHJEM,
   FILES_RMD_USE_SYKEHUS,
-  requested_date=NULL) {
+  requested_date=NULL,
+  abonnenter_file
+  ) {
   Fylke <- NULL
 
   outputDirDaily <- file.path(outputDir, lubridate::today())
@@ -286,7 +292,7 @@ gen_stack_sykehus <- function(
   stack[,location_lower:=tolower(location)]
   stack[, uuid := replicate(.N, uuid::UUIDgenerate(F))]
 
-  abonnenter <- get_abonnenter_sykehus()
+  abonnenter <- get_abonnenter_sykehus(abonnenter_file)
   compare_subset_to_ref(sub=na.omit(unique(abonnenter$sykehus)), ref=stack$location_lower)
   abonnenter[stack, on="sykehus==location_lower", uuid_1:=uuid]
 

@@ -36,7 +36,7 @@ fn_analysis <- function(data, arg_pdf){
       success <- success + 1
     }, error=function(e){
       cat(arg_pdf$index_analysis, " ERROR", "\n", file=fd::path("results", lubridate::today(),"details.txt", package="noispiah"), append=T)
-      Sys.sleep(runif(1, min=1, max = 2.5))
+      Sys.sleep(stats::runif(1, min=1, max = 2.5))
       fails <<- fails + 1
     })
   }

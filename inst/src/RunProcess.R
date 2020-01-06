@@ -7,8 +7,10 @@ CheckData()
 
 if(!fd::config$is_production){
   requested_date <- "2019-11-06"
+  abonnenter_file <- "abonnenter-2019-09-25.xlsx"
 } else {
-  requested_date <- NULL
+  requested_date <- "2019-11-06"
+  abonnenter_file <- "abonnenter-2019-09-25.xlsx"
 }
 
 # copy over the rmd
@@ -17,11 +19,13 @@ copy_rmd()
 analysis_sykehus <- gen_stack_sykehus(dev=!fd::config$is_production,
                           FILES_RMD_USE_SYKEHJEM=CONFIG$FILES_RMD_USE_SYKEHJEM,
                           FILES_RMD_USE_SYKEHUS=CONFIG$FILES_RMD_USE_SYKEHUS,
-                          requested_date=requested_date)
+                          requested_date=requested_date,
+                          abonnenter_file=abonnenter_file)
 analysis_sykehjem <- gen_stack_sykehjem(dev=!fd::config$is_production,
                            FILES_RMD_USE_SYKEHJEM=CONFIG$FILES_RMD_USE_SYKEHJEM,
                            FILES_RMD_USE_SYKEHUS=CONFIG$FILES_RMD_USE_SYKEHUS,
-                           requested_date=requested_date)
+                           requested_date=requested_date,
+                           abonnenter_file=abonnenter_file)
 abonnenter <- rbind(analysis_sykehus$abonnenter,analysis_sykehjem$abonnenter)
 
 # create the plan for emails

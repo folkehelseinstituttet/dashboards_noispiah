@@ -4,9 +4,10 @@
 \alias{Figure_ForskrivningerAvAntibiotikaTilForebyggingOgBehandlingPerIndikasjon}
 \title{Figure_ForskrivningerAvAntibiotikaTilForebyggingOgBehandlingPerIndikasjon}
 \usage{
-
-  Figure_ForskrivningerAvAntibiotikaTilForebyggingOgBehandlingPerIndikasjon(data,
-  arg)
+Figure_ForskrivningerAvAntibiotikaTilForebyggingOgBehandlingPerIndikasjon(
+  data,
+  arg
+)
 }
 \arguments{
 \item{data}{a}

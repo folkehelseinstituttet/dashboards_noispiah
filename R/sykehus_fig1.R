@@ -56,7 +56,7 @@ Figure_PrevalensHAIPerSpesialitet <- function(data, arg) {
   setorder(x,variable)
   levels(tab$variable) <- glue::glue("{lab} (n={n})",
                                      lab=c(
-                                       "Infeksjon i operasjonsområdet",
+                                       glue::glue("Infeksjon i operasjonsomr{fhi::nb$aa}det"),
                                        "Urinveisinfeksjon",
                                        "Nedre luftveisinfeksjon",
                                        "Blodbaneinfeksjon"),

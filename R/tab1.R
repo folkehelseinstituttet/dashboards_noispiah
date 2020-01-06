@@ -25,7 +25,7 @@ Data_DeltagelseForekomstHAIogABiSykehjem <- function(data, arg) {
               antallInfeksjonerHAI = sum(antallInfeksjonerHAI)
             )
             ]
-  t1b[,get:="ÅÅÅ"]
+  t1b[,get:=glue::glue("{fhi::nb$AA}{fhi::nb$AA}{fhi::nb$AA}")]
   t1 <- rbind(t1a,t1b)
 
   t1[, andelBeboereMedInfeksjonHAI := RAWmisc::Format(100 * antallBeboereMedInfeksjonHAI / antallBeboereHAI, 1)]
@@ -85,7 +85,7 @@ Data_DeltagelseForekomstHAIogABiSykehjem <- function(data, arg) {
   }
 
   t2b <- cbind(daTemp1, daTemp2)
-  t2b[,get:="ÅÅÅ"]
+  t2b[,get:=glue::glue("{fhi::nb$AA}{fhi::nb$AA}{fhi::nb$AA}")]
 
   t2 <- rbind(t2a,t2b)
   setnames(t2, "get", arg$varGrouping)
@@ -95,7 +95,7 @@ Data_DeltagelseForekomstHAIogABiSykehjem <- function(data, arg) {
 
   tab <- merge(t1, t2, by = arg$varGrouping, all = T)
   tab <- tab[stringr::str_sort(get(arg$varGrouping), locale = "nb")]
-  tab[get(arg$varGrouping)=="ÅÅÅ",(arg$varGrouping):="Sammenslått"]
+  tab[get(arg$varGrouping)==glue::glue("{fhi::nb$AA}{fhi::nb$AA}{fhi::nb$AA}"),(arg$varGrouping):=glue::glue("Sammensl{fhi::nb$aa}tt")]
 
   # fixing missing
   tab[is.na(antallSykehjemAB),antallSykehjemAB:=0]
@@ -195,7 +195,7 @@ Table_DeltagelseForekomstHAIogABiSykehjem <- function(data, arg) {
         glue::glue("\\multicolumn{{1}}{{|r||}}{{{arg$varGrouping}}}"),
         glue::glue("\\multicolumn{{1}}{{p{{0.9cm}}}}{{Antall {arg$type}}}"),
         glue::glue("\\multicolumn{{1}}{{p{{1.1cm}}}}{{Antall {arg$peopleLabel}}}"),
-        glue::glue("\\multicolumn{{1}}{{p{{1.7cm}}}}{{Andel (antall) {arg$peopleLabel} med minst én HAI (\\%)}}"),
+        glue::glue("\\multicolumn{{1}}{{p{{1.7cm}}}}{{Andel (antall) {arg$peopleLabel} med minst \u00e9n HAI (\\%)}}"),
         "\\multicolumn{1}{p{1.3cm}||}{Prevalens av (antall) HAI (\\%)}",
         glue::glue("\\multicolumn{{1}}{{p{{0.9cm}}}}{{Antall {arg$type}}}"),
         glue::glue("\\multicolumn{{1}}{{p{{1.1cm}}}}{{Antall {arg$peopleLabel}}}"),
