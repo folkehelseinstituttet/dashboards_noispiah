@@ -2,7 +2,7 @@
 #' @param data a
 #' @param arg_pdf a
 #' @export
-fn_email <- function(data, arg_pdf){
+fn_email <- function(data, arg_pdf) {
   # data <- plan_email$data_get()
   # arg_email <- plan_email$analysis_get(1)$arg_email
 
@@ -10,7 +10,7 @@ fn_email <- function(data, arg_pdf){
     "Resultatrapporter fra prevalensunders{fhi::nb$oe}kelsen av ",
     "helsetjenesteassosierte infeksjoner og antibiotikabruk i sykehjem ",
     "{convert_date_to_season(arg_pdfDATE_USE)}"
-    )
+  )
 
   email_text_sykehjem <- glue::glue(
     "Hei<br><br>",
@@ -55,7 +55,7 @@ fn_email <- function(data, arg_pdf){
     "<i>Folkehelseinstituttet</i>"
   )
 
-  if(arg_email$type=="sykehjem"){
+  if (arg_email$type == "sykehjem") {
     email_subject <- email_subject_sykehjem
     email_text <- email_text_sykehjem
   } else {

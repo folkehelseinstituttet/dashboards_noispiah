@@ -13,7 +13,7 @@ CheckData <- function(raw = fd::path("data_raw")) {
 
   dataFilesExist <- TRUE
   for (f in CONFIG$FILES_DATA) {
-    if (!fhi::file_stable(fd::path("data_raw", f))){
+    if (!fhi::file_stable(fd::path("data_raw", f))) {
       fd::msg(f)
       dataFilesExist <- FALSE
     }
@@ -23,6 +23,5 @@ CheckData <- function(raw = fd::path("data_raw")) {
     quit(save = "no")
   }
 
-  unlink(fd::path("results", lubridate::today(),"details.txt"))
-
+  unlink(fd::path("results", lubridate::today(), "details.txt"))
 }

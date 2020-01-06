@@ -1,6 +1,6 @@
 Package: noispiah
 Title: Prevalensundersokelser av helsetjenesteassosierte infeksjoner og antibiotikabruk, NOIS-PIAH
-Version: 2018.11.02
+Version: 2020.01.06
 Authors@R: person("Richard", "White", email = "w@rwhite.no", role = c("aut", "cre"))
 Description: This package implements the NOIS-PIAH analyses and subsequent report generating.
 Depends: R (>= 3.4.0)

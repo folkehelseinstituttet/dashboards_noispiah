@@ -1,11 +1,11 @@
-convert_fylke_to_fhidata <- function(x){
-  x[x=="Finnmark"] <- "Finnmark-Finnmarku"
-  x[x==glue::glue("M{fhi::nb$oe}re og Romsdal")] <- glue::glue("M{fhi::nb$oe}re-og-Romsdal")
-  x[x=="Sogn og Fjordane"] <- "Sogn-og-fjordane"
+convert_fylke_to_fhidata <- function(x) {
+  x[x == "Finnmark"] <- "Finnmark-Finnmarku"
+  x[x == glue::glue("M{fhi::nb$oe}re og Romsdal")] <- glue::glue("M{fhi::nb$oe}re-og-Romsdal")
+  x[x == "Sogn og Fjordane"] <- "Sogn-og-fjordane"
   return(x)
 }
 
-convert_kommune_to_fhidata <- function(x){
+convert_kommune_to_fhidata <- function(x) {
   to_change <- list()
   to_change[[length(to_change)+1]] <- data.table(
     county_code="county09",
@@ -62,5 +62,5 @@ convert_kommune_to_fhidata <- function(x){
     to_change[[i]][[j]] <- as.character(to_change[[i]][[j]])
   }
   to_change <- rbindlist(to_change)
-  x[to_change,on=.(county_code,location),clean:=clean]
+  x[to_change, on = .(county_code, location), clean := clean]
 }
