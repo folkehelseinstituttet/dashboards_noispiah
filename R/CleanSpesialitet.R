@@ -31,10 +31,10 @@ CleanSpesialitet <- function(d){
                         "S0307" ="Indremedisin", # "Lungesykdommer"
                         "S0308" ="Indremedisin", # "Nyresykdommer"
 
-                        "S04" = "Fødselshjelp og kvinnesykdommer", # "Fødselshjelp og kvinnesykdommer"
-                        "S0401" ="Fødselshjelp og kvinnesykdommer", # "Generell gynekologi"
-                        "S0402" ="Fødselshjelp og kvinnesykdommer", # "Gynekologisk onkologi"
-                        "S0403" ="Fødselshjelp og kvinnesykdommer", # "Obstetrikk"
+                        "S04" = glue::glue("F{fhi::nb$oe}dselshjelp og kvinnesykdommer"), # "Fødselshjelp og kvinnesykdommer"
+                        "S0401" =glue::glue("F{fhi::nb$oe}dselshjelp og kvinnesykdommer"), # "Generell gynekologi"
+                        "S0402" =glue::glue("F{fhi::nb$oe}dselshjelp og kvinnesykdommer"), # "Gynekologisk onkologi"
+                        "S0403" =glue::glue("F{fhi::nb$oe}dselshjelp og kvinnesykdommer"), # "Obstetrikk"
 
                         "S05"="Hud- og veneriske sykdommer", # "Hud- og veneriske sykdommer"
 
@@ -46,9 +46,9 @@ CleanSpesialitet <- function(d){
                         "S0701"="Nevrologi", # "Generell nevrologi"
                         "S0702"="Nevrologi", # "Cerebrovaskulære sykdommer"
 
-                        "S09"="Øre-nese-halssykdommer", # "Øre-nese-hals"
+                        "S09"=glue::glue("{fhi::nb$OE}re-nese-halssykdommer"), # "Øre-nese-hals"
 
-                        "S10"="Øyesykdommer", # "Øyesykdommer"
+                        "S10"=glue::glue("{fhi::nb$OE}yesykdommer"), # "Øyesykdommer"
 
                         "S11"="Onkologi", # "Onkologi"
 
@@ -58,9 +58,9 @@ CleanSpesialitet <- function(d){
 
                         "A02"="Observasjon", # "Observasjon"
 
-                        "K A03/A04"="Kirurgisk intensiv/overvåking", # "Kirurgisk intensiv / overvåking"
+                        "K A03/A04"=glue::glue("Kirurgisk intensiv/overv{fhi::nb$aa}king"), # "Kirurgisk intensiv / overvåking"
 
-                        "M A03/A04"="Medisinsk intensiv/overvåking", # "Medisinsk intensiv / overvåking"
+                        "M A03/A04"=glue::glue("Medisinsk intensiv/overv{fhi::nb$aa}king"), # "Medisinsk intensiv / overvåking"
 
                         "100"="Annet/ukjent" # "Annet/ukjent"
                         ),
@@ -71,18 +71,18 @@ CleanSpesialitet <- function(d){
       "Kirurgi",
       "Ortopedisk kirurgi",
       "Indremedisin",
-      "Fødselshjelp og kvinnesykdommer",
+      glue::glue("F{fhi::nb$oe}dselshjelp og kvinnesykdommer"),
       "Hud- og veneriske sykdommer",
       "Barnesykdommer",
       "Nevrologi",
-      "Øre-nese-halssykdommer",
-      "Øyesykdommer",
+      glue::glue("{fhi::nb$OE}re-nese-halssykdommer"),
+      glue::glue("{fhi::nb$OE}yesykdommer"),
       "Onkologi",
       "Revmatologi",
       "Fysikalsk medisin og rehabilitering",
       "Observasjon",
-      "Kirurgisk intensiv/overvåking",
-      "Medisinsk intensiv/overvåking",
+      glue::glue("Kirurgisk intensiv/overv{fhi::nb$aa}king"),
+      glue::glue("Medisinsk intensiv/overv{fhi::nb$aa}king"),
       "Annet/ukjent"
     ))]
   }

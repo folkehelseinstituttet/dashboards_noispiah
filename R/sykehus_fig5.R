@@ -93,10 +93,10 @@ Figure_AntibiotikaTilBehandlingOverTid1 <- function(data, arg) {
                                         "purple",
                                         "orange"),
                                drop=F, guide = guide_legend(ncol = 3, byrow = T, reverse = T))
-  q <- q + scale_x_continuous("Undersøkelsestidspunkt (n=antall forskrivninger)",
+  q <- q + scale_x_continuous(glue::glue("Unders{fhi::nb$oe}kelsestidspunkt (n=antall forskrivninger)"),
                               breaks=ordering$xVal,
                               labels=ordering$xLab)
-  q <- q + scale_y_continuous("Fordeling (%) av forskrivninger til behandling\nper undersøkelsestidspunkt",
+  q <- q + scale_y_continuous(glue::glue("Fordeling (%) av forskrivninger til behandling\nper unders{fhi::nb$oe}kelsestidspunkt"),
                               labels=scales::percent,
                               expand=c(0,0))
   q <- q + expand_limits(y=0)
@@ -168,10 +168,10 @@ Figure_AntibiotikaTilBehandlingOverTid2 <- function(data, arg) {
                                  "orange",
                                  "green"),
                                drop=F, guide = guide_legend(ncol = 2, byrow = T, reverse = T))
-  q <- q + scale_x_continuous("Undersøkelsestidspunkt (n=antall forskrivninger)",
+  q <- q + scale_x_continuous(glue::glue("Unders{fhi::nb$oe}kelsestidspunkt (n=antall forskrivninger)"),
                               breaks=ordering$xVal,
                               labels=ordering$xLab)
-  q <- q + scale_y_continuous("Fordeling (%) av forskrivninger til behandling av\nsamfunnservervede nedre luftveisinfeksjoner\nper undersøkelsestidspunkt",
+  q <- q + scale_y_continuous(glue::glue("Fordeling (%) av forskrivninger til behandling av\nsamfunnservervede nedre luftveisinfeksjoner\nper unders{fhi::nb$oe}kelsestidspunkt"),
                               labels=scales::percent,
                               expand=c(0,0))
   q <- q + fhiplot::theme_fhi_lines()

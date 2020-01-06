@@ -53,7 +53,7 @@ clean_da <- function(da, type="sykehjem"){
     ))]
 
     #
-    toMerge <- ab[,c("ATCKode","Tekst på y-akse")]
+    toMerge <- ab[,c("ATCKode",glue::glue("Tekst p{fhi::nb$aa} y-akse"))]
     setnames(toMerge,c("ATCKode","sykehusAB4"))
 
     nrow(da)
@@ -121,7 +121,7 @@ clean_da <- function(da, type="sykehjem"){
   ), IndikasjonCategory := "Klinisk sepsis"]
 
   da[, IndikasjonCategorySykehus := IndikasjonCategory]
-  da[IndikasjonCategory %in% c("Klinisk sepsis"), IndikasjonCategorySykehus := "Klinisk sepsis, laboratoriebekreftet blodbaneinfeksjon og nøytropen feber"]
+  da[IndikasjonCategory %in% c("Klinisk sepsis"), IndikasjonCategorySykehus := glue::glue("Klinisk sepsis, laboratoriebekreftet blodbaneinfeksjon og n{fhi::nb$oe}ytropen feber")]
 
   da[, IndikasjonCategorySykehusMedKlassifiseringNedreLuftveisinfeksjon:=IndikasjonCategorySykehus]
   da[Klassifisering=="Helsetjenesteassosiert infeksjon" & IndikasjonCategorySykehus=="Nedre luftveisinfeksjon",

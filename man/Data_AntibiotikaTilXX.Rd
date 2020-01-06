@@ -4,9 +4,16 @@
 \alias{Data_AntibiotikaTilXX}
 \title{Data_AntibiotikaTilXX}
 \usage{
-Data_AntibiotikaTilXX(di, da, DATE_USE, indikasjon = NULL,
-  xforebyggingVsBehandling = "Forebygging", ab = "ABBredMethAndre",
-  leftVsRightVar = "SykehusKlassifisering", extraGrouping = ab)
+Data_AntibiotikaTilXX(
+  di,
+  da,
+  DATE_USE,
+  indikasjon = NULL,
+  xforebyggingVsBehandling = "Forebygging",
+  ab = "ABBredMethAndre",
+  leftVsRightVar = "SykehusKlassifisering",
+  extraGrouping = ab
+)
 }
 \arguments{
 \item{di}{a}

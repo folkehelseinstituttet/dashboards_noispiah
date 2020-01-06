@@ -31,7 +31,7 @@ Data_AntibiotikaTilXX <- function(di, da, DATE_USE,
   tab[lr %in% c(
     "Kirurgisk profylakse",
     "Samfunnservervet infeksjon",
-    "Øvre urinveisinfeksjon"
+    glue::glue("{fhi::nb$OE}vre urinveisinfeksjon")
     ),side:="Right"]
   if(nrow(tab)==0) return(tab)
 
@@ -89,7 +89,7 @@ Figure_AntibiotikaTilForebygging <- function(di, da, DATE_USE) {
                               breaks=seq(-1,1,seqBy),
                               labels=paste0(round(abs(seq(-1,1,seqBy))*100),"%"))
   q <- q + labs(main = "Prevalens av helsetjenesteassosierte infeksjoner etter avdelingstype")
-  q <- q + labs(caption="Helsetjenesteassosiert infeksjoner til venstre, samfunnservervede infeksjoner til høyre")
+  q <- q + labs(caption=glue::glue("Helsetjenesteassosiert infeksjoner til venstre, samfunnservervede infeksjoner til h{fhi::nb$oe}yre"))
   q <- q + theme(legend.position = "bottom")
   # q <- q + labs(caption="\n\n\n\n\n\n")
   # q <- q + theme(legend.position=c(0.0,-0.13),
