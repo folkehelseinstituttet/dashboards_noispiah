@@ -42,7 +42,7 @@ plan_pdf$analysis_fn_apply_to_all(fn_analysis)
 
 # arg_pdf <- plan_pdf$analysis_get(1)$arg_pdf
 # plan_pdf$run_all()
-# plan_pdf$run_one(1)
+# plan_pdf$run_one(28)
 plnr::run_all_parallel(
   plan_pdf,
   cores = 4,

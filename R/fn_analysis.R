@@ -12,7 +12,7 @@ fn_analysis <- function(data, arg_pdf){
 
   fs::file_copy(arg_pdf$base_RMD, arg_pdf$RMD)
   fhi::noispiah_resources_copy(arg_pdf$temp_dir)
-  on.exit(unlink(temp_dir, recursive=T, force=T))
+  # on.exit(unlink(temp_dir, recursive=T, force=T))
 
   #Sys.sleep(runif(1))
 

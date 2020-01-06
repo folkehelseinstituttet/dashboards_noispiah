@@ -96,7 +96,7 @@ Figure_AntibiotikaTilBehandlingOverTid1 <- function(data, arg) {
   q <- q + scale_x_continuous("Undersøkelsestidspunkt (n=antall forskrivninger)",
                               breaks=ordering$xVal,
                               labels=ordering$xLab)
-  q <- q + scale_y_continuous("Andel (%) av forskrivninger til behandling\nper undersøkelsestidspunkt",
+  q <- q + scale_y_continuous("Fordeling (%) av forskrivninger til behandling\nper undersøkelsestidspunkt",
                               labels=scales::percent,
                               expand=c(0,0))
   q <- q + expand_limits(y=0)
@@ -123,6 +123,16 @@ Figure_AntibiotikaTilBehandlingOverTid2 <- function(data, arg) {
   # data <- plan$data_get()
   # arg <- plan$analysis_get("sykehus_fig6")$arg
 
+  skeleton <- Data_AntibiotikaTilBehandlingOverTid(
+    di = data$di,
+    da = data$da_all,
+    indikasjon = arg$indikasjon,
+    ab=arg$ab,
+    klassifisering = arg$klassifisering
+  )
+  skeleton[,n:=NULL]
+  skeleton[,denom:=NULL]
+
   tab <- Data_AntibiotikaTilBehandlingOverTid(
     di = data$di,
     da = data$da,
@@ -130,6 +140,10 @@ Figure_AntibiotikaTilBehandlingOverTid2 <- function(data, arg) {
     ab=arg$ab,
     klassifisering=arg$klassifisering
   )
+  tab[, PrevalensTittel:=NULL]
+  tab <- merge(skeleton, tab, all.x=T, by=c("PrevalensDato","ab"))
+  tab[is.na(n), n:=0]
+  tab[is.na(denom), denom:=0]
 
   if(nrow(tab)==0) return(no_data_graph())
   tab <- tab[stringr::str_detect(PrevalensTittel,"^[24]")]
@@ -157,7 +171,7 @@ Figure_AntibiotikaTilBehandlingOverTid2 <- function(data, arg) {
   q <- q + scale_x_continuous("Undersøkelsestidspunkt (n=antall forskrivninger)",
                               breaks=ordering$xVal,
                               labels=ordering$xLab)
-  q <- q + scale_y_continuous("Andel (%) av forskrivninger til behandling av samfunnservervede\nnedre luftveisinfeksjoner per undersøkelsestidspunkt",
+  q <- q + scale_y_continuous("Fordeling (%) av forskrivninger til behandling av\nsamfunnservervede nedre luftveisinfeksjoner\nper undersøkelsestidspunkt",
                               labels=scales::percent,
                               expand=c(0,0))
   q <- q + fhiplot::theme_fhi_lines()
