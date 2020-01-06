@@ -32,6 +32,9 @@ CONFIG$FYLKE <- c(
   "\u00D8stfold"
 )
 
+CONFIG$VALID_SYKEHJEM <- c()
+CONFIG$VALID_SYKEHUS <- c()
+
 #' If folders are setup according to the
 #' dashboard philosophy, then this function
 #' sets RPROJ
