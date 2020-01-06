@@ -8,8 +8,13 @@
 #' @importFrom readxl read_excel
 #' @importFrom RAWmisc RecodeDT
 #' @export Data_AntibiotikaTilBehandlingOverTid
-Data_AntibiotikaTilBehandlingOverTid <- function(di, da, indikasjon=NULL, ab="sykehusAB2",klassifisering=NULL) {
-  . <- NULL
+Data_AntibiotikaTilBehandlingOverTid <- function(
+  di,
+  da,
+  indikasjon=NULL,
+  ab="sykehusAB2",
+  klassifisering=NULL
+  ) {
 
   temp <- da[forebyggingVsBehandling == "Behandling"]
   if(!is.null(indikasjon)) temp <- temp[Indikasjon %in% indikasjon]
@@ -33,24 +38,33 @@ Data_AntibiotikaTilBehandlingOverTid <- function(di, da, indikasjon=NULL, ab="sy
 }
 
 #' Figure_AntibiotikaTilBehandlingOverTid1
-#' @param di a
-#' @param da a
-#' @param da_all a
+#' @param data a
+#' @param arg a
 #' @import data.table
 #' @import ggplot2
-#' @export Figure_AntibiotikaTilBehandlingOverTid1
-Figure_AntibiotikaTilBehandlingOverTid1 <- function(di, da, da_all, DATE_USE) {
-  xLab <- NULL
-  Avdelingstype <- NULL
-  AntallBeboereKl8 <- NULL
-  perc <- NULL
-  variable <- NULL
+#' @export
+Figure_AntibiotikaTilBehandlingOverTid1 <- function(data, arg) {
+  # data <- plan$data_get()
+  # arg <- plan$analysis_get("sykehus_fig5")$arg
 
-  skeleton <- Data_AntibiotikaTilBehandlingOverTid(di = di, da = da_all, ab="sykehusAB2")
+  skeleton <- Data_AntibiotikaTilBehandlingOverTid(
+    di = data$di,
+    da = data$da_all,
+    indikasjon = arg$indikasjon,
+    ab=arg$ab,
+    klassifisering = arg$klassifisering
+    )
   skeleton[,n:=NULL]
   skeleton[,denom:=NULL]
 
-  tab <- Data_AntibiotikaTilBehandlingOverTid(di = di, da = da, ab="sykehusAB2")
+  tab <- Data_AntibiotikaTilBehandlingOverTid(
+    di = data$di,
+    da = data$da,
+    indikasjon = arg$indikasjon,
+    ab=arg$ab,
+    klassifisering = arg$klassifisering
+    )
+
   tab[, PrevalensTittel:=NULL]
   tab <- merge(skeleton, tab, all.x=T, by=c("PrevalensDato","ab"))
   tab[is.na(n), n:=0]
@@ -100,25 +114,23 @@ Figure_AntibiotikaTilBehandlingOverTid1 <- function(di, da, da_all, DATE_USE) {
 
 
 #' Figure_AntibiotikaTilBehandlingOverTid2
-#' @param di a
-#' @param da a
-#' @param DATE_USE a
-#' @param klassifisering a
+#' @param data a
+#' @param arg a
 #' @import data.table
 #' @import ggplot2
-#' @export Figure_AntibiotikaTilBehandlingOverTid2
-Figure_AntibiotikaTilBehandlingOverTid2 <- function(di, da, DATE_USE, klassifisering="Samfunnservervet infeksjon") {
-  xLab <- NULL
-  Avdelingstype <- NULL
-  AntallBeboereKl8 <- NULL
-  perc <- NULL
-  variable <- NULL
+#' @export
+Figure_AntibiotikaTilBehandlingOverTid2 <- function(data, arg) {
+  # data <- plan$data_get()
+  # arg <- plan$analysis_get("sykehus_fig6")$arg
 
-  tab <- Data_AntibiotikaTilBehandlingOverTid(di = di,
-                                              da = da,
-                                              indikasjon=c("Nedre luftveisinfeksjon"),
-                                              ab="sykehusAB3",
-                                              klassifisering=klassifisering)
+  tab <- Data_AntibiotikaTilBehandlingOverTid(
+    di = data$di,
+    da = data$da,
+    indikasjon=arg$indikasjon,
+    ab=arg$ab,
+    klassifisering=arg$klassifisering
+  )
+
   if(nrow(tab)==0) return(no_data_graph())
   tab <- tab[stringr::str_detect(PrevalensTittel,"^[24]")]
 

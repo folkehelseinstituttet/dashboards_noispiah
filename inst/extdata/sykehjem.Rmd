@@ -3,14 +3,10 @@ output:
   fhi::noispiah_document:
     fig_caption: yes
 params:
-  level: landsdekkende
-  location: "Landsdekkende"
-  fylke: "X"
-  DATE_USE: 2018-05-30
-  date_display: "2. kvartal 2018"
+  arg_pdf: NULL
 title: "Prevalensundersøkelsen av helsetjenesteassosierte infeksjoner og antibiotikabruk i sykehjem (NOIS-PIAH)"
-sub_title: "`r dplyr::case_when(params$location=='Landsdekkende' ~ 'Nasjonale resultater',params$level=='fylke' ~ params$location, params$level=='kommune' ~ glue::glue('{params$location} kommune'))` --- `r params$date_display`"
-header: "Prevalensundersøkelsen av helsetjenesteassosierte infeksjoner og antibiotikabruk \\newline ``r dplyr::case_when(params$location=='Landsdekkende' ~ 'Nasjonale resultater',params$level=='fylke' ~ params$location, params$level=='kommune' ~ glue::glue('{params$location} kommune'))` --- `r params$date_display`"
+sub_title: "`r params$arg_pdf$location_name` --- `r params$arg_pdf$date_display`"
+header: "Prevalensundersøkelsen av helsetjenesteassosierte infeksjoner og antibiotikabruk \\newline ``r params$arg_pdf$location_name` --- `r params$arg_pdf$date_display`"
 footer: "Folkehelseinstituttet, Oslo, Norge"
 authors:
   - "_"
@@ -18,40 +14,121 @@ editor_options:
   chunk_output_type: console
 ---
 
-```{r message=FALSE, warning=FALSE, include=FALSE, paged.print=FALSE}
-knitr::opts_chunk$set(fig.width=7.25, fig.height=6) 
+```{r, include=FALSE}
 suppressMessages(suppressPackageStartupMessages(fd::initialize("noispiah")))
+```
 
-dev = fd::config$is_dev
-level <- params$level
-location <- params$location
-fylke <- params$fylke
-DATE_USE <- params$DATE_USE
+```{r message=FALSE, warning=FALSE, include=FALSE, paged.print=FALSE}
+knitr::opts_chunk$set(fig.width = 7.25, fig.height = 6)
+
+####################################
+arg_pdf <- params$arg_pdf
+# arg_pdf <- plan_pdf$analysis_get(2)$arg_pdf
+####################################
+
+level <- arg_pdf$level
+location <- arg_pdf$location
+fylke <- arg_pdf$fylke
+DATE_USE <- arg_pdf$DATE_USE
 
 suppressMessages(library(data.table))
 suppressMessages(library(ggplot2))
 
-da <- readxl::read_excel(fd::path("data_raw","AntibiotikadataPrimer.xlsx"))
-di <- readxl::read_excel(fd::path("data_raw","InfeksjonsdataPrimer.xlsx"))
+da <- readxl::read_excel(fd::path("data_raw", "AntibiotikadataPrimer.xlsx"))
+di <- readxl::read_excel(fd::path("data_raw", "InfeksjonsdataPrimer.xlsx"))
 
 setDT(da)
 setDT(di)
 
-da <- CleanDA(da, type="sykehjem")
-CleanDI(di, type="sykehjem")
+da <- clean_da(da, type = "sykehjem")
+clean_di(di, type = "sykehjem")
+
+plan <- plnr::Plan$new()
+plan$data_add(df = da, name = "da_all")
+plan$data_add(df = di, name = "di_all")
 
 da_all <- copy(da)
 di_all <- copy(di)
 
-if(level=="landsdekkende"){
-  
-} else if(level=="fylke"){
-  da <- da[Fylke==location]
-  di <- di[Fylke==location]
-} else if(level=="kommune"){
-  da <- da[Kommune==location & Fylke==fylke]
-  di <- di[Kommune==location & Fylke==fylke]
+if (arg_pdf$level == "landsdekkende") {
+
+} else if (arg_pdf$level == "fylke") {
+  da <- da[Fylke == arg_pdf$location]
+  di <- di[Fylke == arg_pdf$location]
+} else if (arg_pdf$level == "kommune") {
+  da <- da[Kommune == arg_pdf$location & Fylke == arg_pdf$fylke]
+  di <- di[Kommune == arg_pdf$location & Fylke == arg_pdf$fylke]
 }
+
+plan$data_add(df = da, name = "da")
+plan$data_add(df = di, name = "di")
+
+plan$analysis_add(
+  fn = Table_DeltagelseForekomstHAIogABiSykehjem,
+  name = "sykehjem_tab1",
+  level = arg_pdf$level,
+  DATE_USE = arg_pdf$DATE_USE,
+  type = "sykehjem",
+  da_unique_structure_vars = c(
+    "InstitusjonId",
+    "Avdelingstype",
+    "Avdeling"
+  ),
+  varGrouping = dplyr::case_when(
+    arg_pdf$level == "landsdekkende" ~ "Fylke",
+    arg_pdf$level == "fylke" ~ "Kommune",
+    arg_pdf$level == "kommune" ~ "Institusjon"
+  ),
+  peopleLabel = "beboere"
+)
+
+plan$analysis_add(
+  fn = Figure_ForekomstHAIiSykehjemPerAvdelingstype,
+  name = "sykehjem_fig1",
+  level = arg_pdf$level,
+  DATE_USE = arg_pdf$DATE_USE
+)
+
+plan$analysis_add(
+  fn = Figure_ForskrivningerAvAntibiotikaTilForebyggingOgBehandlingPerIndikasjon,
+  name = "sykehjem_fig2",
+  level = arg_pdf$level,
+  DATE_USE = arg_pdf$DATE_USE,
+  ab = "forebyggVsBehandOgMethVsAndre",
+  group1 = "IndikasjonCategory",
+  group2 = "forebyggVsBehandOgMethVsAndre"
+)
+
+plan$analysis_add(
+  fn = Figure_ForskrivningerAvAntibiotikaPerIndikasjon,
+  name = "sykehjem_fig3",
+  level = arg_pdf$level,
+  DATE_USE = arg_pdf$DATE_USE,
+  indikasjon = "Nedre urinveisinfeksjon",
+  display_name = "Nedre urinveisinfeksjon",
+  with_metenamin = T
+)
+
+plan$analysis_add(
+  fn = Figure_ForskrivningerAvAntibiotikaPerIndikasjon,
+  name = "sykehjem_fig4",
+  level = arg_pdf$level,
+  DATE_USE = arg_pdf$DATE_USE,
+  indikasjon = "Nedre luftveisinfeksjon",
+  display_name = "Nedre luftveisinfeksjon",
+  with_metenamin = F
+)
+
+plan$analysis_add(
+  fn = Figure_ForskrivningerAvAntibiotikaPerIndikasjon,
+  name = "sykehjem_fig5",
+  level = arg_pdf$level,
+  DATE_USE = arg_pdf$DATE_USE,
+  indikasjon = "Hud- og bløtdelsinfeksjon, ekskl. postoperativ sårinfeksjon",
+  display_name = "Hud- og bløtdelsinfeksjon",
+  with_metenamin = F
+)
+
 ```
 
 \newpage 
@@ -79,7 +156,8 @@ I antibiotikadelen av undersøkelsen skal antall beboere som fikk minst ett anti
 \begin{landscape}
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, paged.print=TRUE, results='asis'}
-Table_DeltagelseForekomstHAIogABiSykehjem(di=di,da=da,level=level,DATE_USE=DATE_USE,type="sykehjem")
+plan$run_one("sykehjem_tab1")
+# Table_DeltagelseForekomstHAIogABiSykehjem(di=di,da=da,level=level,DATE_USE=DATE_USE,type="sykehjem")
 ```
 
 \end{landscape}
@@ -91,7 +169,8 @@ Table_DeltagelseForekomstHAIogABiSykehjem(di=di,da=da,level=level,DATE_USE=DATE_
 Figur 1 viser prevalens av helsetjenesteassosierte infeksjoner blant beboere i sykehjem, samlet og per avdelingstype. Resultatene kan brukes til å endre eller iverksette målrettede tiltak for forebygging av helsetjenesteassosierte infeksjoner i sykehjem.
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, paged.print=TRUE, results='asis', fig.cap='\\label{fig:figs1}Prevalens av helsetjenesteassosierte infeksjoner blant beboere i sykehjem per avdelingstype'}
-Figure_ForekomstHAIiSykehjemPerAvdelingstype(di=di,da=da,DATE_USE=DATE_USE)
+plan$run_one("sykehjem_fig1")
+# Figure_ForekomstHAIiSykehjemPerAvdelingstype(di=di,da=da,DATE_USE=DATE_USE)
 ```
 
 \newpage
@@ -103,9 +182,10 @@ Figur 2 viser bruk av antibiotika i sykehjem per indikasjon. Andel forskrivninge
 \begin{landscape}
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, paged.print=TRUE, results='asis', fig.cap='\\label{fig:figs2}Andel forskrivninger av antibiotika til forebygging og behandling i sykehjem, per indikasjon'}
-q <- Figure_ForskrivningerAvAntibiotikaTilForebyggingOgBehandlingPerIndikasjon(di=di,da=da,DATE_USE=DATE_USE)
-f <- sprintf("%s.png",tempfile())
-ggsave(f, plot = q, width = 297*0.75, height = 210*0.75, units = "mm")
+q <- plan$run_one("sykehjem_fig2")
+# q <- Figure_ForskrivningerAvAntibiotikaTilForebyggingOgBehandlingPerIndikasjon(di=di,da=da,DATE_USE=DATE_USE)
+f <- sprintf("%s.png", tempfile())
+ggsave(f, plot = q, width = 297 * 0.75, height = 210 * 0.75, units = "mm")
 ```
 
 \begin{figure}
@@ -126,7 +206,8 @@ Ved hjelp av Nasjonal faglig retningslinje for bruk av antibiotika i primærhels
 Figur 3 viser kun forskrivning til behandling, mens metenamin (Hiprex) i retningslinjen kun er anbefalt til forebygging av urinveisinfeksjoner. Følgelig vil bruk av metenamin vist i figur 3, indikere feilbruk og/eller feilregistrering.
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, paged.print=TRUE, results='asis', fig.cap='\\label{fig:figs3}Forskrivning av antibiotika (virkestoff) til behandling av nedre urinveisinfeksjoner'}
-Figure_ForskrivningerAvAntibiotikaPerIndikasjon(di=di,da=da,DATE_USE=DATE_USE,indikasjon="Nedre urinveisinfeksjon")
+plan$run_one("sykehjem_fig3")
+# Figure_ForskrivningerAvAntibiotikaPerIndikasjon(di=di,da=da,DATE_USE=DATE_USE,indikasjon="Nedre urinveisinfeksjon")
 ```
 
 \newpage
@@ -136,7 +217,8 @@ Figure_ForskrivningerAvAntibiotikaPerIndikasjon(di=di,da=da,DATE_USE=DATE_USE,in
 Ved hjelp av Nasjonal faglig retningslinje for bruk av antibiotika i primærhelsetjenesten kan du vurdere om bruken av antibiotika til behandling av nedre luftveisinfeksjoner vist i figur 4, er i tråd med retningslinjen. Bruken av bredspektrede antibiotika er spesifisert i figuren.
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, paged.print=TRUE, results='asis', fig.cap='\\label{fig:figs4}Forskrivning av antibiotika (virkestoff) til behandling av nedre luftveisinfeksjoner'}
-Figure_ForskrivningerAvAntibiotikaPerIndikasjon(di=di,da=da,DATE_USE=DATE_USE,indikasjon="Nedre luftveisinfeksjon", with_metenamin=F)
+plan$run_one("sykehjem_fig4")
+#Figure_ForskrivningerAvAntibiotikaPerIndikasjon(di = di, da = da, DATE_USE = DATE_USE, indikasjon = "Nedre luftveisinfeksjon", with_metenamin = F)
 ```
 
 \newpage
@@ -146,13 +228,15 @@ Figure_ForskrivningerAvAntibiotikaPerIndikasjon(di=di,da=da,DATE_USE=DATE_USE,in
 Ved hjelp av Nasjonal faglig retningslinje for bruk av antibiotika i primærhelsetjenesten kan du vurdere om bruken av antibiotika til behandling av hud- og bløtdelsinfeksjoner vist i figur 5, er i tråd med retningslinjen. Bruken av bredspektrede antibiotika er spesifisert i figuren.
 
 ```{r echo=FALSE, message=FALSE, warning=FALSE, paged.print=TRUE, results='asis', fig.cap='\\label{fig:figs5}Forskrivning av antibiotika (virkestoff) til behandling av hud- og bløtdelsinfeksjoner, ekskl. postoperative sårinfeksjoner'}
-Figure_ForskrivningerAvAntibiotikaPerIndikasjon(
-  di=di,
-  da=da,
-  DATE_USE=DATE_USE,
-  indikasjon="Hud- og bløtdelsinfeksjon, ekskl. postoperativ sårinfeksjon", 
-  display_name="Hud- og bløtdelsinfeksjon",
-  with_metenamin=F)
+plan$run_one("sykehjem_fig5")
+# Figure_ForskrivningerAvAntibiotikaPerIndikasjon(
+#   di = di,
+#   da = da,
+#   DATE_USE = DATE_USE,
+#   indikasjon = "Hud- og bløtdelsinfeksjon, ekskl. postoperativ sårinfeksjon",
+#   display_name = "Hud- og bløtdelsinfeksjon",
+#   with_metenamin = F
+# )
 ```
 
 

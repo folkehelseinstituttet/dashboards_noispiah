@@ -1,10 +1,12 @@
 #' Data_AndelAntibiotikaTilForebyggingOgBehandling
-#' @param di a
-#' @param da a
-#' @param DATE_USE a
+#' @param data a
+#' @param arg a
 #' @export Data_AndelAntibiotikaTilForebyggingOgBehandling
-Data_AndelAntibiotikaTilForebyggingOgBehandling <- function(di, da, DATE_USE) {
-  temp <- da[PrevalensDato == DATE_USE & !is.na(Klassifisering)]
+Data_AndelAntibiotikaTilForebyggingOgBehandling <- function(data, arg) {
+  # data <- plan$data_get()
+  # arg <- plan$analysis_get("sykehus_fig2")$arg
+
+  temp <- data$da[PrevalensDato == arg$DATE_USE & !is.na(Klassifisering)]
 
   tab <- temp[, .(n = .N), by = .(Klassifisering)]
   tab[, denom := sum(n)]
@@ -26,12 +28,14 @@ Data_AndelAntibiotikaTilForebyggingOgBehandling <- function(di, da, DATE_USE) {
 }
 
 #' Figure_AndelAntibiotikaTilForebyggingOgBehandling
-#' @param di a
-#' @param da a
-#' @param DATE_USE a
-#' @export Figure_AndelAntibiotikaTilForebyggingOgBehandling
-Figure_AndelAntibiotikaTilForebyggingOgBehandling <- function(di, da, DATE_USE) {
-  tab <- Data_AndelAntibiotikaTilForebyggingOgBehandling(di=di,da=da,DATE_USE=DATE_USE)
+#' @param data a
+#' @param arg a
+#' @export
+Figure_AndelAntibiotikaTilForebyggingOgBehandling <- function(data, arg) {
+  # data <- plan$data_get()
+  # arg <- plan$analysis_get("sykehus_fig2")$arg
+
+  tab <- Data_AndelAntibiotikaTilForebyggingOgBehandling(data = data, arg = arg)
   if(nrow(tab)==0) return(no_data_graph())
   tab[, groupingLab:= glue::glue("{grouping} (n={n})",grouping=grouping,n=sum(n)),by=grouping]
 
@@ -52,7 +56,7 @@ Figure_AndelAntibiotikaTilForebyggingOgBehandling <- function(di, da, DATE_USE) 
   q <- ggplot(tab, aes(x = xLab, y = prop, fill= groupingLab))
   q <- q + geom_col(colour = "black", alpha = 1)
   q <- q + scale_x_discrete("Klassifisering (n=antall forskrivninger)")
-  q <- q + scale_y_continuous("Andel (%) forskrivninger antibiotika\ntil forebygging og behandling",
+  q <- q + scale_y_continuous("Andel (%) forskrivninger av antibiotika\ntil forebygging og behandling",
                               labels=scales::percent,
                               expand=c(0,0),
                               lim=c(0,max(tab$prop)*1.1))

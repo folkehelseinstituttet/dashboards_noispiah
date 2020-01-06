@@ -1,9 +1,16 @@
-#' CleanDA
+#' ddf
+#' @export
+ddf <- function(){
+  print(3)
+}
+
+#' clean_da
 #' @param da a
 #' @param type a
-#' @export CleanDA
-CleanDA <- function(da, type="sykehjem"){
-  ab <- readxl::read_excel(file.path(system.file("extdata", package = "noispiah"), "2019-05-06_Antibiotikagrupper.xlsx"))
+#' @export
+clean_da <- function(da, type="sykehjem"){
+  print(1)
+  ab <- readxl::read_excel(file.path(system.file(package = "noispiah"), "extdata", "2019-05-06_Antibiotikagrupper.xlsx"))
   setDT(ab)
 
   if(type=="sykehjem"){

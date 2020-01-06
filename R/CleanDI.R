@@ -1,8 +1,8 @@
 #' CleanDI
 #' @param di a
 #' @param type a
-#' @export CleanDI
-CleanDI <- function(di, type="sykehjem"){
+#' @export
+clean_di <- function(di, type="sykehjem"){
 
   if(type=="sykehjem"){
     di[,NumberPeople:=AntallBeboereKl8]

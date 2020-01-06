@@ -102,42 +102,38 @@ Figure_AntibiotikaTilForebygging <- function(di, da, DATE_USE) {
 
 
 #' Figure_AntibiotikaTilBehandling
-#' @param di a
-#' @param da a
-#' @param DATE_USE a
-#' @param indikasjon a
-#' @param ab a
-#' @param leftVsRightVar a
-#' @param extraGrouping a
-#' @param captionLeft a
-#' @param captionRight a
-#' @param xLab a
-#' @param colours a
-#' @param xforebyggingVsBehandling a
+#' @param data a
+#' @param arg a
 #' @import data.table
 #' @import ggplot2
-#' @export Figure_AntibiotikaTilBehandling
-Figure_AntibiotikaTilBehandling <- function(di, da, DATE_USE, indikasjon=NULL,
-                                            ab="sykehusAB4",
-                                            leftVsRightVar="SykehusKlassifisering",
-                                            extraGrouping="sykehusAB5",
-                                            captionLeft="Helsetjenesteassosierte\ninfeksjoner (n={n})",
-                                            captionRight="Samfunnservervede\ninfeksjoner (n={n})",
-                                            xLab="Andel (%) av forskrivinger til behandling av nedre luftveisinfeksjoner",
-                                            colours=c("orange","blue"),
-                                            xforebyggingVsBehandling="Behandling") {
+#' @export
+Figure_AntibiotikaTilBehandling <- function(data, arg){
+  # function(di, da, DATE_USE, indikasjon=NULL,
+  # ab="sykehusAB4",
+  # leftVsRightVar="SykehusKlassifisering",
+  # extraGrouping="sykehusAB5",
+  # captionLeft="Helsetjenesteassosierte\ninfeksjoner (n={n})",
+  # captionRight="Samfunnservervede\ninfeksjoner (n={n})",
+  # xLab="Andel (%) av forskrivinger til behandling av nedre luftveisinfeksjoner",
+  # colours=c("orange","blue"),
+  # xforebyggingVsBehandling="Behandling") {
 
-  Avdelingstype <- NULL
-  AntallBeboereKl8 <- NULL
-  perc <- NULL
-  variable <- NULL
+  # data <- plan$data_get()
+  # arg <- plan$analysis_get("sykehus_fig7")$arg
+  # arg <- plan$analysis_get("sykehus_fig8")$arg
+  # arg <- plan$analysis_get("sykehus_fig9")$arg
+  # arg <- plan$analysis_get("sykehus_fig10")$arg
 
-  tab <- Data_AntibiotikaTilXX(di = di, da = da, DATE_USE=DATE_USE,
-                               indikasjon = indikasjon,
-                               xforebyggingVsBehandling = xforebyggingVsBehandling,
-                               ab=ab,
-                               leftVsRightVar=leftVsRightVar,
-                               extraGrouping=extraGrouping)
+  tab <- Data_AntibiotikaTilXX(
+    di = data$di,
+    da = data$da,
+    DATE_USE = arg$DATE_USE,
+    indikasjon = arg$indikasjon,
+    xforebyggingVsBehandling = arg$xforebyggingVsBehandling,
+    ab = arg$ab,
+    leftVsRightVar = arg$leftVsRightVar,
+    extraGrouping = arg$extraGrouping
+    )
   if(nrow(tab)==0) return(no_data_graph())
   num_ab <- length(unique(tab$ab))
   if(num_ab<5){
@@ -164,7 +160,7 @@ Figure_AntibiotikaTilBehandling <- function(di, da, DATE_USE, indikasjon=NULL,
   tab[,denomRight:=sum(Right,na.rm=T)]
 
   xLab <- glue::glue("{xLab} (n={n})",
-                     xLab=xLab,
+                     xLab=arg$xLab,
                      n=tab$denomLeft[1]+tab$denomRight[1])
 
   tab[,numLeft:=sum(Left,na.rm=T),by=.(ab)]
@@ -188,7 +184,7 @@ Figure_AntibiotikaTilBehandling <- function(di, da, DATE_USE, indikasjon=NULL,
   q <- q + geom_hline(yintercept=0)
   q <- q + coord_flip()
   q <- q + scale_fill_manual("",
-                             values=colours,
+                             values=arg$colours,
                              drop=F, guide = guide_legend(ncol = 2, byrow = T, reverse = F))
   #q <- q + scale_colour_brewer("", palette = "Set1", guide = guide_legend(ncol = 3, byrow = T, reverse = TRUE))
   q <- q + scale_x_discrete("Antibiotika (virkestoff)", expand = expand_scale(add = c(1, 0)))
@@ -203,14 +199,14 @@ Figure_AntibiotikaTilBehandling <- function(di, da, DATE_USE, indikasjon=NULL,
   q <- q + geom_label(mapping=aes(
     x = ordering$ab[lab_pos],
     y = -maxVal,
-    label = glue::glue(captionLeft,n=tab$denomLeft[1])),
+    label = glue::glue(arg$captionLeft,n=tab$denomLeft[1])),
     hjust=0,
     vjust=1,
     fill="white")
   q <- q + geom_label(mapping=aes(
     x = ordering$ab[lab_pos],
     y = maxVal,
-    label = glue::glue(captionRight,n=tab$denomRight[1])),
+    label = glue::glue(arg$captionRight,n=tab$denomRight[1])),
     hjust=1,
     vjust=1,
     fill="white")

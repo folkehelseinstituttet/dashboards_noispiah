@@ -1,17 +1,18 @@
 #' Data_ForskrivningerAvAntibiotikaPerIndikasjon
-#' @param di a
-#' @param da a
-#' @param DATE_USE a
-#' @param with_metenamin a
+#' @param data a
+#' @param arg a
 #' @import data.table
 #' @importFrom readxl read_excel
 #' @importFrom RAWmisc RecodeDT
 #' @export Data_ForskrivningerAvAntibiotikaPerIndikasjon
-Data_ForskrivningerAvAntibiotikaPerIndikasjon <- function(di, da, DATE_USE, with_metenamin=T) {
+Data_ForskrivningerAvAntibiotikaPerIndikasjon <- function(
+  data,
+  arg
+) {
   . <- NULL
 
-  temp <- da[PrevalensDato == DATE_USE & !is.na(forebyggingVsBehandling)]
-  if(with_metenamin){
+  temp <- data$da[PrevalensDato == arg$DATE_USE & !is.na(forebyggingVsBehandling)]
+  if(arg$with_metenamin){
     temp[,antibiotics:=ABBredMethAndre]
   } else {
     temp[,antibiotics:=ABBredAndre]
@@ -29,36 +30,29 @@ Data_ForskrivningerAvAntibiotikaPerIndikasjon <- function(di, da, DATE_USE, with
 
 
 #' Figure_ForskrivningerAvAntibiotikaPerIndikasjon
-#' @param di a
-#' @param da a
-#' @param DATE_USE a
-#' @param indikasjon a
-#' @param display_name a
-#' @param with_metenamin a
+#' @param data a
+#' @param arg a
 #' @import data.table
 #' @import ggplot2
 #' @importFrom stats reorder
-#' @export Figure_ForskrivningerAvAntibiotikaPerIndikasjon
+#' @export
 Figure_ForskrivningerAvAntibiotikaPerIndikasjon <- function(
-  di,
-  da,
-  DATE_USE,
-  indikasjon = "Nedre urinveisinfeksjon",
-  display_name = indikasjon,
-  with_metenamin=T) {
-  xLab <- NULL
-  Avdelingstype <- NULL
-  AntallBeboereKl8 <- NULL
-  perc <- NULL
-  variable <- NULL
+  data,
+  arg
+  ) {
 
-  tab <- Data_ForskrivningerAvAntibiotikaPerIndikasjon(di = di, da = da, DATE_USE = DATE_USE, with_metenamin=with_metenamin)[IndikasjonCategory == indikasjon]
+
+  tab <- Data_ForskrivningerAvAntibiotikaPerIndikasjon(
+    data = data,
+    arg = arg
+    )[IndikasjonCategory == arg$indikasjon]
+
   if(nrow(tab)==0) return(no_data_graph())
   tab[, xLab := sprintf("%s (n=%s)", ATCSubstans, n)]
   tab[, denom := sum(n), by = IndikasjonCategory]
   tab[, sorting := sum(n), by = xLab]
 
-  if(with_metenamin){
+  if(arg$with_metenamin){
     tab[, antibiotics:=factor(
       antibiotics,
       levels=c(
@@ -99,7 +93,7 @@ Figure_ForskrivningerAvAntibiotikaPerIndikasjon <- function(
   q <- q + scale_y_continuous(
     sprintf(
       "Andel (%%) av forskrivninger til behandling\nav %ser (n=%s)",
-      tolower(display_name),
+      tolower(arg$display_name),
       sum(tab$n)
     ),
     labels = scales::percent,

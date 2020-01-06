@@ -4,7 +4,7 @@
 \alias{CheckData}
 \title{test}
 \usage{
-CheckData(raw = fhi::DashboardFolder("data_raw"))
+CheckData(raw = fd::path("data_raw"))
 }
 \arguments{
 \item{raw}{a}

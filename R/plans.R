@@ -37,8 +37,8 @@ get_abonnenter_sykehjem <- function(){
 #' @importFrom readxl read_excel
 #' @importFrom rmarkdown render
 #' @importFrom lubridate today
-#' @export GenStackSykehjem
-GenStackSykehjem <- function(
+#' @export
+gen_stack_sykehjem <- function(
   dev = FALSE,
   outputDir = fd::path("results"),
   FILES_RMD_USE_SYKEHJEM,
@@ -86,6 +86,13 @@ GenStackSykehjem <- function(
     )
   )
   stack[, order := 1:.N]
+
+  stack[,location_name := dplyr::case_when(
+    level == "landsdekkende" ~ "Nasjonale resultater",
+    level == "kommune" ~ paste0(location," kommune"),
+    TRUE ~ location
+  )]
+
   stack <- merge(stack, fylkeKommune, by.x = "location", by.y = "kommune", all.x = T)
   setorder(stack, order)
   stack[level=="fylke",fylke:=location]
@@ -117,8 +124,10 @@ GenStackSykehjem <- function(
     outputDirUse=outputDirUse,
     location=location)]
 
-  stack[, RMD := FILES_RMD_USE_SYKEHJEM]
-  stack[, dev := dev]
+  stack[, temp_dir := replicate(.N, fhi::temp_dir())]
+  stack[, base_RMD:= CONFIG$FILES_RMD_USE_SYKEHJEM]
+  stack[, RMD := file.path(temp_dir, "file.Rmd")]
+
   stack[, DATE_USE := maxDate]
   stack[, date_display := convert_date_to_season(DATE_USE)]
 
@@ -205,8 +214,8 @@ get_abonnenter_sykehus <- function(){
 #' @importFrom readxl read_excel
 #' @importFrom rmarkdown render
 #' @importFrom lubridate today
-#' @export GenStackSykehus
-GenStackSykehus <- function(
+#' @export gen_stack_sykehus
+gen_stack_sykehus <- function(
   dev = FALSE,
   outputDir = fd::path("results"),
   FILES_RMD_USE_SYKEHJEM,
@@ -249,9 +258,15 @@ GenStackSykehus <- function(
   stack[, order := 1:.N]
   setorder(stack, order)
 
+  stack[,location_name := dplyr::case_when(
+    level == "landsdekkende" ~ "Nasjonale resultater",
+    TRUE ~ location
+  )]
+
   stack[level == "landsdekkende", outputDirUse := file.path(outputDirDaily, "Sykehus", "Landsdekkende")]
   stack[level == "helseforetak", outputDirUse := file.path(outputDirDaily, "Sykehus", "Helseforetak")]
   stack[level == "institusjon", outputDirUse := file.path(outputDirDaily, "Sykehus", "Institusjon")]
+
 
   stack[,pdf := glue::glue("{location}.pdf",
                            location=location)]
@@ -261,8 +276,10 @@ GenStackSykehus <- function(
     outputDirUse=outputDirUse,
     location=location)]
 
-  stack[, RMD := FILES_RMD_USE_SYKEHUS]
-  stack[, dev := dev]
+  stack[, temp_dir := replicate(.N, fhi::temp_dir())]
+  stack[, base_RMD:= CONFIG$FILES_RMD_USE_SYKEHUS]
+  stack[, RMD := file.path(temp_dir, "file.Rmd")]
+
   stack[, DATE_USE := maxDate]
   stack[, date_display := convert_date_to_kvartal(DATE_USE)]
 
@@ -332,5 +349,43 @@ GenStackSykehus <- function(
 
 
 
+#' gen_plan_email
+#' @param dev a
+#' @param abonnenter a
+#' @export
+gen_plan_email <- function(
+  dev=TRUE,
+  abonnenter
+  ){
 
+  emails <- copy(abonnenter)
+  emails[,type:=dplyr::case_when(
+    stringr::str_detect(from,"/Sykehus/") ~ "sykehus",
+    TRUE ~ "sykehjem"
+  )]
+  emails[,email:=rev(tstrsplit(to,"/"))[2]]
+  emails[,file_name:=rev(tstrsplit(to,"/"))[1]]
+  emails[,from:=NULL]
+  emails[,uuid:=NULL]
+  setnames(emails,"to","file_absolute")
 
+  if(dev){
+    emails_to_replace <- c(emails[type=="sykehus"]$email[1],emails[type=="sykehjem"]$email[1])
+    emails[email %in% emails_to_replace, email:="riwh@fhi.no"]
+    emails <- emails[email=="riwh@fhi.no"]
+  }
+
+  plan_email <- plnr::Plan$new(name_arg = "arg_email")
+  emails_loop <- unique(emails[,.(email,type)])
+  for(i in nrow(emails_loop)){
+    d <- emails[email==emails_loop$email[i] & type==emails_loop$type[i]]
+
+    plan_email$analysis_add(
+      type = emails_loop$type[i],
+      email = emails_loop$email[i],
+      files = d[,.(file_absolute,file_name)]
+    )
+  }
+
+  return(plan_email)
+}

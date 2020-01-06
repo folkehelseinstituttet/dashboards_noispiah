@@ -20,7 +20,13 @@ Imports:
   glue,
   lemon,
   scales,
-  fhiplot
+  fhiplot,
+  R6,
+  plnr,
+  dplyr,
+  fd,
+  fhidata,
+  fs
 Suggests:
   testthat
 Remotes: raubreywhite/RAWmisc, folkehelseinstituttet/fhi

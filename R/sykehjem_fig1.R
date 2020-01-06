@@ -1,55 +1,14 @@
 #' Data_ForekomstHAIiSykehjemPerAvdelingstype
-#' @param di a
-#' @param da a
-#' @param DATE_USE a
+#' @param data a
+#' @param arg a
 #' @import data.table
 #' @importFrom RAWmisc RecodeDT
 #' @export Data_ForekomstHAIiSykehjemPerAvdelingstype
-Data_ForekomstHAIiSykehjemPerAvdelingstype <- function(di, da, DATE_USE) {
-  . <- NULL
-  InstitusjonType <- NULL
-  PrevalensDato <- NULL
-  InstitusjonId <- NULL
-  AntallBeboereKl8 <- NULL
-  AntallBeboereMedInfeksjon <- NULL
-  AntallUrinveisInfeksjonerUtenUrinveiskateter_EgenInstitusjon <- NULL
-  AntallUrinveisInfeksjonerUtenUrinveiskateter_AnnetSykehus <- NULL
-  AntallUrinveisInfeksjonerUtenUrinveiskateter_AnnetSykehjem <- NULL
-  AntallUrinveisInfeksjonerMedUrinveiskateter_EgenInstitusjon <- NULL
-  AntallUrinveisInfeksjonerMedUrinveiskateter_AnnetSykehus <- NULL
-  AntallUrinveisInfeksjonerMedUrinveiskateter_AnnetSykehjem <- NULL
-  AntallNedreLuftveisInfeksjoner_EgenInstitusjon <- NULL
-  AntallNedreLuftveisInfeksjoner_AnnetSykehus <- NULL
-  AntallNedreLuftveisInfeksjoner_AnnetSykehjem <- NULL
-  AntallOverflatiskePostOpSarinfeksjoner_EgenInstitusjon <- NULL
-  AntallOverflatiskePostOpSarinfeksjoner_AnnetSykehus <- NULL
-  AntallOverflatiskePostOpSarinfeksjoner_AnnetSykehjem <- NULL
-  AntallDypePostOpSarinfeksjoner_EgenInstitusjon <- NULL
-  AntallDypePostOpSarinfeksjoner_AnnetSykehus <- NULL
-  AntallDypePostOpSarinfeksjoner_AnnetSykehjem <- NULL
-  AntallHudInfeksjoner_EgenInstitusjon <- NULL
-  AntallHudInfeksjoner_AnnetSykehus <- NULL
-  AntallHudInfeksjoner_AnnetSykehjem <- NULL
-  andelBeboereMedInfeksjonHAI <- NULL
-  antallBeboereMedInfeksjonHAI <- NULL
-  antallBeboereHAI <- NULL
-  prevalensAvInfeksjonerHAI <- NULL
-  antallInfeksjonerHAI <- NULL
-  AntallBeboereSomGisAntibiotika <- NULL
-  ATCSubstans <- NULL
-  AndelBeboereSomGisAB <- NULL
-  antallBeboerePaAB <- NULL
-  antallBeboereAB <- NULL
-  PrevalensAvABbruk <- NULL
-  AntallForskrivningerAB <- NULL
+Data_ForekomstHAIiSykehjemPerAvdelingstype <- function(data, arg) {
+  # data <- plan$data_get()
+  # arg <- plan$analysis_get("sykehjem_fig1")$arg
 
-  Avdelingstype <- NULL
-  prop <- NULL
-  value <- NULL
-  variable <- NULL
-  xLab <- NULL
-
-  tab <- di[PrevalensDato == DATE_USE,
+  tab <- data$di[PrevalensDato == arg$DATE_USE,
     .(
       AntallBeboereKl8 = sum(AntallBeboereKl8),
       antallInfeksjonerUrine = sum(
@@ -120,20 +79,19 @@ Data_ForekomstHAIiSykehjemPerAvdelingstype <- function(di, da, DATE_USE) {
 
 
 #' Figure_ForekomstHAIiSykehjemPerAvdelingstype
-#' @param di a
-#' @param da a
-#' @param DATE_USE a
+#' @param data a
+#' @param arg a
 #' @import data.table
 #' @import ggplot2
-#' @export Figure_ForekomstHAIiSykehjemPerAvdelingstype
-Figure_ForekomstHAIiSykehjemPerAvdelingstype <- function(di, da, DATE_USE) {
-  xLab <- NULL
-  Avdelingstype <- NULL
-  AntallBeboereKl8 <- NULL
-  perc <- NULL
-  variable <- NULL
+#' @export
+Figure_ForekomstHAIiSykehjemPerAvdelingstype <- function(data, arg) {
+  # data <- plan$data_get()
+  # arg <- plan$analysis_get("sykehjem_fig1")$arg
 
-  tab <- Data_ForekomstHAIiSykehjemPerAvdelingstype(di = di, da = da, DATE_USE = DATE_USE)
+  tab <- Data_ForekomstHAIiSykehjemPerAvdelingstype(
+    data = data,
+    arg = arg
+  )
 
   if(nrow(tab)==0) return(no_data_graph())
   if(sum(tab$AntallBeboereKl8)==0) return(no_data_graph())

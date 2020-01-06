@@ -4,39 +4,12 @@
 \alias{Figure_AntibiotikaTilBehandling}
 \title{Figure_AntibiotikaTilBehandling}
 \usage{
-Figure_AntibiotikaTilBehandling(di, da, DATE_USE, indikasjon = NULL,
-  ab = "sykehusAB4", leftVsRightVar = "SykehusKlassifisering",
-  extraGrouping = "sykehusAB5",
-  captionLeft = "Helsetjenesteassosierte\\ninfeksjoner (n={n})",
-  captionRight = "Samfunnservervede\\ninfeksjoner (n={n})",
-  xLab = "Andel (\%) av forskrivinger til behandling av nedre luftveisinfeksjoner",
-  colours = c("orange", "blue"),
-  xforebyggingVsBehandling = "Behandling")
+Figure_AntibiotikaTilBehandling(data, arg)
 }
 \arguments{
-\item{di}{a}
+\item{data}{a}
 
-\item{da}{a}
-
-\item{DATE_USE}{a}
-
-\item{indikasjon}{a}
-
-\item{ab}{a}
-
-\item{leftVsRightVar}{a}
-
-\item{extraGrouping}{a}
-
-\item{captionLeft}{a}
-
-\item{captionRight}{a}
-
-\item{xLab}{a}
-
-\item{colours}{a}
-
-\item{xforebyggingVsBehandling}{a}
+\item{arg}{a}
 }
 \description{
 Figure_AntibiotikaTilBehandling

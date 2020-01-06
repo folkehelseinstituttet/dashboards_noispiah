@@ -1,91 +1,23 @@
 #' Data_DeltagelseForekomstHAIogABiSykehjem
-#' @param di a
-#' @param da a
-#' @param level a
-#' @param DATE_USE a
-#' @param type sykehjem
+#' @param data a
+#' @param arg sykehjem
 #' @import data.table
-#' @export Data_DeltagelseForekomstHAIogABiSykehjem
-Data_DeltagelseForekomstHAIogABiSykehjem <- function(di, da, level, DATE_USE, type="sykehjem") {
-  . <- NULL
-  InstitusjonType <- NULL
-  PrevalensDato <- NULL
-  InstitusjonId <- NULL
-  AntallBeboereKl8 <- NULL
-  AntallBeboereMedInfeksjon <- NULL
-  AntallUrinveisInfeksjonerUtenUrinveiskateter_EgenInstitusjon <- NULL
-  AntallUrinveisInfeksjonerUtenUrinveiskateter_AnnetSykehus <- NULL
-  AntallUrinveisInfeksjonerUtenUrinveiskateter_AnnetSykehjem <- NULL
-  AntallUrinveisInfeksjonerMedUrinveiskateter_EgenInstitusjon <- NULL
-  AntallUrinveisInfeksjonerMedUrinveiskateter_AnnetSykehus <- NULL
-  AntallUrinveisInfeksjonerMedUrinveiskateter_AnnetSykehjem <- NULL
-  AntallNedreLuftveisInfeksjoner_EgenInstitusjon <- NULL
-  AntallNedreLuftveisInfeksjoner_AnnetSykehus <- NULL
-  AntallNedreLuftveisInfeksjoner_AnnetSykehjem <- NULL
-  AntallOverflatiskePostOpSarinfeksjoner_EgenInstitusjon <- NULL
-  AntallOverflatiskePostOpSarinfeksjoner_AnnetSykehus <- NULL
-  AntallOverflatiskePostOpSarinfeksjoner_AnnetSykehjem <- NULL
-  AntallDypePostOpSarinfeksjoner_EgenInstitusjon <- NULL
-  AntallDypePostOpSarinfeksjoner_AnnetSykehus <- NULL
-  AntallDypePostOpSarinfeksjoner_AnnetSykehjem <- NULL
-  AntallHudInfeksjoner_EgenInstitusjon <- NULL
-  AntallHudInfeksjoner_AnnetSykehus <- NULL
-  AntallHudInfeksjoner_AnnetSykehjem <- NULL
-  andelBeboereMedInfeksjonHAI <- NULL
-  antallBeboereMedInfeksjonHAI <- NULL
-  antallBeboereHAI <- NULL
-  prevalensAvInfeksjonerHAI <- NULL
-  antallInfeksjonerHAI <- NULL
-  AntallBeboereSomGisAntibiotika <- NULL
-  ATCSubstans <- NULL
-  AndelBeboereSomGisAB <- NULL
-  antallBeboerePaAB <- NULL
-  antallBeboereAB <- NULL
-  PrevalensAvABbruk <- NULL
-  AntallForskrivningerAB <- NULL
+#' @export
+Data_DeltagelseForekomstHAIogABiSykehjem <- function(data, arg) {
+  # data <- plan$data_get()
+  # arg <- plan$analysis_get("sykehus_tab1")$arg
+  # arg <- plan$analysis_get("table1_sykehjem")$arg
 
-  if(type=="sykehjem"){
-    if (!level %in% c("landsdekkende", "fylke", "kommune")) stop("Bad level")
-
-    if (level == "landsdekkende") {
-      varGrouping <- "Fylke"
-    } else if (level == "fylke") {
-      varGrouping <- "Kommune"
-    } else if (level == "kommune") {
-      varGrouping <- "Institusjon"
-    }
-    da_unique_structure_vars <- c(
-      "InstitusjonId",
-      "Avdelingstype",
-      "Avdeling"
-    )
-  } else {
-    if (!level %in% c("landsdekkende", "helseforetak", "institusjon")) stop("Bad level")
-
-    if (level == "landsdekkende") {
-      varGrouping <- "HelseForetak"
-    } else if (level == "helseforetak") {
-      varGrouping <- "Institusjon"
-    } else if (level == "institusjon") {
-      varGrouping <- "Institusjon"
-    }
-    da_unique_structure_vars <- c(
-      "InstitusjonId",
-      "Spesialitet",
-      "Avdeling"
-    )
-  }
-
-  t1a <- di[PrevalensDato == DATE_USE,
+  t1a <- data$di[PrevalensDato == arg$DATE_USE,
     .(
       antallSykehjemHAI = length(unique(InstitusjonId)),
       antallBeboereHAI = sum(NumberPeople),
       antallBeboereMedInfeksjonHAI = sum(NumberPeopleMedInfeksjon),
       antallInfeksjonerHAI = sum(antallInfeksjonerHAI)
     ),
-    by = .(get(varGrouping))
+    by = .(get(arg$varGrouping))
   ]
-  t1b <- di[PrevalensDato == DATE_USE,
+  t1b <- data$di[PrevalensDato == arg$DATE_USE,
             .(
               antallSykehjemHAI = length(unique(InstitusjonId)),
               antallBeboereHAI = sum(NumberPeople),
@@ -98,13 +30,13 @@ Data_DeltagelseForekomstHAIogABiSykehjem <- function(di, da, level, DATE_USE, ty
 
   t1[, andelBeboereMedInfeksjonHAI := RAWmisc::Format(100 * antallBeboereMedInfeksjonHAI / antallBeboereHAI, 1)]
   t1[, prevalensAvInfeksjonerHAI := RAWmisc::Format(100 * antallInfeksjonerHAI / antallBeboereHAI, 1)]
-  setnames(t1, "get", varGrouping)
+  setnames(t1, "get", arg$varGrouping)
 
   # creating T2
-  daTemp1 <- unique(da[PrevalensDato == DATE_USE,
+  daTemp1 <- unique(data$da[PrevalensDato == arg$DATE_USE,
                        c(
-                         varGrouping,
-                         da_unique_structure_vars,
+                         arg$varGrouping,
+                         arg$da_unique_structure_vars,
                          "NumberPeople",
                          "NumberPeopleSomGisAntibiotika"
                        ),
@@ -117,20 +49,20 @@ Data_DeltagelseForekomstHAIogABiSykehjem <- function(di, da, level, DATE_USE, ty
                        antallBeboereAB = sum(NumberPeople),
                        antallBeboerePaAB = sum(NumberPeopleSomGisAntibiotika)
                      ),
-                     by = .(get(varGrouping))
+                     by = .(get(arg$varGrouping))
                      ]
 
-  daTemp2 <- da[PrevalensDato == DATE_USE,
+  daTemp2 <- data$da[PrevalensDato == arg$DATE_USE,
                 .(AntallForskrivningerAB = sum(!is.na(ATCSubstans))),
-                by = .(get(varGrouping))
+                by = .(get(arg$varGrouping))
                 ]
 
   t2a <- merge(daTemp1, daTemp2, by = "get", all = T)
 
-  daTemp1 <- unique(da[PrevalensDato == DATE_USE,
+  daTemp1 <- unique(data$da[PrevalensDato == arg$DATE_USE,
                        c(
-                         varGrouping,
-                         da_unique_structure_vars,
+                         arg$varGrouping,
+                         arg$da_unique_structure_vars,
                          "NumberPeople",
                          "NumberPeopleSomGisAntibiotika"
                        ),
@@ -145,7 +77,7 @@ Data_DeltagelseForekomstHAIogABiSykehjem <- function(di, da, level, DATE_USE, ty
                      )
                      ]
 
-  daTemp2 <- da[PrevalensDato == DATE_USE,
+  daTemp2 <- data$da[PrevalensDato == arg$DATE_USE,
                 .(AntallForskrivningerAB = sum(!is.na(ATCSubstans)))
                 ]
   if(nrow(daTemp2)==0){
@@ -156,14 +88,14 @@ Data_DeltagelseForekomstHAIogABiSykehjem <- function(di, da, level, DATE_USE, ty
   t2b[,get:="ÅÅÅ"]
 
   t2 <- rbind(t2a,t2b)
-  setnames(t2, "get", varGrouping)
+  setnames(t2, "get", arg$varGrouping)
 
   t2[, AndelBeboereSomGisAB := RAWmisc::Format(100 * antallBeboerePaAB / antallBeboereAB, 1)]
   t2[, PrevalensAvABbruk := RAWmisc::Format(100 * AntallForskrivningerAB / antallBeboereAB, 1)]
 
-  tab <- merge(t1, t2, by = varGrouping, all = T)
-  tab <- tab[stringr::str_sort(get(varGrouping), locale = "nb")]
-  tab[get(varGrouping)=="ÅÅÅ",(varGrouping):="Sammenslått"]
+  tab <- merge(t1, t2, by = arg$varGrouping, all = T)
+  tab <- tab[stringr::str_sort(get(arg$varGrouping), locale = "nb")]
+  tab[get(arg$varGrouping)=="ÅÅÅ",(arg$varGrouping):="Sammenslått"]
 
   # fixing missing
   tab[is.na(antallSykehjemAB),antallSykehjemAB:=0]
@@ -186,7 +118,7 @@ Data_DeltagelseForekomstHAIogABiSykehjem <- function(di, da, level, DATE_USE, ty
 
 
   tab <- tab[, c(
-    varGrouping,
+    arg$varGrouping,
     "antallSykehjemHAI",
     "antallBeboereHAI",
     "xandelBeboereMedInfeksjonHAI",
@@ -208,45 +140,49 @@ Data_DeltagelseForekomstHAIogABiSykehjem <- function(di, da, level, DATE_USE, ty
 
 
 #' Table_DeltagelseForekomstHAIogABiSykehjem
-#' @param di a
-#' @param da a
-#' @param level a
-#' @param DATE_USE a
-#' @param type sykehjem
+#' @param data a
+#' @param arg a
 #' @import data.table
 #' @import xtable
 #' @export Table_DeltagelseForekomstHAIogABiSykehjem
-Table_DeltagelseForekomstHAIogABiSykehjem <- function(di, da, level, DATE_USE, type="sykehjem") {
-  tab_source <- Data_DeltagelseForekomstHAIogABiSykehjem(di = di, da = da, level = level, DATE_USE = DATE_USE, type=type)
+Table_DeltagelseForekomstHAIogABiSykehjem <- function(data, arg) {
+  # data <- plan$data_get()
+  # arg <- plan$analysis_get("sykehus_tab1")$arg
+  # arg <- plan$analysis_get("table1_sykehjem")$arg
+
+  tab_source <- Data_DeltagelseForekomstHAIogABiSykehjem(
+    data = data,
+    arg = arg
+    )
   splitting <- fhi::split_equal(1:nrow(tab_source), size = 25)
 
   for(i in seq_along(splitting)){
     if(i>1) cat("\\newpage\n\n")
     tab <- tab_source[splitting[[i]],]
 
-    if(type=="sykehjem"){
-      if (!level %in% c("landsdekkende", "fylke", "kommune")) stop("Bad level")
+    if(arg$type=="sykehjem"){
+      if (!arg$level %in% c("landsdekkende", "fylke", "kommune")) stop("Bad level")
 
-      if (level == "landsdekkende") {
+      if (arg$level == "landsdekkende") {
         varGrouping <- "Fylke"
-      } else if (level == "fylke") {
+      } else if (arg$level == "fylke") {
         varGrouping <- "Kommune"
-      } else if (level == "kommune") {
+      } else if (arg$level == "kommune") {
         varGrouping <- "Institusjon"
       }
-      di[,NumberPeople:=AntallBeboereKl8]
+      #di[,NumberPeople:=AntallBeboereKl8]
       peopleLabel <- "beboere"
     } else {
-      if (!level %in% c("landsdekkende", "helseforetak", "institusjon")) stop("Bad level")
+      if (!arg$level %in% c("landsdekkende", "helseforetak", "institusjon")) stop("Bad level")
 
-      if (level == "landsdekkende") {
+      if (arg$level == "landsdekkende") {
         varGrouping <- "Helseforetak"
-      } else if (level == "helseforetak") {
+      } else if (arg$level == "helseforetak") {
         varGrouping <- "Sykehus"
-      } else if (level == "institusjon") {
+      } else if (arg$level == "institusjon") {
         varGrouping <- "Sykehus"
       }
-      di[,NumberPeople:=AntallPasienterKl8]
+      #di[,NumberPeople:=AntallPasienterKl8]
       peopleLabel <- "pasienter"
     }
 
@@ -256,14 +192,14 @@ Table_DeltagelseForekomstHAIogABiSykehjem <- function(di, da, level, DATE_USE, t
       "& \\multicolumn{4}{c||}{HAI} & \\multicolumn{4}{c|}{Bruk av antibiotika} \\\\\n",
       " \\hline\n",
       paste0(c(
-        glue::glue("\\multicolumn{{1}}{{|r||}}{{{varGrouping}}}"),
-        glue::glue("\\multicolumn{{1}}{{p{{0.9cm}}}}{{Antall {type}}}"),
-        glue::glue("\\multicolumn{{1}}{{p{{1.1cm}}}}{{Antall {peopleLabel}}}"),
-        glue::glue("\\multicolumn{{1}}{{p{{1.7cm}}}}{{Andel (antall) {peopleLabel} med minst én HAI (\\%)}}"),
+        glue::glue("\\multicolumn{{1}}{{|r||}}{{{arg$varGrouping}}}"),
+        glue::glue("\\multicolumn{{1}}{{p{{0.9cm}}}}{{Antall {arg$type}}}"),
+        glue::glue("\\multicolumn{{1}}{{p{{1.1cm}}}}{{Antall {arg$peopleLabel}}}"),
+        glue::glue("\\multicolumn{{1}}{{p{{1.7cm}}}}{{Andel (antall) {arg$peopleLabel} med minst én HAI (\\%)}}"),
         "\\multicolumn{1}{p{1.3cm}||}{Prevalens av (antall) HAI (\\%)}",
-        glue::glue("\\multicolumn{{1}}{{p{{0.9cm}}}}{{Antall {type}}}"),
-        glue::glue("\\multicolumn{{1}}{{p{{1.1cm}}}}{{Antall {peopleLabel}}}"),
-        glue::glue("\\multicolumn{{1}}{{p{{2cm}}}}{{Andel (antall) {peopleLabel} som fikk minst ett antibiotikum (\\%)}}"),
+        glue::glue("\\multicolumn{{1}}{{p{{0.9cm}}}}{{Antall {arg$type}}}"),
+        glue::glue("\\multicolumn{{1}}{{p{{1.1cm}}}}{{Antall {arg$peopleLabel}}}"),
+        glue::glue("\\multicolumn{{1}}{{p{{2cm}}}}{{Andel (antall) {arg$peopleLabel} som fikk minst ett antibiotikum (\\%)}}"),
         "\\multicolumn{1}{p{2.75cm}|}{Prevalens av (antall) antibiotikaforskrivninger (\\%)}  \\\\\n"
       ), collapse = " & ")
     )
@@ -271,7 +207,7 @@ Table_DeltagelseForekomstHAIogABiSykehjem <- function(di, da, level, DATE_USE, t
     if(i==1){
       xtab <- xtable::xtable(
         tab,
-        caption = sprintf("Deltagelse, forekomst av helsetjenesteassosierte infeksjoner og bruk av antibiotika i %s",type)
+        caption = sprintf("Deltagelse, forekomst av helsetjenesteassosierte infeksjoner og bruk av antibiotika i %s",arg$type)
       )
     } else {
       xtab <- xtable::xtable(
