@@ -15,12 +15,23 @@ Imports:
   ggplot2,
   processx,
   readxl,
-  uuid
+  uuid,
+  crayon,
+  glue,
+  lemon,
+  scales,
+  fhiplot,
+  R6,
+  plnr,
+  dplyr,
+  fd,
+  fhidata,
+  fs
 Suggests:
   testthat
 Remotes: raubreywhite/RAWmisc, folkehelseinstituttet/fhi
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
-RoxygenNote: 6.0.1
+RoxygenNote: 6.1.1
 Additional_repositories: https://folkehelseinstituttet.github.io/drat/, https://raubreywhite.github.io/drat/
