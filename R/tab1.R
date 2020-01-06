@@ -17,16 +17,17 @@ Data_DeltagelseForekomstHAIogABiSykehjem <- function(data, arg) {
     ),
     by = .(get(arg$varGrouping))
   ]
-  t1b <- data$di[PrevalensDato == arg$DATE_USE,
-            .(
-              antallSykehjemHAI = length(unique(InstitusjonId)),
-              antallBeboereHAI = sum(NumberPeople),
-              antallBeboereMedInfeksjonHAI = sum(NumberPeopleMedInfeksjon),
-              antallInfeksjonerHAI = sum(antallInfeksjonerHAI)
-            )
-            ]
-  t1b[,get:=glue::glue("{fhi::nb$AA}{fhi::nb$AA}{fhi::nb$AA}")]
-  t1 <- rbind(t1a,t1b)
+  t1b <- data$di[
+    PrevalensDato == arg$DATE_USE,
+    .(
+      antallSykehjemHAI = length(unique(InstitusjonId)),
+      antallBeboereHAI = sum(NumberPeople),
+      antallBeboereMedInfeksjonHAI = sum(NumberPeopleMedInfeksjon),
+      antallInfeksjonerHAI = sum(antallInfeksjonerHAI)
+    )
+  ]
+  t1b[, get := glue::glue("{fhi::nb$AA}{fhi::nb$AA}{fhi::nb$AA}")]
+  t1 <- rbind(t1a, t1b)
 
   t1[, andelBeboereMedInfeksjonHAI := RAWmisc::Format(100 * antallBeboereMedInfeksjonHAI / antallBeboereHAI, 1)]
   t1[, prevalensAvInfeksjonerHAI := RAWmisc::Format(100 * antallInfeksjonerHAI / antallBeboereHAI, 1)]
@@ -34,60 +35,62 @@ Data_DeltagelseForekomstHAIogABiSykehjem <- function(data, arg) {
 
   # creating T2
   daTemp1 <- unique(data$da[PrevalensDato == arg$DATE_USE,
-                       c(
-                         arg$varGrouping,
-                         arg$da_unique_structure_vars,
-                         "NumberPeople",
-                         "NumberPeopleSomGisAntibiotika"
-                       ),
-                       with = F
-                       ])
+    c(
+      arg$varGrouping,
+      arg$da_unique_structure_vars,
+      "NumberPeople",
+      "NumberPeopleSomGisAntibiotika"
+    ),
+    with = F
+  ])
 
   daTemp1 <- daTemp1[,
-                     .(
-                       antallSykehjemAB = length(unique(InstitusjonId)),
-                       antallBeboereAB = sum(NumberPeople),
-                       antallBeboerePaAB = sum(NumberPeopleSomGisAntibiotika)
-                     ),
-                     by = .(get(arg$varGrouping))
-                     ]
+    .(
+      antallSykehjemAB = length(unique(InstitusjonId)),
+      antallBeboereAB = sum(NumberPeople),
+      antallBeboerePaAB = sum(NumberPeopleSomGisAntibiotika)
+    ),
+    by = .(get(arg$varGrouping))
+  ]
 
   daTemp2 <- data$da[PrevalensDato == arg$DATE_USE,
-                .(AntallForskrivningerAB = sum(!is.na(ATCSubstans))),
-                by = .(get(arg$varGrouping))
-                ]
+    .(AntallForskrivningerAB = sum(!is.na(ATCSubstans))),
+    by = .(get(arg$varGrouping))
+  ]
 
   t2a <- merge(daTemp1, daTemp2, by = "get", all = T)
 
   daTemp1 <- unique(data$da[PrevalensDato == arg$DATE_USE,
-                       c(
-                         arg$varGrouping,
-                         arg$da_unique_structure_vars,
-                         "NumberPeople",
-                         "NumberPeopleSomGisAntibiotika"
-                       ),
-                       with = F
-                       ])
+    c(
+      arg$varGrouping,
+      arg$da_unique_structure_vars,
+      "NumberPeople",
+      "NumberPeopleSomGisAntibiotika"
+    ),
+    with = F
+  ])
 
-  daTemp1 <- daTemp1[,
-                     .(
-                       antallSykehjemAB = length(unique(InstitusjonId)),
-                       antallBeboereAB = sum(NumberPeople),
-                       antallBeboerePaAB = sum(NumberPeopleSomGisAntibiotika)
-                     )
-                     ]
+  daTemp1 <- daTemp1[
+    ,
+    .(
+      antallSykehjemAB = length(unique(InstitusjonId)),
+      antallBeboereAB = sum(NumberPeople),
+      antallBeboerePaAB = sum(NumberPeopleSomGisAntibiotika)
+    )
+  ]
 
-  daTemp2 <- data$da[PrevalensDato == arg$DATE_USE,
-                .(AntallForskrivningerAB = sum(!is.na(ATCSubstans)))
-                ]
-  if(nrow(daTemp2)==0){
-    daTemp2 <- data.table(AntallForskrivningerAB=0)
+  daTemp2 <- data$da[
+    PrevalensDato == arg$DATE_USE,
+    .(AntallForskrivningerAB = sum(!is.na(ATCSubstans)))
+  ]
+  if (nrow(daTemp2) == 0) {
+    daTemp2 <- data.table(AntallForskrivningerAB = 0)
   }
 
   t2b <- cbind(daTemp1, daTemp2)
-  t2b[,get:=glue::glue("{fhi::nb$AA}{fhi::nb$AA}{fhi::nb$AA}")]
+  t2b[, get := glue::glue("{fhi::nb$AA}{fhi::nb$AA}{fhi::nb$AA}")]
 
-  t2 <- rbind(t2a,t2b)
+  t2 <- rbind(t2a, t2b)
   setnames(t2, "get", arg$varGrouping)
 
   t2[, AndelBeboereSomGisAB := RAWmisc::Format(100 * antallBeboerePaAB / antallBeboereAB, 1)]
@@ -95,26 +98,26 @@ Data_DeltagelseForekomstHAIogABiSykehjem <- function(data, arg) {
 
   tab <- merge(t1, t2, by = arg$varGrouping, all = T)
   tab <- tab[stringr::str_sort(get(arg$varGrouping), locale = "nb")]
-  tab[get(arg$varGrouping)==glue::glue("{fhi::nb$AA}{fhi::nb$AA}{fhi::nb$AA}"),(arg$varGrouping):=glue::glue("Sammensl{fhi::nb$aa}tt")]
+  tab[get(arg$varGrouping) == glue::glue("{fhi::nb$AA}{fhi::nb$AA}{fhi::nb$AA}"), (arg$varGrouping) := glue::glue("Sammensl{fhi::nb$aa}tt")]
 
   # fixing missing
-  tab[is.na(antallSykehjemAB),antallSykehjemAB:=0]
+  tab[is.na(antallSykehjemAB), antallSykehjemAB := 0]
 
   # making pretty
-  tab[,xandelBeboereMedInfeksjonHAI:=sprintf("%s%% (n=%s)",andelBeboereMedInfeksjonHAI,antallBeboereMedInfeksjonHAI)]
-  tab[,xprevalensAvInfeksjonerHAI:=sprintf("%s%% (n=%s)",prevalensAvInfeksjonerHAI,antallInfeksjonerHAI)]
+  tab[, xandelBeboereMedInfeksjonHAI := sprintf("%s%% (n=%s)", andelBeboereMedInfeksjonHAI, antallBeboereMedInfeksjonHAI)]
+  tab[, xprevalensAvInfeksjonerHAI := sprintf("%s%% (n=%s)", prevalensAvInfeksjonerHAI, antallInfeksjonerHAI)]
 
-  tab[,xAndelBeboereSomGisAB:=sprintf("%s%% (n=%s)",AndelBeboereSomGisAB,antallBeboerePaAB)]
-  tab[,xPrevalensAvABbruk:=sprintf("%s%% (n=%s)",PrevalensAvABbruk,AntallForskrivningerAB)]
+  tab[, xAndelBeboereSomGisAB := sprintf("%s%% (n=%s)", AndelBeboereSomGisAB, antallBeboerePaAB)]
+  tab[, xPrevalensAvABbruk := sprintf("%s%% (n=%s)", PrevalensAvABbruk, AntallForskrivningerAB)]
 
   # fixing percentages w/ denoms of 0
-  tab[antallSykehjemHAI==0,antallBeboereHAI:=0]
-  tab[antallSykehjemHAI==0,xandelBeboereMedInfeksjonHAI:="-"]
-  tab[antallSykehjemHAI==0,xprevalensAvInfeksjonerHAI:="-"]
+  tab[antallSykehjemHAI == 0, antallBeboereHAI := 0]
+  tab[antallSykehjemHAI == 0, xandelBeboereMedInfeksjonHAI := "-"]
+  tab[antallSykehjemHAI == 0, xprevalensAvInfeksjonerHAI := "-"]
 
-  tab[antallSykehjemAB==0,antallBeboereAB:=0]
-  tab[antallSykehjemAB==0,xAndelBeboereSomGisAB:="-"]
-  tab[antallSykehjemAB==0,xPrevalensAvABbruk:="-"]
+  tab[antallSykehjemAB == 0, antallBeboereAB := 0]
+  tab[antallSykehjemAB == 0, xAndelBeboereSomGisAB := "-"]
+  tab[antallSykehjemAB == 0, xPrevalensAvABbruk := "-"]
 
 
   tab <- tab[, c(
@@ -130,9 +133,9 @@ Data_DeltagelseForekomstHAIogABiSykehjem <- function(data, arg) {
   ), with = F]
   tab <- as.matrix(tab)
 
-  for(i in 1:ncol(tab)){
-    vals <- tab[,i]
-    tab[vals=="NA% (n=NA)",i] <- ""
+  for (i in 1:ncol(tab)) {
+    vals <- tab[, i]
+    tab[vals == "NA% (n=NA)", i] <- ""
   }
 
   return(tab)
@@ -153,14 +156,14 @@ Table_DeltagelseForekomstHAIogABiSykehjem <- function(data, arg) {
   tab_source <- Data_DeltagelseForekomstHAIogABiSykehjem(
     data = data,
     arg = arg
-    )
+  )
   splitting <- fhi::split_equal(1:nrow(tab_source), size = 25)
 
-  for(i in seq_along(splitting)){
-    if(i>1) cat("\\newpage\n\n")
-    tab <- tab_source[splitting[[i]],]
+  for (i in seq_along(splitting)) {
+    if (i > 1) cat("\\newpage\n\n")
+    tab <- tab_source[splitting[[i]], ]
 
-    if(arg$type=="sykehjem"){
+    if (arg$type == "sykehjem") {
       if (!arg$level %in% c("landsdekkende", "fylke", "kommune")) stop("Bad level")
 
       if (arg$level == "landsdekkende") {
@@ -170,7 +173,7 @@ Table_DeltagelseForekomstHAIogABiSykehjem <- function(data, arg) {
       } else if (arg$level == "kommune") {
         varGrouping <- "Institusjon"
       }
-      #di[,NumberPeople:=AntallBeboereKl8]
+      # di[,NumberPeople:=AntallBeboereKl8]
       peopleLabel <- "beboere"
     } else {
       if (!arg$level %in% c("landsdekkende", "helseforetak", "institusjon")) stop("Bad level")
@@ -182,7 +185,7 @@ Table_DeltagelseForekomstHAIogABiSykehjem <- function(data, arg) {
       } else if (arg$level == "institusjon") {
         varGrouping <- "Sykehus"
       }
-      #di[,NumberPeople:=AntallPasienterKl8]
+      # di[,NumberPeople:=AntallPasienterKl8]
       peopleLabel <- "pasienter"
     }
 
@@ -204,10 +207,10 @@ Table_DeltagelseForekomstHAIogABiSykehjem <- function(data, arg) {
       ), collapse = " & ")
     )
 
-    if(i==1){
+    if (i == 1) {
       xtab <- xtable::xtable(
         tab,
-        caption = sprintf("Deltagelse, forekomst av helsetjenesteassosierte infeksjoner og bruk av antibiotika i %s",arg$type)
+        caption = sprintf("Deltagelse, forekomst av helsetjenesteassosierte infeksjoner og bruk av antibiotika i %s", arg$type)
       )
     } else {
       xtab <- xtable::xtable(
@@ -218,7 +221,7 @@ Table_DeltagelseForekomstHAIogABiSykehjem <- function(data, arg) {
 
     xtable::align(xtab) <- "r|r||r|r|r|r||r|r|r|r|"
 
-    if(i==length(splitting)){
+    if (i == length(splitting)) {
       hline.after <- c(-1, 0, nrow(xtab) - 1, nrow(xtab))
     } else {
       hline.after <- c(-1, 0, nrow(xtab))

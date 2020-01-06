@@ -1,8 +1,8 @@
-FormatNorwegian_int <- function(x){
-  if(x<10000){
-    return(formatC(x,big.mark="", format="f", drop0trailing = T))
+FormatNorwegian_int <- function(x) {
+  if (x < 10000) {
+    return(formatC(x, big.mark = "", format = "f", drop0trailing = T))
   } else {
-    formatC(x,big.mark=" ", format="f", drop0trailing = T)
+    formatC(x, big.mark = " ", format = "f", drop0trailing = T)
   }
 }
 

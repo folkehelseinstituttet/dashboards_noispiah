@@ -4,14 +4,9 @@
 \alias{gen_stack_sykehus}
 \title{GenStackSykehus}
 \usage{
-gen_stack_sykehus(
-  dev = FALSE,
-  outputDir = fd::path("results"),
-  FILES_RMD_USE_SYKEHJEM,
-  FILES_RMD_USE_SYKEHUS,
-  requested_date = NULL,
-  abonnenter_file
-)
+gen_stack_sykehus(dev = FALSE, outputDir = fd::path("results"),
+  FILES_RMD_USE_SYKEHJEM, FILES_RMD_USE_SYKEHUS, requested_date = NULL,
+  abonnenter_file)
 }
 \arguments{
 \item{dev}{a}
