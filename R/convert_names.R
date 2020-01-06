@@ -45,14 +45,22 @@ convert_kommune_to_fhidata <- function(x){
   )
   to_change[[length(to_change)+1]] <- data.table(
     county_code="county05",
-    location=glue::glue("{fhi$nb$OE}stre Toten"),
-    clean=glue::glue("{fhi$nb$OE}stre-Toten")
+    location=glue::glue("{fhi::nb$OE}stre Toten"),
+    clean=glue::glue("{fhi::nb$OE}stre-Toten")
   )
   to_change[[length(to_change)+1]] <- data.table(
     county_code="county05",
-    location=glue::glue("{fhi$nb$OE}ystre Slidre"),
-    clean=glue::glue("{fhi$nb$OE}ystre-Slidre")
+    location=glue::glue("{fhi::nb$OE}ystre Slidre"),
+    clean=glue::glue("{fhi::nb$OE}ystre-Slidre")
   )
+  to_change[[length(to_change)+1]] <- data.table(
+    county_code="county05",
+    location=glue::glue("Vestre Slidre"),
+    clean=glue::glue("Vestre-Slidre")
+  )
+  for(i in seq_along(to_change)) for(j in 1:ncol(to_change[[i]])){
+    to_change[[i]][[j]] <- as.character(to_change[[i]][[j]])
+  }
   to_change <- rbindlist(to_change)
   x[to_change,on=.(county_code,location),clean:=clean]
 }
