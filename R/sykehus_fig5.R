@@ -169,7 +169,10 @@ Figure_AntibiotikaTilBehandlingOverTid2 <- function(data, arg) {
   tab <- merge(tab, ordering[, c("PrevalensDato", "xVal")], by = "PrevalensDato")
   tab[, ab := factor(ab, levels = rev(levels(ab)))]
 
-  q <- ggplot(tab, aes(x = xVal, y = n / denom, fill = ab))
+  tab[, prop := n / denom]
+  tab[is.nan(prop), prop := 0]
+
+  q <- ggplot(tab, aes(x = xVal, y = prop, fill = ab))
   q <- q + geom_col(colour = "black", alpha = 1)
   q <- q + scale_fill_manual("",
     values = c(
