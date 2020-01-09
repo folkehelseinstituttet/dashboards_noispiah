@@ -8,3 +8,15 @@ no_data_graph <- function() {
   q <- q + scale_y_continuous("", breaks = NULL)
   q
 }
+
+#' no data graph
+#' @export
+no_data_table <- function() {
+  xtab <- xtable::xtable(data.frame("Ingen data"))
+  xtable::print.xtable(xtab,
+                       include.rownames = FALSE,
+                       include.colnames = FALSE,
+                       caption.placement = "top",
+                       comment = F
+  )
+}
