@@ -3,6 +3,7 @@
 #' @param type a
 #' @export
 clean_di <- function(di, type = "sykehjem") {
+  di[,PrevalensDato:=as.Date(PrevalensDato)]
   if (type == "sykehjem") {
     di[, NumberPeople := AntallBeboereKl8]
     di[, NumberPeopleMedInfeksjon := AntallBeboereMedInfeksjon]

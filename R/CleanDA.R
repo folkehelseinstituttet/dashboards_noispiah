@@ -9,7 +9,8 @@ ddf <- function() {
 #' @param type a
 #' @export
 clean_da <- function(da, type = "sykehjem") {
-  print(1)
+  da[,PrevalensDato:=as.Date(PrevalensDato)]
+
   ab <- readxl::read_excel(file.path(system.file(package = "noispiah"), "extdata", "2019-05-06_Antibiotikagrupper.xlsx"))
   setDT(ab)
 
