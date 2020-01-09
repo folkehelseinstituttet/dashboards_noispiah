@@ -14,9 +14,9 @@ no_data_graph <- function() {
 no_data_table <- function() {
   xtab <- xtable::xtable(data.frame("Ingen data"))
   xtable::print.xtable(xtab,
-                       include.rownames = FALSE,
-                       include.colnames = FALSE,
-                       caption.placement = "top",
-                       comment = F
+    include.rownames = FALSE,
+    include.colnames = FALSE,
+    caption.placement = "top",
+    comment = F
   )
 }
