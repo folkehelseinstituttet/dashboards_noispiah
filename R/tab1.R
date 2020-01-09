@@ -26,6 +26,7 @@ Data_DeltagelseForekomstHAIogABiSykehjem <- function(data, arg) {
       antallInfeksjonerHAI = sum(antallInfeksjonerHAI)
     )
   ]
+  t1a[,get:=glue::glue(get)]
   t1b[, get := glue::glue("{fhi::nb$AA}{fhi::nb$AA}{fhi::nb$AA}")]
   t1 <- rbind(t1a, t1b)
 
@@ -90,6 +91,7 @@ Data_DeltagelseForekomstHAIogABiSykehjem <- function(data, arg) {
   t2b <- cbind(daTemp1, daTemp2)
   t2b[, get := glue::glue("{fhi::nb$AA}{fhi::nb$AA}{fhi::nb$AA}")]
 
+  t2a[,get:=glue::glue(get)]
   t2 <- rbind(t2a, t2b)
   setnames(t2, "get", arg$varGrouping)
 
@@ -151,12 +153,14 @@ Data_DeltagelseForekomstHAIogABiSykehjem <- function(data, arg) {
 Table_DeltagelseForekomstHAIogABiSykehjem <- function(data, arg) {
   # data <- plan$data_get()
   # arg <- plan$analysis_get("sykehus_tab1")$arg
-  # arg <- plan$analysis_get("table1_sykehjem")$arg
+  # arg <- plan$analysis_get("sykehjem_tab1")$arg
 
   tab_source <- Data_DeltagelseForekomstHAIogABiSykehjem(
     data = data,
     arg = arg
   )
+  if(nrow(tab_source)<=1) return(no_data_table())
+
   splitting <- fhi::split_equal(1:nrow(tab_source), size = 25)
 
   for (i in seq_along(splitting)) {

@@ -46,6 +46,7 @@ plan_email$analysis_fn_apply_to_all(fn_email)
 plan_pdf <- plnr::Plan$new(name_arg = "arg_pdf")
 plan_pdf$data_add(df = abonnenter, name = "abonnenter")
 plan_pdf$analysis_add_from_df(df = rbind(analysis_sykehus$stack, analysis_sykehjem$stack, fill=T))
+#plan_pdf$analysis_add_from_df(df = analysis_sykehjem$stack[stringr::str_detect(location_name,"lesberg")])
 #plan_pdf$analysis_add_from_df(df = rbind(stackA$stack[1], stackB$stack[1], fill=T))
 
 # add the analysis function to the plan
@@ -53,7 +54,7 @@ plan_pdf$analysis_fn_apply_to_all(fn_analysis)
 
 # arg_pdf <- plan_pdf$analysis_get(1)$arg_pdf
 # plan_pdf$run_all()
-# plan_pdf$run_one(28)
+# plan_pdf$run_one(1)
 plnr::run_all_parallel(
   plan_pdf,
   cores = 4,

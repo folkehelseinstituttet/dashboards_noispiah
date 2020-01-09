@@ -65,8 +65,6 @@ gen_stack_sykehjem <- function(
   } else {
     maxDate <- requested_date
   }
-  da <- da[PrevalensDato == maxDate]
-  di <- di[PrevalensDato == maxDate]
 
   fylkeKommune <- unique(rbind(da[, c("Fylke", "Kommune")], di[, c("Fylke", "Kommune")]))
   setorder(fylkeKommune, Fylke, Kommune)
@@ -250,8 +248,6 @@ gen_stack_sykehus <- function(
   } else {
     maxDate <- requested_date
   }
-  da <- da[PrevalensDato == maxDate]
-  di <- di[PrevalensDato == maxDate]
 
   stack <- rbind(
     data.table(
