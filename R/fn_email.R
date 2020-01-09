@@ -1,8 +1,8 @@
 #' fn_email
 #' @param data a
-#' @param arg_pdf a
+#' @param argset_pdf a
 #' @export
-fn_email <- function(data, arg_pdf) {
+fn_email <- function(data, argset_pdf) {
   # data <- plan_email$data_get()
   # arg_email <- plan_email$analysis_get(1)$arg_email
 

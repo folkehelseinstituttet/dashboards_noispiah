@@ -152,8 +152,8 @@ Data_DeltagelseForekomstHAIogABiSykehjem <- function(data, arg) {
 #' @export Table_DeltagelseForekomstHAIogABiSykehjem
 Table_DeltagelseForekomstHAIogABiSykehjem <- function(data, arg) {
   # data <- plan$data_get()
-  # arg <- plan$analysis_get("sykehus_tab1")$arg
-  # arg <- plan$analysis_get("sykehjem_tab1")$arg
+  # arg <- plan$argset_get("sykehus_tab1")
+  # arg <- plan$argset_get("sykehjem_tab1")
 
   tab_source <- Data_DeltagelseForekomstHAIogABiSykehjem(
     data = data,
@@ -163,7 +163,12 @@ Table_DeltagelseForekomstHAIogABiSykehjem <- function(data, arg) {
     return(no_data_table())
   }
 
-  splitting <- fhi::split_equal(1:nrow(tab_source), size = 25)
+  if(nrow(tab_source==26)){
+    # dont leave just 1 row on the next page
+    splitting <- fhi::split_equal(1:nrow(tab_source), size = 26)
+  } else {
+    splitting <- fhi::split_equal(1:nrow(tab_source), size = 25)
+  }
 
   for (i in seq_along(splitting)) {
     if (i > 1) cat("\\newpage\n\n")

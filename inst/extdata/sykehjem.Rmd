@@ -3,10 +3,10 @@ output:
   fhi::noispiah_document:
     fig_caption: yes
 params:
-  arg_pdf: NULL
+  argset_pdf: NULL
 title: "Prevalensundersøkelsen av helsetjenesteassosierte infeksjoner og antibiotikabruk i sykehjem (NOIS-PIAH)"
-sub_title: "`r params$arg_pdf$location_name` --- `r params$arg_pdf$date_display`"
-header: "Prevalensundersøkelsen av helsetjenesteassosierte infeksjoner og antibiotikabruk \\newline ``r params$arg_pdf$location_name` --- `r params$arg_pdf$date_display`"
+sub_title: "`r params$argset_pdf$location_name` --- `r params$argset_pdf$date_display`"
+header: "Prevalensundersøkelsen av helsetjenesteassosierte infeksjoner og antibiotikabruk \\newline ``r params$argset_pdf$location_name` --- `r params$argset_pdf$date_display`"
 footer: "Folkehelseinstituttet, Oslo, Norge"
 authors:
   - "_"
@@ -22,14 +22,14 @@ suppressMessages(suppressPackageStartupMessages(fd::initialize("noispiah")))
 knitr::opts_chunk$set(fig.width = 7.25, fig.height = 6)
 
 ####################################
-arg_pdf <- params$arg_pdf
-# arg_pdf <- plan_pdf$analysis_get(1)$arg_pdf
+argset_pdf <- params$argset_pdf
+# argset_pdf <- plan_pdf$analysis_get(1)$argset_pdf
 ####################################
 
-level <- arg_pdf$level
-location <- arg_pdf$location
-fylke <- arg_pdf$fylke
-DATE_USE <- arg_pdf$DATE_USE
+level <- argset_pdf$level
+location <- argset_pdf$location
+fylke <- argset_pdf$fylke
+DATE_USE <- argset_pdf$DATE_USE
 
 suppressMessages(library(data.table))
 suppressMessages(library(ggplot2))
@@ -43,21 +43,21 @@ setDT(di)
 da <- clean_da(da, type = "sykehjem")
 clean_di(di, type = "sykehjem")
 
-plan <- plnr::Plan$new()
+plan <- plnr::Plan$new(name_argset = "arg")
 plan$data_add(df = da, name = "da_all")
 plan$data_add(df = di, name = "di_all")
 
 da_all <- copy(da)
 di_all <- copy(di)
 
-if (arg_pdf$level == "landsdekkende") {
+if (argset_pdf$level == "landsdekkende") {
 
-} else if (arg_pdf$level == "fylke") {
-  da <- da[Fylke == arg_pdf$location]
-  di <- di[Fylke == arg_pdf$location]
-} else if (arg_pdf$level == "kommune") {
-  da <- da[Kommune == arg_pdf$location & Fylke == arg_pdf$fylke]
-  di <- di[Kommune == arg_pdf$location & Fylke == arg_pdf$fylke]
+} else if (argset_pdf$level == "fylke") {
+  da <- da[Fylke == argset_pdf$location]
+  di <- di[Fylke == argset_pdf$location]
+} else if (argset_pdf$level == "kommune") {
+  da <- da[Kommune == argset_pdf$location & Fylke == argset_pdf$fylke]
+  di <- di[Kommune == argset_pdf$location & Fylke == argset_pdf$fylke]
 }
 
 plan$data_add(df = da, name = "da")
@@ -66,8 +66,8 @@ plan$data_add(df = di, name = "di")
 plan$analysis_add(
   fn = Table_DeltagelseForekomstHAIogABiSykehjem,
   name = "sykehjem_tab1",
-  level = arg_pdf$level,
-  DATE_USE = arg_pdf$DATE_USE,
+  level = argset_pdf$level,
+  DATE_USE = argset_pdf$DATE_USE,
   type = "sykehjem",
   da_unique_structure_vars = c(
     "InstitusjonId",
@@ -75,9 +75,9 @@ plan$analysis_add(
     "Avdeling"
   ),
   varGrouping = dplyr::case_when(
-    arg_pdf$level == "landsdekkende" ~ "Fylke",
-    arg_pdf$level == "fylke" ~ "Kommune",
-    arg_pdf$level == "kommune" ~ "Institusjon"
+    argset_pdf$level == "landsdekkende" ~ "Fylke",
+    argset_pdf$level == "fylke" ~ "Kommune",
+    argset_pdf$level == "kommune" ~ "Institusjon"
   ),
   peopleLabel = "beboere"
 )
@@ -85,15 +85,15 @@ plan$analysis_add(
 plan$analysis_add(
   fn = Figure_ForekomstHAIiSykehjemPerAvdelingstype,
   name = "sykehjem_fig1",
-  level = arg_pdf$level,
-  DATE_USE = arg_pdf$DATE_USE
+  level = argset_pdf$level,
+  DATE_USE = argset_pdf$DATE_USE
 )
 
 plan$analysis_add(
   fn = Figure_ForskrivningerAvAntibiotikaTilForebyggingOgBehandlingPerIndikasjon,
   name = "sykehjem_fig2",
-  level = arg_pdf$level,
-  DATE_USE = arg_pdf$DATE_USE,
+  level = argset_pdf$level,
+  DATE_USE = argset_pdf$DATE_USE,
   ab = "forebyggVsBehandOgMethVsAndre",
   group1 = "IndikasjonCategory",
   group2 = "forebyggVsBehandOgMethVsAndre"
@@ -102,8 +102,8 @@ plan$analysis_add(
 plan$analysis_add(
   fn = Figure_ForskrivningerAvAntibiotikaPerIndikasjon,
   name = "sykehjem_fig3",
-  level = arg_pdf$level,
-  DATE_USE = arg_pdf$DATE_USE,
+  level = argset_pdf$level,
+  DATE_USE = argset_pdf$DATE_USE,
   indikasjon = "Nedre urinveisinfeksjon",
   display_name = "Nedre urinveisinfeksjon",
   with_metenamin = T
@@ -112,8 +112,8 @@ plan$analysis_add(
 plan$analysis_add(
   fn = Figure_ForskrivningerAvAntibiotikaPerIndikasjon,
   name = "sykehjem_fig4",
-  level = arg_pdf$level,
-  DATE_USE = arg_pdf$DATE_USE,
+  level = argset_pdf$level,
+  DATE_USE = argset_pdf$DATE_USE,
   indikasjon = "Nedre luftveisinfeksjon",
   display_name = "Nedre luftveisinfeksjon",
   with_metenamin = F
@@ -122,8 +122,8 @@ plan$analysis_add(
 plan$analysis_add(
   fn = Figure_ForskrivningerAvAntibiotikaPerIndikasjon,
   name = "sykehjem_fig5",
-  level = arg_pdf$level,
-  DATE_USE = arg_pdf$DATE_USE,
+  level = argset_pdf$level,
+  DATE_USE = argset_pdf$DATE_USE,
   indikasjon = "Hud- og bløtdelsinfeksjon, ekskl. postoperativ sårinfeksjon",
   display_name = "Hud- og bløtdelsinfeksjon",
   with_metenamin = F
