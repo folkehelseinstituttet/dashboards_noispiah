@@ -4,12 +4,12 @@
 \alias{fn_analysis}
 \title{fn_analysis}
 \usage{
-fn_analysis(data, arg_pdf)
+fn_analysis(data, argset_pdf)
 }
 \arguments{
 \item{data}{a}
 
-\item{arg_pdf}{a}
+\item{argset_pdf}{a}
 }
 \description{
 fn_analysis
