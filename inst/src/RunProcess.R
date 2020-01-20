@@ -38,7 +38,8 @@ abonnenter <- rbind(analysis_sykehus$abonnenter,analysis_sykehjem$abonnenter)
 # create the plan for emails
 plan_email <- gen_plan_email(
   dev=!fd::config$is_production,
-  abonnenter=abonnenter
+  abonnenter=abonnenter,
+  DATE_USE = analysis_sykehjem$stack$DATE_USE[1]
   )
 plan_email$analysis_fn_apply_to_all(fn_email)
 
@@ -53,14 +54,8 @@ plan_pdf$argset_add_from_df(df = rbind(analysis_sykehus$stack, analysis_sykehjem
 plan_pdf$analysis_fn_apply_to_all(fn_analysis)
 
 # argset_pdf <- plan_pdf$argset_get(99)
-# plan_pdf$run_all()
+plan_pdf$run_all()
 # plan_pdf$run_one(99)
-plnr::run_all_parallel(
-  plan_pdf,
-  cores = 4,
-  future.chunk.size = 1,
-  multisession = T
-)
 
 # Check to see if all files have been created
 files_required <- unique(c(abonnenter$from, abonnenter$to))
@@ -79,6 +74,10 @@ if(fail){
   fd::msg("All files created properly", slack=T)
 }
 
+# plan_email$len()
+# plan_email$argset_get(2)
+# plan_email$run_all()
+
 file.create(fd::path("data_raw","DONE.txt"))
 
 
@@ -86,24 +85,3 @@ if(!fhi::DashboardIsDev()) quit(save="no")
 
 #"Møre og Romsdal - Fræna" -
 #"Møre og Romsdal - Haram"
-
-
-run_all_parallel <- function(plan, cores = parallel::detectCores(), verbose = interactive()){
-  cl <- parallel::makeCluster(cores, outfile = "")
-  doParallel::registerDoParallel(cl)
-  on.exit(parallel::stopCluster(cl))
-
-  data <- plan$data_get()
-  if(verbose) pb <- fhi::txt_progress_bar(max=plan$len())
-
-  foreach(
-    i = plan$x_seq_along(),
-    .packages = c("data.table"),
-    .export = "plan"
-  ) %dopar% {
-    plan$parent_env <- environment()
-    plan$run_one_with_data(index_analysis = i, data = data)
-    if(verbose) utils::setTxtProgressBar(pb, value = i)
-  }
-
-}
