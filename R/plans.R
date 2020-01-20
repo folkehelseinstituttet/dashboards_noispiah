@@ -48,14 +48,6 @@ gen_stack_sykehjem <- function(
                                FILES_RMD_USE_SYKEHUS,
                                requested_date = NULL,
                                abonnenter_file) {
-  Fylke <- NULL
-
-  outputDirDaily <- file.path(outputDir, lubridate::today())
-  dir.create(outputDirDaily)
-  dir.create(file.path(outputDirDaily, "Sykehjem"))
-  dir.create(file.path(outputDirDaily, "Sykehjem", "Landsdekkende"))
-  dir.create(file.path(outputDirDaily, "Sykehjem", "Fylke"))
-  dir.create(file.path(outputDirDaily, "Sykehjem", "Kommune"))
 
   da <- data.table(readxl::read_excel(fd::path("data_raw", "AntibiotikadataPrimer.xlsx")))
   di <- data.table(readxl::read_excel(fd::path("data_raw", "InfeksjonsdataPrimer.xlsx")))
@@ -65,6 +57,13 @@ gen_stack_sykehjem <- function(
   } else {
     maxDate <- requested_date
   }
+
+  outputDirDaily <- file.path(outputDir, maxDate)
+  dir.create(outputDirDaily)
+  dir.create(file.path(outputDirDaily, "Sykehjem"))
+  dir.create(file.path(outputDirDaily, "Sykehjem", "Landsdekkende"))
+  dir.create(file.path(outputDirDaily, "Sykehjem", "Fylke"))
+  dir.create(file.path(outputDirDaily, "Sykehjem", "Kommune"))
 
   fylkeKommune <- unique(rbind(da[, c("Fylke", "Kommune")], di[, c("Fylke", "Kommune")]))
   setorder(fylkeKommune, Fylke, Kommune)
@@ -231,14 +230,6 @@ gen_stack_sykehus <- function(
                               FILES_RMD_USE_SYKEHUS,
                               requested_date = NULL,
                               abonnenter_file) {
-  Fylke <- NULL
-
-  outputDirDaily <- file.path(outputDir, lubridate::today())
-  dir.create(outputDirDaily)
-  dir.create(file.path(outputDirDaily, "Sykehus"))
-  dir.create(file.path(outputDirDaily, "Sykehus", "Landsdekkende"))
-  dir.create(file.path(outputDirDaily, "Sykehus", "Helseforetak"))
-  dir.create(file.path(outputDirDaily, "Sykehus", "Institusjon"))
 
   da <- data.table(readxl::read_excel(fd::path("data_raw", "AntibiotikadataSpesialist.xlsx")))
   di <- data.table(readxl::read_excel(fd::path("data_raw", "InfeksjonsdataSpesialist.xlsx")))
@@ -248,6 +239,13 @@ gen_stack_sykehus <- function(
   } else {
     maxDate <- requested_date
   }
+
+  outputDirDaily <- file.path(outputDir, maxDate)
+  dir.create(outputDirDaily)
+  dir.create(file.path(outputDirDaily, "Sykehus"))
+  dir.create(file.path(outputDirDaily, "Sykehus", "Landsdekkende"))
+  dir.create(file.path(outputDirDaily, "Sykehus", "Helseforetak"))
+  dir.create(file.path(outputDirDaily, "Sykehus", "Institusjon"))
 
   stack <- rbind(
     data.table(
@@ -366,10 +364,13 @@ gen_stack_sykehus <- function(
 #' gen_plan_email
 #' @param dev a
 #' @param abonnenter a
+#' @param DATE_USE a
 #' @export
 gen_plan_email <- function(
                            dev = TRUE,
-                           abonnenter) {
+                           abonnenter,
+                           DATE_USE
+                           ) {
   emails <- copy(abonnenter)
   setnames(emails, "epost", "email")
   # emails[,email:=rev(tstrsplit(to,"/"))[2]]
@@ -384,15 +385,16 @@ gen_plan_email <- function(
     emails <- emails[email == "riwh@fhi.no"]
   }
 
-  plan_email <- plnr::Plan$new(name_arg = "arg_email")
+  plan_email <- plnr::Plan$new(name = "argset_email")
   emails_loop <- unique(emails[, .(email, type)])
-  for (i in nrow(emails_loop)) {
+  for (i in 1:nrow(emails_loop)) {
     d <- emails[email == emails_loop$email[i] & type == emails_loop$type[i]]
 
     plan_email$analysis_add(
       type = emails_loop$type[i],
       email = emails_loop$email[i],
-      files = d[, .(file_absolute, file_name)]
+      files = d[, .(file_absolute, file_name)],
+      DATE_USE = DATE_USE
     )
   }
 

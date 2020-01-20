@@ -4,12 +4,12 @@
 \alias{fn_email}
 \title{fn_email}
 \usage{
-fn_email(data, argset_pdf)
+fn_email(data, argset_email)
 }
 \arguments{
 \item{data}{a}
 
-\item{argset_pdf}{a}
+\item{argset_email}{a}
 }
 \description{
 fn_email

@@ -19,7 +19,7 @@ fn_analysis <- function(data, argset_pdf) {
   fails <- 0
   success <- 0
   while (success < 1 & fails < 2) {
-    cat(argset_pdf$index_analysis, " - ", argset_pdf$output_pdf, "TRY \n", file = fd::path("results", lubridate::today(), "details.txt", package = "noispiah"), append = T)
+    cat(argset_pdf$index_analysis, " - ", argset_pdf$output_pdf, "TRY \n", file = fd::path("results", argset_pdf$DATE_USE, "details.txt", package = "noispiah"), append = T)
 
     tryCatch({
       rmarkdown::render(
@@ -34,7 +34,7 @@ fn_analysis <- function(data, argset_pdf) {
       )
       success <- success + 1
     }, error = function(e) {
-      cat(argset_pdf$index_analysis, " ERROR", "\n", file = fd::path("results", lubridate::today(), "details.txt", package = "noispiah"), append = T)
+      cat(argset_pdf$index_analysis, " ERROR", "\n", file = fd::path("results", argset_pdf$DATE_USE, "details.txt", package = "noispiah"), append = T)
       Sys.sleep(stats::runif(1, min = 1, max = 2.5))
       fails <<- fails + 1
     })
@@ -44,7 +44,7 @@ fn_analysis <- function(data, argset_pdf) {
   file.copy(fs::path(temp_dir, temp_pdf), argset_pdf$output_pdf, overwrite = TRUE)
   if (!file.exists(argset_pdf$output_pdf)) fd::msg(glue::glue("index: {argset_pdf$index_analysis} couldn't copy"), type = "err")
 
-  cat(argset_pdf$index_analysis, " - ", argset_pdf$output_pdf, "SUCCEED \n", file = fd::path("results", lubridate::today(), "details.txt", package = "noispiah"), append = T)
+  cat(argset_pdf$index_analysis, " - ", argset_pdf$output_pdf, "SUCCEED \n", file = fd::path("results", argset_pdf$DATE_USE, "details.txt", package = "noispiah"), append = T)
 
   to_copy <- data$abonnenter[uuid == argset_pdf$uuid]
   if (nrow(to_copy) > 0) {
