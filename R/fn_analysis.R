@@ -10,7 +10,7 @@ fn_analysis <- function(data, argset_pdf) {
   temp_uuid <- uuid::UUIDgenerate()
   temp_pdf <- glue::glue("{temp_uuid}.pdf")
 
-  fs::file_copy(argset_pdf$base_RMD, argset_pdf$RMD, overwrite=T)
+  fs::file_copy(argset_pdf$base_RMD, argset_pdf$RMD, overwrite = T)
   fhi::noispiah_resources_copy(argset_pdf$temp_dir)
   # on.exit(unlink(temp_dir, recursive=T, force=T))
 

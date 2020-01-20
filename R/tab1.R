@@ -163,7 +163,7 @@ Table_DeltagelseForekomstHAIogABiSykehjem <- function(data, arg) {
     return(no_data_table())
   }
 
-  if(nrow(tab_source==26)){
+  if (nrow(tab_source == 26)) {
     # dont leave just 1 row on the next page
     splitting <- fhi::split_equal(1:nrow(tab_source), size = 26)
   } else {
