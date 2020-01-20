@@ -48,7 +48,6 @@ gen_stack_sykehjem <- function(
                                FILES_RMD_USE_SYKEHUS,
                                requested_date = NULL,
                                abonnenter_file) {
-
   da <- data.table(readxl::read_excel(fd::path("data_raw", "AntibiotikadataPrimer.xlsx")))
   di <- data.table(readxl::read_excel(fd::path("data_raw", "InfeksjonsdataPrimer.xlsx")))
 
@@ -230,7 +229,6 @@ gen_stack_sykehus <- function(
                               FILES_RMD_USE_SYKEHUS,
                               requested_date = NULL,
                               abonnenter_file) {
-
   da <- data.table(readxl::read_excel(fd::path("data_raw", "AntibiotikadataSpesialist.xlsx")))
   di <- data.table(readxl::read_excel(fd::path("data_raw", "InfeksjonsdataSpesialist.xlsx")))
 
@@ -369,8 +367,7 @@ gen_stack_sykehus <- function(
 gen_plan_email <- function(
                            dev = TRUE,
                            abonnenter,
-                           DATE_USE
-                           ) {
+                           DATE_USE) {
   emails <- copy(abonnenter)
   setnames(emails, "epost", "email")
   # emails[,email:=rev(tstrsplit(to,"/"))[2]]

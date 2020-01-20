@@ -70,7 +70,7 @@ fn_email <- function(data, argset_email) {
     html = email_text,
     to = argset_email$email,
     bcc = c("Torunn.Alberg@fhi.no", "RichardAubrey.White@fhi.no"),
-    inlines = system.file("extdata","logo_kort.png",package="noispiah"),
+    inlines = system.file("extdata", "logo_kort.png", package = "noispiah"),
     attachments = argset_email$files$file_absolute,
     include_footer = F
   )
