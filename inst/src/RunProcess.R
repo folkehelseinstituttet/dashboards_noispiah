@@ -44,9 +44,9 @@ plan_email <- gen_plan_email(
 plan_email$analysis_fn_apply_to_all(fn_email)
 
 # create the plan
-plan_pdf <- plnr::Plan$new(name_argset = "argset_pdf")
-plan_pdf$data_add(df = abonnenter, name = "abonnenter")
-plan_pdf$argset_add_from_df(df = rbind(analysis_sykehus$stack, analysis_sykehjem$stack, fill=T))
+plan_pdf <- plnr::Plan$new(argset_name = "argset_pdf")
+plan_pdf$add_data(direct = abonnenter, name = "abonnenter")
+plan_pdf$add_argset_from_df(df = rbind(analysis_sykehus$stack, analysis_sykehjem$stack, fill=T))
 #plan_pdf$analysis_add_from_df(df = analysis_sykehjem$stack[stringr::str_detect(location_name,"lesberg")])
 #plan_pdf$analysis_add_from_df(df = rbind(stackA$stack[1], stackB$stack[1], fill=T))
 

@@ -382,12 +382,12 @@ gen_plan_email <- function(
     emails <- emails[email == "riwh@fhi.no"]
   }
 
-  plan_email <- plnr::Plan$new(name = "argset_email")
+  plan_email <- plnr::Plan$new(argset_name = "argset_email")
   emails_loop <- unique(emails[, .(email, type)])
   for (i in 1:nrow(emails_loop)) {
     d <- emails[email == emails_loop$email[i] & type == emails_loop$type[i]]
 
-    plan_email$analysis_add(
+    plan_email$add_analysis(
       type = emails_loop$type[i],
       email = emails_loop$email[i],
       files = d[, .(file_absolute, file_name)],

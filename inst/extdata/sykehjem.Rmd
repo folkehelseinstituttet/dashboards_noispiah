@@ -44,8 +44,8 @@ da <- clean_da(da, type = "sykehjem")
 clean_di(di, type = "sykehjem")
 
 plan <- plnr::Plan$new(name_argset = "arg")
-plan$data_add(df = da, name = "da_all")
-plan$data_add(df = di, name = "di_all")
+plan$add_data(df = da, name = "da_all")
+plan$add_data(df = di, name = "di_all")
 
 da_all <- copy(da)
 di_all <- copy(di)
@@ -60,10 +60,10 @@ if (argset_pdf$level == "landsdekkende") {
   di <- di[Kommune == argset_pdf$location & Fylke == argset_pdf$fylke]
 }
 
-plan$data_add(df = da, name = "da")
-plan$data_add(df = di, name = "di")
+plan$add_data(df = da, name = "da")
+plan$add_data(df = di, name = "di")
 
-plan$analysis_add(
+plan$add_analysis(
   fn = Table_DeltagelseForekomstHAIogABiSykehjem,
   name = "sykehjem_tab1",
   level = argset_pdf$level,
@@ -82,14 +82,14 @@ plan$analysis_add(
   peopleLabel = "beboere"
 )
 
-plan$analysis_add(
+plan$add_analysis(
   fn = Figure_ForekomstHAIiSykehjemPerAvdelingstype,
   name = "sykehjem_fig1",
   level = argset_pdf$level,
   DATE_USE = argset_pdf$DATE_USE
 )
 
-plan$analysis_add(
+plan$add_analysis(
   fn = Figure_ForskrivningerAvAntibiotikaTilForebyggingOgBehandlingPerIndikasjon,
   name = "sykehjem_fig2",
   level = argset_pdf$level,
@@ -99,7 +99,7 @@ plan$analysis_add(
   group2 = "forebyggVsBehandOgMethVsAndre"
 )
 
-plan$analysis_add(
+plan$add_analysis(
   fn = Figure_ForskrivningerAvAntibiotikaPerIndikasjon,
   name = "sykehjem_fig3",
   level = argset_pdf$level,
@@ -109,7 +109,7 @@ plan$analysis_add(
   with_metenamin = T
 )
 
-plan$analysis_add(
+plan$add_analysis(
   fn = Figure_ForskrivningerAvAntibiotikaPerIndikasjon,
   name = "sykehjem_fig4",
   level = argset_pdf$level,
@@ -119,7 +119,7 @@ plan$analysis_add(
   with_metenamin = F
 )
 
-plan$analysis_add(
+plan$add_analysis(
   fn = Figure_ForskrivningerAvAntibiotikaPerIndikasjon,
   name = "sykehjem_fig5",
   level = argset_pdf$level,

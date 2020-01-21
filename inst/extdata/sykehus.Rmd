@@ -44,8 +44,8 @@ da <- clean_da(da, type="sykehus")
 clean_di(di, type="sykehus")
 
 plan <- plnr::Plan$new(name_argset = "arg")
-plan$data_add(df = da, name = "da_all")
-plan$data_add(df = di, name = "di_all")
+plan$add_data(df = da, name = "da_all")
+plan$add_data(df = di, name = "di_all")
 
 
 da_all <- copy(da)
@@ -61,10 +61,10 @@ if(argset_pdf$level=="landsdekkende"){
   di <- di[Institusjon==argset_pdf$location]
 }
 
-plan$data_add(df = da, name = "da")
-plan$data_add(df = di, name = "di")
+plan$add_data(df = da, name = "da")
+plan$add_data(df = di, name = "di")
 
-plan$analysis_add(
+plan$add_analysis(
   fn = Table_DeltagelseForekomstHAIogABiSykehjem,
   name = "sykehus_tab1",
   level = argset_pdf$level,
@@ -83,21 +83,21 @@ plan$analysis_add(
   peopleLabel = "pasienter"
 )
 
-plan$analysis_add(
+plan$add_analysis(
   fn = Figure_PrevalensHAIPerSpesialitet,
   name = "sykehus_fig1",
   level = argset_pdf$level,
   DATE_USE = argset_pdf$DATE_USE
 )
 
-plan$analysis_add(
+plan$add_analysis(
   fn = Figure_AndelAntibiotikaTilForebyggingOgBehandling,
   name = "sykehus_fig2",
   level = argset_pdf$level,
   DATE_USE = argset_pdf$DATE_USE
 )
 
-plan$analysis_add(
+plan$add_analysis(
   fn = Figure_ForskrivningerAvAntibiotikaTilBehandlingPerIndikasjon,
   name = "sykehus_fig3",
   level = argset_pdf$level,
@@ -107,7 +107,7 @@ plan$analysis_add(
   group2="forebyggVsBehandOgMethVsAndre"
 )
 
-plan$analysis_add(
+plan$add_analysis(
   fn = Figure_ForskrivningerAvAntibiotikaTilBehandlingPerSpesialitet,
   name = "sykehus_fig4",
   level = argset_pdf$level,
@@ -117,7 +117,7 @@ plan$analysis_add(
   group2="c_spesialitet"
 )
 
-plan$analysis_add(
+plan$add_analysis(
   fn = Figure_AntibiotikaTilBehandlingOverTid1,
   name = "sykehus_fig5",
   level = argset_pdf$level,
@@ -127,7 +127,7 @@ plan$analysis_add(
   klassifisering=NULL
 )
 
-plan$analysis_add(
+plan$add_analysis(
   fn = Figure_AntibiotikaTilBehandlingOverTid2,
   name = "sykehus_fig6",
   level = argset_pdf$level,
@@ -137,7 +137,7 @@ plan$analysis_add(
   klassifisering="Samfunnservervet infeksjon"
 )
 
-plan$analysis_add(
+plan$add_analysis(
   fn = Figure_AntibiotikaTilBehandling,
   name = "sykehus_fig7",
   level = argset_pdf$level,
@@ -153,7 +153,7 @@ plan$analysis_add(
   xforebyggingVsBehandling="Behandling"
 )
 
-plan$analysis_add(
+plan$add_analysis(
   fn = Figure_AntibiotikaTilBehandling,
   name = "sykehus_fig8",
   level = argset_pdf$level,
@@ -169,7 +169,7 @@ plan$analysis_add(
   xforebyggingVsBehandling="Behandling"
 )
 
-plan$analysis_add(
+plan$add_analysis(
   fn = Figure_AntibiotikaTilBehandling,
   name = "sykehus_fig9",
   level = argset_pdf$level,
@@ -185,7 +185,7 @@ plan$analysis_add(
   xforebyggingVsBehandling="Behandling"
 )
 
-plan$analysis_add(
+plan$add_analysis(
   fn = Figure_AntibiotikaTilBehandling,
   name = "sykehus_fig10",
   level = argset_pdf$level,
@@ -201,7 +201,7 @@ plan$analysis_add(
   xforebyggingVsBehandling="Behandling"
 )
 
-plan$analysis_add(
+plan$add_analysis(
   fn = Figure_AntibiotikaTilBehandling,
   name = "sykehus_fig11",
   level = argset_pdf$level,
