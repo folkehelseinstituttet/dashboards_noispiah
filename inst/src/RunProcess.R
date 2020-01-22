@@ -41,7 +41,7 @@ plan_email <- gen_plan_email(
   abonnenter=abonnenter,
   DATE_USE = analysis_sykehjem$stack$DATE_USE[1]
   )
-plan_email$analysis_fn_apply_to_all(fn_email)
+plan_email$apply_analysis_fn_to_all(fn_email)
 
 # create the plan
 plan_pdf <- plnr::Plan$new(argset_name = "argset_pdf")
@@ -51,11 +51,11 @@ plan_pdf$add_argset_from_df(df = rbind(analysis_sykehus$stack, analysis_sykehjem
 #plan_pdf$analysis_add_from_df(df = rbind(stackA$stack[1], stackB$stack[1], fill=T))
 
 # add the analysis function to the plan
-plan_pdf$analysis_fn_apply_to_all(fn_analysis)
+plan_pdf$apply_analysis_fn_to_all(fn_analysis)
 
 # argset_pdf <- plan_pdf$argset_get(99)
 plan_pdf$run_all()
-# plan_pdf$run_one(99)
+# plan_pdf$run_one(1)
 
 # Check to see if all files have been created
 files_required <- unique(c(abonnenter$from, abonnenter$to))

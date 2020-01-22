@@ -24,7 +24,7 @@ knitr::opts_chunk$set(fig.width=7.25, fig.height=6)
 
 ####################################
 argset_pdf <- params$argset_pdf
-# argset_pdf <- plan_pdf$argset_get(1)
+# argset_pdf <- plan_pdf$get_argset(1)
 ####################################
 
 level <- argset_pdf$level
@@ -43,9 +43,9 @@ setDT(di)
 da <- clean_da(da, type="sykehus")
 clean_di(di, type="sykehus")
 
-plan <- plnr::Plan$new(name_argset = "arg")
-plan$add_data(df = da, name = "da_all")
-plan$add_data(df = di, name = "di_all")
+plan <- plnr::Plan$new(argset_name = "arg")
+plan$add_data(direct = da, name = "da_all")
+plan$add_data(direct = di, name = "di_all")
 
 
 da_all <- copy(da)
@@ -61,8 +61,8 @@ if(argset_pdf$level=="landsdekkende"){
   di <- di[Institusjon==argset_pdf$location]
 }
 
-plan$add_data(df = da, name = "da")
-plan$add_data(df = di, name = "di")
+plan$add_data(direct = da, name = "da")
+plan$add_data(direct = di, name = "di")
 
 plan$add_analysis(
   fn = Table_DeltagelseForekomstHAIogABiSykehjem,
