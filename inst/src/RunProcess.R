@@ -75,7 +75,8 @@ if(fail){
 }
 
 # plan_email$len()
-# plan_email$argset_get(2)
+# plan_email$get_argset(1)
+# plan_email$run_one(2)
 # plan_email$run_all()
 
 file.create(fd::path("data_raw","DONE.txt"))
