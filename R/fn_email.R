@@ -24,13 +24,13 @@ fn_email <- function(data, argset_email) {
 
     "Vi h{fhi::nb$aa}per rapportene vil v{fhi::nb$ae}re nyttige i deres arbeid for god kvalitet p{fhi::nb$aa} helsetjenestene.<br><br>",
 
-    "Sp{fhi::nb$oe}rsm{fhi::nb$aa}l og tilbakemeldinger p{fhi::nb$aa} rapportene kan sendes til prevalens@fhi.no.<br><br>",
+    "<span style='color:red'>Ikke svar p{fhi::nb$aa} denne e-posten.</span> Sp{fhi::nb$oe}rsm{fhi::nb$aa}l og tilbakemeldinger p{fhi::nb$aa} rapportene kan sendes til prevalens@fhi.no.<br><br>",
 
     "<i>Vennlig hilsen</i><br>",
     "<i>Avdeling for smittevernregistre og </i><br>",
     "<i>Seksjon for resistens- og infeksjonsforebygging</i><br>",
     "<i>Folkehelseinstituttet</i><br><br>",
-    "<img src='cid:logo_kort.png' width='75'>"
+    "<img src='cid:logo_kort.png' width='90'>"
   )
 
   email_subject_sykehus <- glue::glue(
@@ -48,13 +48,13 @@ fn_email <- function(data, argset_email) {
 
     "Vi h{fhi::nb$aa}per rapportene vil v{fhi::nb$ae}re nyttige i deres arbeid for god kvalitet p{fhi::nb$aa} helsetjenestene.<br><br>",
 
-    "Sp{fhi::nb$oe}rsm{fhi::nb$aa}l og tilbakemeldinger p{fhi::nb$aa} rapportene kan sendes til prevalens@fhi.no.<br><br>",
+    "<span style='color:red'>Ikke svar p{fhi::nb$aa} denne e-posten.</span> Sp{fhi::nb$oe}rsm{fhi::nb$aa}l og tilbakemeldinger p{fhi::nb$aa} rapportene kan sendes til prevalens@fhi.no.<br><br>",
 
     "<i>Vennlig hilsen</i><br>",
     "<i>Avdeling for smittevernregistre og </i><br>",
     "<i>Seksjon for resistens- og infeksjonsforebygging</i><br>",
     "<i>Folkehelseinstituttet</i><br><br>",
-    "<img src='cid:logo_kort.png' width='75'>"
+    "<img src='cid:logo_kort.png' width='90'>"
   )
 
   if (argset_email$type == "sykehjem") {
